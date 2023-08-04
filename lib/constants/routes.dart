@@ -1,2 +1,4 @@
+
 const loginRoute = '/login/';
-const adminPanelRoute = '/adminPanel/';
+const adminDashboardRoute = '/adminDashboard/';
+const addHouseRoute = '/addHouse';

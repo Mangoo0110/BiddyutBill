@@ -1,4 +1,5 @@
-import 'package:e_bill/admin_panel/admin_home.dart';
+import 'package:e_bill/admin_panel/addHouse.dart';
+import 'package:e_bill/admin_panel/admin_Dashboard.dart';
 import 'package:e_bill/authentication/logIn.dart';
 import 'package:e_bill/authentication/signUp.dart';
 import 'package:e_bill/constants/routes.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
       home: FutureBuilder(
@@ -28,7 +29,8 @@ class MyApp extends StatelessWidget {
           }
       ),
       routes: {
-        adminPanelRoute:(context) => const AdminHome(),
+        adminDashboardRoute:(context) => const AdminHome(),
+        addHouseRoute: (context) => const AddHouse(),
       },
     );
   }

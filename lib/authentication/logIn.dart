@@ -1,5 +1,11 @@
+
+import 'dart:convert';
+
+import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:e_bill/constants/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:fluttertoast/fluttertoast.dart' ;
 
 class logIn extends StatefulWidget {
   const logIn({super.key});
@@ -18,6 +24,43 @@ class _logInState extends State<logIn> {
   TextEditingController passwordController = TextEditingController();
 
 
+  adminLogIn()async{
+    try{
+      var varsityId = vIdController.text.trim();
+      var password = passwordController.text.trim();
+      print("$varsityId , $password");
+      var res = await http.post(
+          Uri.parse(API.adminLogIn),
+          body: {
+            "varsityID": varsityId,
+            "password": password,
+          }
+      );
+      print(res.statusCode);
+      if(res.statusCode == 200){
+        print("success");
+        var resBodyOfLogin = jsonDecode(res.body);
+        if(resBodyOfLogin["Success"]==true){
+
+          Fluttertoast.showToast(msg: "Congrats, You are Logged In successfully");
+          Future.delayed(
+             const Duration(milliseconds: 2000),()
+          {
+            Navigator.pushNamedAndRemoveUntil(context, adminDashboardRoute, (route) => false);
+          }
+          );
+        }
+        else{
+          print(resBodyOfLogin["Success"]);
+          Fluttertoast.showToast(msg: "Wrong Credentials!!");
+        }
+      }
+    }
+    catch(e){
+      print(e);
+      Fluttertoast.showToast(msg: "$e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -261,7 +304,8 @@ class _logInState extends State<logIn> {
                             borderRadius: BorderRadius.circular(16),
                             onTap: (){
                               if(adminbtn){
-                                Navigator.of(context).pushNamedAndRemoveUntil(adminPanelRoute, (route) => false);
+                                adminLogIn();
+                                //Navigator.of(context).pushNamedAndRemoveUntil(adminPanelRoute, (route) => false);
                               }
                             },
                             child: Padding(
