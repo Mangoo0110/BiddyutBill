@@ -19,7 +19,15 @@ class _AllHouseViewState extends State<AllHouseView> {
   final StreamController _allHouseStreamController = StreamController.broadcast();
   List<House>allHouses=[];
 
- 
+ @override
+  void initState() {
+    // TODO: implement initState
+   Timer.periodic(const Duration(seconds: 2), (timer) {
+       getAllHouses();
+       //currentAdmin = getCurrentAdmin();
+     });
+    super.initState();
+  }
   @override
   void dispose() {
     // TODO: implement dispose
@@ -89,7 +97,7 @@ class _AllHouseViewState extends State<AllHouseView> {
                               color: (assignedUserID=="")?Colors.grey : Colors.green,
                             ),
                             child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 20),
+                              padding: const EdgeInsets.symmetric(vertical: 20),
                               child: SingleChildScrollView(
                                 child: Column(
                                   children: [
