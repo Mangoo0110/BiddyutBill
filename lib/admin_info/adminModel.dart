@@ -3,27 +3,31 @@ import 'dart:convert';
 class Admin{
   final String  id;
   final String email;
-  final String fullname;
+  final String password;
+  final String fullName ;
 
   Admin(
         {
         required this.id,
         required this.email,
-        required this.fullname,
+        required this.fullName,
+        required this.password
       }
       );
 
   factory Admin.fromJson(Map<String,dynamic> json) =>Admin(
       id: json["varsityID"],
+      password:  json["password"],
       email: json["email"],
-      fullname: json["fullName"],
+      fullName: json["fullName"],
   );
 
   Map<String,dynamic>toJson()=>
       {
         "varsityID" : id,
+        "password" : password,
         "email" : email,
-        "fullName" : fullname,
+        "fullName" : fullName,
       };
 
 

@@ -1,20 +1,25 @@
 
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:e_bill/admin_info/adminModel.dart';
+import 'package:e_bill/admin_info/adminPreferences.dart';
 import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:e_bill/constants/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart' ;
 
-class logIn extends StatefulWidget {
-  const logIn({super.key});
+
+
+class LogIn extends StatefulWidget {
+  const LogIn({super.key});
 
   @override
-  State<logIn> createState() => _logInState();
+  State<LogIn> createState() => LogInState();
 }
 
-class _logInState extends State<logIn> {
+class LogInState extends State<LogIn> {
 
   bool adminbtn=false;
   bool userbtn=false;
@@ -24,6 +29,8 @@ class _logInState extends State<logIn> {
   TextEditingController passwordController = TextEditingController();
 
 
+
+
   adminLogIn()async{
     try{
       var varsityId = vIdController.text.trim();
@@ -31,6 +38,7 @@ class _logInState extends State<logIn> {
       print("$varsityId , $password");
       var res = await http.post(
           Uri.parse(API.adminLogIn),
+          headers: {"Accept":"application/json"},
           body: {
             "varsityID": varsityId,
             "password": password,
@@ -43,6 +51,11 @@ class _logInState extends State<logIn> {
         if(resBodyOfLogin["Success"]==true){
 
           Fluttertoast.showToast(msg: "Congrats, You are Logged In successfully");
+          final data =resBodyOfLogin["AdminAuth"];
+          //print(data);
+          Admin adminInfo = Admin.fromJson(data);
+          // CurrrentAdmin.setCurrentAdmin(adminInfo);
+          // CurrrentAdmin().setLoggedIn(setter: true);
           Future.delayed(
              const Duration(milliseconds: 2000),()
           {

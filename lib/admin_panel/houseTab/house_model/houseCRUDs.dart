@@ -1,8 +1,8 @@
 
 import 'dart:convert';
 
+import 'package:e_bill/admin_panel/houseTab/house_model/house.dart';
 import 'package:e_bill/api_connection/api_connection.dart';
-import 'package:e_bill/house_model/house.dart';
 import 'package:http/http.dart' as http;
 
 class HouseStorage{
