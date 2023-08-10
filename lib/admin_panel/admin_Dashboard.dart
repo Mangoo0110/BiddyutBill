@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:e_bill/admin_info/adminModel.dart';
-import 'package:e_bill/admin_panel/houseTab/allhouseView.dart';
+import 'package:e_bill/admin_panel/houseTab/houseView/allhouseView.dart';
 import 'package:e_bill/admin_panel/unitCostTab/unitCostView.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
