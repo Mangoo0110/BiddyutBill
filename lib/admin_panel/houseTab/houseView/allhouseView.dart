@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:e_bill/admin_info/adminModel.dart';
-import 'package:e_bill/admin_info/adminPreferences.dart';
 import 'package:e_bill/admin_panel/houseTab/house_model/house.dart';
 import 'package:e_bill/admin_panel/houseTab/house_model/houseCRUDs.dart';
 import 'package:e_bill/constants/routes.dart';

@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:e_bill/api_connection/api_connection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -61,7 +59,7 @@ class _AddUserState extends State<AddUser> {
   Widget build(BuildContext context) {
     print("started");
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 41, 20, 20),
+      backgroundColor: const Color.fromARGB(255, 41, 20, 20),
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(0, 255, 22, 22),
         title: const Text(
@@ -105,6 +103,7 @@ class _AddUserState extends State<AddUser> {
                   } else if (rg.hasMatch(val!)) {
                     return "Enter Numbers(0-9)..";
                   }
+                  return null;
                 },
                 decoration: const InputDecoration(
                   labelText: "User Id Number",
@@ -113,7 +112,7 @@ class _AddUserState extends State<AddUser> {
                   fillColor: Colors.white,
                 ),
                 cursorColor: Colors.white,
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               ),
             ),
             //House no textField
@@ -132,6 +131,7 @@ class _AddUserState extends State<AddUser> {
                   } else if (rg.hasMatch(val!)) {
                     return "Enter character as (a-z),(0-9)..";
                   }
+                  return null;
                 },
                 decoration: const InputDecoration(
                   labelText: "Name of User",
@@ -159,6 +159,7 @@ class _AddUserState extends State<AddUser> {
                   } else if (rg.hasMatch(val!)) {
                     return "Enter character as (a-z),(0-9)..";
                   }
+                  return null;
                 },
                 decoration: const InputDecoration(
                   labelText: "Phone Number",
@@ -186,6 +187,7 @@ class _AddUserState extends State<AddUser> {
                   } else if (rg.hasMatch(val!)) {
                     return "Enter character as (a-z),(0-9)..";
                   }
+                  return null;
                 },
                 decoration: const InputDecoration(
                   labelText: "Assign to a house",
@@ -196,7 +198,7 @@ class _AddUserState extends State<AddUser> {
                   hintStyle: TextStyle(color: Colors.grey),
                 ),
                 cursorColor: Colors.white,
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               ),
             ),
           ],

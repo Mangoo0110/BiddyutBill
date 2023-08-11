@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:e_bill/admin_info/adminModel.dart';
 import 'package:e_bill/admin_panel/admin_Dashboard.dart';
 import 'package:e_bill/admin_panel/houseTab/houseView/addHouse.dart';
@@ -8,7 +6,7 @@ import 'package:e_bill/constants/routes.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -20,7 +18,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
-
 
   bool adminExist = false;
   String adId = '';
@@ -35,11 +32,11 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: const LogIn(),
+      home: const AdminHome(),
       routes: {
-        adminDashboardRoute:(context) => const AdminHome(),
+        adminDashboardRoute: (context) => const AdminHome(),
         addHouseRoute: (context) => const AddHouse(),
-        loginRoute: (context) =>const AdminHome(),
+        loginRoute: (context) => const AdminHome(),
       },
     );
   }

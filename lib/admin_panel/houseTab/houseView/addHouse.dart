@@ -101,6 +101,7 @@ class _AddHouseState extends State<AddHouse> {
                   else if(rg.hasMatch(val!)){
                     return "Enter character as (a-z),(0-9)..";
                   }
+                  return null;
                 },
                 decoration: const InputDecoration(
                   labelText: "Name of the building",
@@ -109,7 +110,7 @@ class _AddHouseState extends State<AddHouse> {
                   fillColor: Colors.white,
                 ),
                 cursorColor: Colors.white,
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               ),
             ),
             //House no textField
@@ -128,6 +129,7 @@ class _AddHouseState extends State<AddHouse> {
                   else if(rg.hasMatch(val!)){
                     return "Enter character as (a-z),(0-9)..";
                   }
+                  return null;
                 },
                 decoration: const InputDecoration(
                   labelText: "House No",
@@ -155,6 +157,7 @@ class _AddHouseState extends State<AddHouse> {
                   else if(rg.hasMatch(val!)){
                     return "Enter character as (a-z),(0-9)..";
                   }
+                  return null;
                 },
                 decoration: const InputDecoration(
                   labelText: "Meter No",
@@ -182,6 +185,7 @@ class _AddHouseState extends State<AddHouse> {
                   else if(rg.hasMatch(val!)){
                     return "Enter character as (a-z),(0-9)..";
                   }
+                  return null;
                 },
                 decoration: const InputDecoration(
                   labelText: "Assign a user",
@@ -192,7 +196,7 @@ class _AddHouseState extends State<AddHouse> {
                   hintStyle: TextStyle(color: Colors.grey),
                 ),
                 cursorColor: Colors.white,
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               ),
             ),
 

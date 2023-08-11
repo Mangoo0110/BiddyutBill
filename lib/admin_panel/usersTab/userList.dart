@@ -33,7 +33,7 @@ class Tile extends StatelessWidget {
               Column(
                 children: [Text(name), Text(id)],
               ),
-              Column()
+              const Column()
             ],
           )),
     );
@@ -67,7 +67,7 @@ class _UserListState extends State<UserList> {
   }
 
   String idNumHouse(String a, String b, String c) {
-    String s = "id: " + a + "    " + "Number: " + b + "    " + "House: " + c;
+    String s = "id: $a    Number: $b    House: $c";
     return s;
   }
 
@@ -102,7 +102,7 @@ class _UserListState extends State<UserList> {
                     ),
                     //hdjfkhaskjfdhsdftextAlign: TextAlign.center,
                     cursorColor: Colors.white,
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ),
@@ -112,7 +112,7 @@ class _UserListState extends State<UserList> {
                   itemCount: userData.length,
                   itemBuilder: (context, index) {
                     return Card(
-                      margin: EdgeInsets.all(10),
+                      margin: const EdgeInsets.all(10),
                       child: ListTile(
                         title: Text(userData[index]["name"]),
                         subtitle: Text(idNumHouse(
@@ -126,14 +126,14 @@ class _UserListState extends State<UserList> {
           ],
         ),
         floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: Color.fromARGB(255, 11, 94, 35),
-          foregroundColor: Color.fromARGB(255, 231, 227, 227),
+          backgroundColor: const Color.fromARGB(255, 11, 94, 35),
+          foregroundColor: const Color.fromARGB(255, 231, 227, 227),
           onPressed: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => AddUser()));
+                context, MaterialPageRoute(builder: (context) => const AddUser()));
           },
-          icon: Icon(Icons.add),
-          label: Text('Add User'),
+          icon: const Icon(Icons.add),
+          label: const Text('Add User'),
         ),
       ),
     );
