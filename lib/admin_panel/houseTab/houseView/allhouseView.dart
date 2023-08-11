@@ -34,6 +34,7 @@ class _AllHouseViewState extends State<AllHouseView> {
   @override
   void dispose() {
     // TODO: implement dispose
+    //_allHouseStreamController.close();
     super.dispose();
   }
 
@@ -91,6 +92,10 @@ class _AllHouseViewState extends State<AllHouseView> {
                 case ConnectionState.active:
                   if(snapshot.hasData) {
                     final allHouses = snapshot.data as List<House>;
+                    if(allHouses.isEmpty){
+                      return const Center(child: Text("No houses yet!!",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30,color: Colors.grey),));
+
+                    }
                     return GridView.builder(
                         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 170,
@@ -137,7 +142,7 @@ class _AllHouseViewState extends State<AllHouseView> {
                     );
                   }
                   else{
-                    return const Center(child:  CircularProgressIndicator(),);
+                    return const Center(child:  Text("No houses yet!!"),);
                   }
                 default:
                   return const Center(child:  CircularProgressIndicator(),);

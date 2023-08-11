@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:e_bill/admin_info/adminModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:hive/hive.dart';
 
 class CurrrentAdmin{
   //String adminKey = "currentAdmin";

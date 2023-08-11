@@ -1,4 +1,5 @@
 
 const loginRoute = '/login/';
 const adminDashboardRoute = '/adminDashboard/';
-const addOrUpdateHouseRoute = '/addOrUpdateHouse';
+const addHouseRoute = '/addHouse';
+const updateHouseRoute = '/updateHouse';

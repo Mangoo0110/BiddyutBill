@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:e_bill/admin_info/adminModel.dart';
-import 'package:e_bill/admin_info/adminPreferences.dart';
 import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:e_bill/constants/routes.dart';
 import 'package:flutter/material.dart';
@@ -96,12 +95,12 @@ class LogInState extends State<LogIn> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: EdgeInsets.fromLTRB(0, 160, 0, 0),
+                      padding: const EdgeInsets.fromLTRB(0, 160, 0, 0),
                       child: ConstrainedBox(constraints: BoxConstraints(
                         minHeight: cons.minHeight,
                         minWidth: cons.minWidth,
                       ),
-                      child: Container(
+                      child: SizedBox(
                           height: 150,
                           child: Image.asset("images/e_bill.png",color: Colors.orange,)
                        ),
