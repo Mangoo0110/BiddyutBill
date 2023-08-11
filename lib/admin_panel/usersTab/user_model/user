@@ -1,0 +1,36 @@
+import 'dart:convert';
+
+class User{
+  final  id;
+  final  name;
+  final  email;
+  final  number
+  final  assignedHomeID;
+
+  User(
+      {
+       this.id,
+       this.name,
+       this.email,
+       this.number
+       this.assignedHomeID,
+      }
+      );
+
+  factory User.fromJson(Map<String,dynamic> json) =>User(
+      id: json["Id"],
+      name: json["Name"],
+      email: json["Email"],
+      number: json["Number"]
+      assignedHomeID: json["AssignedHomeID"]
+  );
+
+  Map<String,dynamic>toJson()=>
+      {
+        "Id": id,
+        "Name" : name,
+        "Email" : email,
+        "Number" : number,
+        "AssignedHomeID" : assignedHomeID,
+      };
+}
