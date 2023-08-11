@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:e_bill/admin_panel/usersTab/userView/add_user.dart';
+import 'package:e_bill/admin_panel/usersTab/userView/update_user.dart';
 import 'package:e_bill/admin_panel/usersTab/user_model/user.dart';
 import 'package:e_bill/admin_panel/usersTab/user_model/userCRUDs.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class _UserListState extends State<UserList> {
   }
 
   String idEmailMeterNo(String a, String b, String c) {
-    String s = "id: $a    Number: $b    House: $c";
+    String s = "Id: $a    Email: $b    Meter No: $c";
     return s;
   }
 
@@ -102,10 +103,13 @@ class _UserListState extends State<UserList> {
                             return Card(
                               margin: const EdgeInsets.all(10),
                               child: ListTile(
-                                title: Text(userData.fullName),
+                                title: Text(userData.fullName,style: TextStyle(color: Colors.black, fontSize: 28),),
                                 subtitle: Text(
                                   idEmailMeterNo(userData.id, userData.email, userData.assignedMeterNo),
                                 ),
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=> UpdateUser(userInfo: userData,)));
+                                },
                               ),
                             );
                           });
@@ -121,14 +125,14 @@ class _UserListState extends State<UserList> {
           ],
         ),
         floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: const Color.fromARGB(255, 11, 94, 35),
-          foregroundColor: const Color.fromARGB(255, 231, 227, 227),
+          backgroundColor: Colors.green.shade200,
+          foregroundColor:  const Color.fromARGB(255, 21, 70, 23),
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context)=>
             const AddUser()
             ));
           },
-          icon: const Icon(Icons.add),
+          icon: const Icon(Icons.add, size: 28,),
           label: const Text('Add User',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25),),
         ),
       ),

@@ -1,5 +1,5 @@
 <?php
-$serverHost = "127.0.0.1";
+$serverHost = "localhost";
 $user = "root";
 $password = "";
 $database = "biddyutBill";
@@ -13,12 +13,12 @@ header("Access-Control-Allow-Origin: *");
 //$assignedHouseID = "18974";
 
 
-$uId = $_POST["userId"];
-$uName = $_POST["name"];
-$uNumber = $_POST["mobileNo"];
-$assignedHouseID = $_POST["assignedHouseID"];
+$uId = $_POST["varsity_id"];
+$uName = $_POST["full_name"];
+$uEmail = $_POST["email"];
+$assignedMeterNo = $_POST["assignedMeterNo"];
 
-$sqlQuery = "INSERT INTO users SET id = '$uId', name = '$uName', number = '$uNumber', Assignedhouse = '$assignedHouseID'";
+$sqlQuery = "INSERT INTO users SET varsity_id = '$uId', full_name = '$uName', email = '$uEmail', assignedMeterNo = '$assignedMeterNo'";
 
 //INSERT INTO `users`(`id`, `name`, `number`, `Assignedhouse`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]')
 

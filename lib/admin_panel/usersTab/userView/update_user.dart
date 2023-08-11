@@ -1,42 +1,49 @@
 import 'dart:convert';
 
+import 'package:e_bill/admin_panel/usersTab/user_model/user.dart';
 import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-class AddUser extends StatefulWidget {
-  const AddUser({super.key});
+class UpdateUser extends StatelessWidget {
 
-  @override
-  State<AddUser> createState() => _AddUserState();
-}
+  
 
-class _AddUserState extends State<AddUser> {
+  User userInfo;
+  UpdateUser({super.key,required this.userInfo});
+
   var userIdFormKey = GlobalKey<FormState>();
+
   var mobileNoFormKey = GlobalKey<FormState>();
+
   var nameFormKey = GlobalKey<FormState>();
+
   var assignedHouseIdFormKey = GlobalKey<FormState>();
-  TextEditingController userIdInputController = TextEditingController();
-  TextEditingController mobileNoInputController = TextEditingController();
-  TextEditingController nameInputController = TextEditingController();
-  TextEditingController assignedHouseIDInputController =
+
+  TextEditingController varsityIdInputController = TextEditingController();
+
+  TextEditingController emailInputController = TextEditingController();
+
+  TextEditingController fullNameInputController = TextEditingController();
+
+  TextEditingController assignedMeterNoInputController =
       TextEditingController();
 
-  addUser() async {
+  updateUser() async {
     try {
-      var varsityId = userIdInputController.text.trim();
-      var fullName = nameInputController.text.trim();
-      //var mobileNo = mobileNoInputController.text.trim();
-      //var assignedHouseID = assignedHouseIDInputController.text.trim();
+      var varsityId = varsityIdInputController.text.trim();
+      var full_Name= fullNameInputController.text.trim();
+      var email = emailInputController.text.trim();
+      var assignedMeterNo = assignedMeterNoInputController.text.trim();
       print("pressed\n");
       var res = await http.post(Uri.parse(API.addUser), headers: {
         "Accept": "application/json"
       }, body: {
-        "varsity_id": userIdInputController.text.trim(),
-        "full_name": nameInputController.text.trim(),
-        "email": mobileNoInputController.text.trim(),
-        "assignedMeterNo": assignedHouseIDInputController.text.trim(),
+        "varsity_id": varsityId,
+        "full_name": full_Name,
+        "email": emailInputController.text.trim(),
+        "assignedMeterNo": assignedMeterNoInputController.text.trim(),
       });
       print(res.statusCode);
       if (res.statusCode == 200) {
@@ -44,27 +51,35 @@ class _AddUserState extends State<AddUser> {
         if (data["Success"] == true) {
           Fluttertoast.showToast(
               timeInSecForIosWeb: 5,
-              msg: "New User (User Id : $varsityId and Name : $varsityId) added.");
+              msg: "New User (User Id : $varsityId and Name : $full_Name) added.");
         } else {
           Fluttertoast.showToast(
-            timeInSecForIosWeb: 10,
-              msg: "Could not add User (Id : $varsityId and Name : $varsityId).");
+              msg: "Could not add User (Id : $varsityId and Name : $full_Name).");
         }
       }
     } catch (e) {
       print(e);
     }
   }
+  void getUserInfo(){
+    fullNameInputController.text = userInfo.fullName;
+    print(fullNameInputController.text);
+    varsityIdInputController.text = userInfo.id;
+    print(userInfo.id);
+    emailInputController.text = userInfo.email;
+    assignedMeterNoInputController.text = userInfo.assignedMeterNo;
 
+  }
   @override
   Widget build(BuildContext context) {
     print("started");
+    getUserInfo();
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 0, 7, 3),
+      backgroundColor: Color.fromARGB(255, 2, 22, 8),
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(0, 255, 22, 22),
+        backgroundColor: Color.fromARGB(0, 3, 30, 7),
         title: const Text(
-          "Add User",
+          "Update User Record",
           style: TextStyle(color: Colors.white),
         ),
         leading: CloseButton(
@@ -76,7 +91,7 @@ class _AddUserState extends State<AddUser> {
         actions: [
           IconButton(
               onPressed: () {
-                addUser();
+                updateUser();
                 Navigator.pop(context);
               },
               icon: const Icon(
@@ -96,7 +111,7 @@ class _AddUserState extends State<AddUser> {
               ),
               child: TextFormField(
                 key: userIdFormKey,
-                controller: userIdInputController,
+                controller: varsityIdInputController,
                 validator: (val) {
                   RegExp rg = RegExp(r"^[0-9]", caseSensitive: false);
                   if (val == "") {
@@ -124,7 +139,7 @@ class _AddUserState extends State<AddUser> {
               ),
               child: TextFormField(
                 key: nameFormKey,
-                controller: nameInputController,
+                controller: fullNameInputController,
                 validator: (val) {
                   RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
                   if (val == "") {
@@ -152,7 +167,7 @@ class _AddUserState extends State<AddUser> {
               ),
               child: TextFormField(
                 key: mobileNoFormKey,
-                controller: mobileNoInputController,
+                controller: emailInputController,
                 validator: (val) {
                   RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
                   if (val == "") {
@@ -180,7 +195,7 @@ class _AddUserState extends State<AddUser> {
               ),
               child: TextFormField(
                 key: assignedHouseIdFormKey,
-                controller: assignedHouseIDInputController,
+                controller: assignedMeterNoInputController,
                 validator: (val) {
                   RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
                   if (val == "") {

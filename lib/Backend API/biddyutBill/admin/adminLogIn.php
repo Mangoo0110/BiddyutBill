@@ -1,12 +1,12 @@
 <?php
 
-$serverhost = "127.0.0.1";
+$serverhost = "localhost";
 $user = "root";
 $password = "";
 $database = "biddyutBill";
 
 $connectionNow = new mysqli($serverhost, $user, $password, $database);
-
+header("Access-Control-Allow-Origin: *");
 // $adminId = $_POST['varsityID'];
 // $adminPassword = $_POST['password'];
 

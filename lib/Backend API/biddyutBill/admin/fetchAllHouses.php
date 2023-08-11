@@ -1,10 +1,11 @@
 <?php
-$serverHost = "127.0.0.1";
+$serverHost = "localhost";
 $user = "root";
 $password = "";
 $database = "biddyutBill";
 
 $connectionNow = new mysqli($serverHost,$user,$password,$database);
+header("Access-Control-Allow-Origin: *");
 
 $sqlFetchQuery = "SELECT * FROM houses";
 $houseRecord = [];
