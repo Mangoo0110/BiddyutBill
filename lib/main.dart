@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
       home: const LogIn(),
       routes: {
         adminDashboardRoute:(context) => const AdminHome(),
-        addHouseRoute: (context) => const AddHouse(),
+        addOrUpdateHouseRoute: (context) => const AddHouse(),
         loginRoute: (context) =>const AdminHome(),
       },
     );

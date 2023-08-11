@@ -7,29 +7,37 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-class AddHouse extends StatefulWidget {
-  const AddHouse({super.key});
+class UpdateHouse extends StatelessWidget {
+  House thisHouse ;
+  UpdateHouse({Key? key, required this.thisHouse}) : super(key: key);
 
-  @override
-  State<AddHouse> createState() => _AddHouseState();
-}
+  final String _updateHouseBtn = "update-a-house";
 
-class _AddHouseState extends State<AddHouse> {
-  final String _createHouseBtn = "create-a-house";
   String buildingName =  "";
+
   String houseNo =  "";
+
   String meterNo = "";
+
   String assignedUserID = "";
+
   var buildingNameFormKey = GlobalKey<FormState>();
+
   var meterNoFormKey = GlobalKey<FormState>();
+
   var houseNoFormKey = GlobalKey<FormState>();
+
   var assignedUserIdFormKey = GlobalKey<FormState>();
+
   TextEditingController buildingNameInputController = TextEditingController();
+
   TextEditingController meterNoInputController = TextEditingController();
+
   TextEditingController houseNoInputController = TextEditingController();
+
   TextEditingController assignedUserIDInputController = TextEditingController();
-  
-  addHouse()async{
+
+  addHouse(BuildContext context)async{
     try {
        buildingName =  buildingNameInputController.text.trim();
        houseNo =  houseNoInputController.text.trim();
@@ -65,30 +73,20 @@ class _AddHouseState extends State<AddHouse> {
     }
   }
 
-  getExistingHouse(){
-   final modalRoute = ModalRoute.of(context);
-    if(modalRoute!=null){
-      final args = modalRoute.settings.arguments;
-      if(args != null && args is House){
-        House thisHouse = args;
+  getExistingHouse(BuildContext context){
+   
         buildingNameInputController.text = thisHouse.buildingName;
         houseNoInputController.text = thisHouse.houseNo;
         meterNoInputController.text = thisHouse.meterNo;
         assignedUserIDInputController.text = thisHouse.assignedUserID;
-      }
-    }
   }
-@override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
+
   @override
   Widget build(BuildContext context) {
-    getExistingHouse();
+    getExistingHouse(context);
     Size size = MediaQuery.of(context).size;
     return Hero(
-      tag: _createHouseBtn,
+      tag: _updateHouseBtn,
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: AlertDialog(
@@ -115,7 +113,7 @@ class _AddHouseState extends State<AddHouse> {
                       vertical: size.height * 0.01,
                       horizontal: size.width * 0.2,
                     ),
-                    child: const Text("New house",style: TextStyle(color: Colors.white),),
+                    child: const Text("Update house",style: TextStyle(color: Colors.white),),
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(
@@ -127,7 +125,7 @@ class _AddHouseState extends State<AddHouse> {
                            // if(buildingNameFormKey.currentState!.validate() & houseNoFormKey.currentState!.validate()){
                            //   addHouse();
                            // }
-                            addHouse();
+                            addHouse(context);
                           },
                           icon: const Icon(Icons.check,color: Colors.white,)),
                   ),
@@ -159,6 +157,7 @@ class _AddHouseState extends State<AddHouse> {
                         else if(rg.hasMatch(val!)){
                           return "Enter character as (a-z),(0-9)..";
                         }
+                        return null;
                       },
                       decoration: const InputDecoration(
                         labelText: "Name of the building",
@@ -260,143 +259,5 @@ class _AddHouseState extends State<AddHouse> {
           ),),
       ),
     );
-      // appBar: AppBar(
-      //   backgroundColor: Colors.black,
-      //   title: const Text("New house",style: TextStyle(color: Colors.white),),
-      //   leading: CloseButton(
-      //     color: Colors.white,
-      //     onPressed: (){
-      //       Navigator.pop(context);
-      //     },
-      //   ),
-      //   actions: [
-      //     IconButton(
-      //         onPressed: (){
-      //          // if(buildingNameFormKey.currentState!.validate() & houseNoFormKey.currentState!.validate()){
-      //          //   addHouse();
-      //          // }
-      //           addHouse();
-      //         },
-      //         icon: const Icon(Icons.check,color: Colors.white,))
-      //   ],
-      // ),
-    //   body: SingleChildScrollView(
-    //     child: Column(
-    //       children: [
-    //         //Category textField
-    //         Padding(
-    //           padding: const EdgeInsets.symmetric(
-    //             vertical: 15,
-    //           ),
-    //           child: TextFormField(
-    //             key: buildingNameFormKey,
-    //             controller: buildingNameInputController,
-    //             validator: (val){
-    //               RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
-    //               if(val==""){
-    //                 return "This field can not be empty!";
-    //               }
-    //               else if(rg.hasMatch(val!)){
-    //                 return "Enter character as (a-z),(0-9)..";
-    //               }
-    //             },
-    //             decoration: const InputDecoration(
-    //               labelText: "Name of the building",
-    //               labelStyle: TextStyle(color: Colors.white),
-    //               focusColor: Colors.white,
-    //               fillColor: Colors.white,
-    //             ),
-    //             cursorColor: Colors.white,
-    //             style: TextStyle(color: Colors.white),
-    //           ),
-    //         ),
-    //         //House no textField
-    //         Padding(
-    //           padding: const EdgeInsets.symmetric(
-    //             vertical: 14,
-    //           ),
-    //           child: TextFormField(
-    //             key: houseNoFormKey,
-    //             controller: houseNoInputController,
-    //             validator: (val){
-    //               RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
-    //               if(val==""){
-    //                 return "This field can not be empty!";
-    //                 }
-    //               else if(rg.hasMatch(val!)){
-    //                 return "Enter character as (a-z),(0-9)..";
-    //               }
-    //             },
-    //             decoration: const InputDecoration(
-    //               labelText: "House No",
-    //               labelStyle: TextStyle(color: Colors.white),
-    //               focusColor: Colors.white,
-    //               fillColor: Colors.white,
-    //             ),
-    //             cursorColor: Colors.white,
-    //             style: const TextStyle(color: Colors.white),
-    //           ),
-    //         ),
-    //         //Meter no textField
-    //         Padding(
-    //           padding: const EdgeInsets.symmetric(
-    //             vertical: 14,
-    //           ),
-    //           child: TextFormField(
-    //             key: meterNoFormKey,
-    //             controller: meterNoInputController,
-    //             validator: (val){
-    //               RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
-    //               if(val==""){
-    //                 return "This field can not be empty!";
-    //               }
-    //               else if(rg.hasMatch(val!)){
-    //                 return "Enter character as (a-z),(0-9)..";
-    //               }
-    //             },
-    //             decoration: const InputDecoration(
-    //               labelText: "Meter No",
-    //               labelStyle: TextStyle(color: Colors.white),
-    //               focusColor: Colors.white,
-    //               fillColor: Colors.white,
-    //             ),
-    //             cursorColor: Colors.white,
-    //             style: const TextStyle(color: Colors.white),
-    //           ),
-    //         ),
-    //         // Assign a user textField
-    //         Padding(
-    //           padding: const EdgeInsets.symmetric(
-    //             vertical: 14,
-    //           ),
-    //           child: TextFormField(
-    //             key: assignedUserIdFormKey,
-    //             controller: assignedUserIDInputController,
-    //             validator: (val){
-    //               RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
-    //               if(val==""){
-    //                 return "This field can not be empty!";
-    //               }
-    //               else if(rg.hasMatch(val!)){
-    //                 return "Enter character as (a-z),(0-9)..";
-    //               }
-    //             },
-    //             decoration: const InputDecoration(
-    //               labelText: "Assign a user",
-    //               labelStyle: TextStyle(color: Colors.white),
-    //               focusColor: Colors.white,
-    //               fillColor: Colors.white,
-    //               hintText: "Type a userId...",
-    //               hintStyle: TextStyle(color: Colors.grey),
-    //             ),
-    //             cursorColor: Colors.white,
-    //             style: TextStyle(color: Colors.white),
-    //           ),
-    //         ),
-
-    //       ],
-    //     ),
-    //   ),
-    
-  }
+       }
 }

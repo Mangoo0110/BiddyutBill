@@ -59,7 +59,7 @@ class LogInState extends State<LogIn> {
           Future.delayed(
              const Duration(milliseconds: 2000),()
           {
-            Navigator.pushNamedAndRemoveUntil(context, adminDashboardRoute, (route) => false);
+            Navigator.pushNamedAndRemoveUntil(context, adminDashboardRoute, (route) => false, arguments: adminInfo);
           }
           );
         }

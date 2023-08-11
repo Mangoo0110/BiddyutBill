@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:e_bill/admin_info/adminModel.dart';
 import 'package:e_bill/admin_info/adminPreferences.dart';
+import 'package:e_bill/admin_panel/houseTab/houseView/addHouse.dart';
+import 'package:e_bill/admin_panel/houseTab/houseView/updateHouse.dart';
 import 'package:e_bill/admin_panel/houseTab/house_model/house.dart';
 import 'package:e_bill/admin_panel/houseTab/house_model/houseCRUDs.dart';
 import 'package:e_bill/constants/routes.dart';
@@ -18,7 +20,8 @@ class _AllHouseViewState extends State<AllHouseView> {
 
   final StreamController _allHouseStreamController = StreamController.broadcast();
   List<House>allHouses=[];
-
+  final String _createHouseBtn = "create-a-house";
+  final String _updateHouseBtn = "update-a-house";
  @override
   void initState() {
     // TODO: implement initState
@@ -31,7 +34,6 @@ class _AllHouseViewState extends State<AllHouseView> {
   @override
   void dispose() {
     // TODO: implement dispose
-    _allHouseStreamController;
     super.dispose();
   }
 
@@ -47,20 +49,31 @@ class _AllHouseViewState extends State<AllHouseView> {
         .of(context)
         .size;
     return Scaffold(
-      floatingActionButton: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Colors.green.shade200,
-        ),
-        // width: size.width * 0.2,
-        // height: size.height * 0.08,
-        child: IconButton(
-          icon: const Icon(Icons.add_home_work_rounded),
-          iconSize: 50,
-          color: Colors.green,
-          onPressed: (){
-            Navigator.pushNamed(context, addHouseRoute);
-          },
+      floatingActionButton: Hero(
+        tag: _createHouseBtn,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Colors.green.shade200,
+          ),
+          // width: size.width * 0.2,
+          // height: size.height * 0.08,
+          child: IconButton(
+            icon: const Icon(Icons.add_home_work_rounded),
+            iconSize: 50,
+            color: Colors.green,
+            onPressed: (){ 
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  opaque: false,
+                  transitionDuration: const Duration(milliseconds: 500),
+                  reverseTransitionDuration: const Duration(milliseconds: 500),
+                  pageBuilder: (BuildContext context,b,e){
+                return const AddHouse();
+              })
+              );
+            },
+          ),
         ),
       ),
       body: Container(
@@ -91,19 +104,31 @@ class _AllHouseViewState extends State<AllHouseView> {
                           var building = thisHouse.buildingName;
                           var houseNo = thisHouse.houseNo;
                           var assignedUserID = thisHouse.assignedUserID;
-                          return Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              color: (assignedUserID=="")?Colors.grey : Colors.green,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 20),
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    Text("Building : $building",style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 12),),
-                                    Text("House No : $houseNo",style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 12),),
-                                  ],
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                        PageRouteBuilder(
+                          opaque: false,
+                          transitionDuration: const Duration(milliseconds: 500),
+                          reverseTransitionDuration: const Duration(milliseconds: 200),
+                          pageBuilder: (BuildContext context,b,e){
+                        return  UpdateHouse(thisHouse: thisHouse,);
+                      }));
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: (assignedUserID=="")?Colors.grey : Colors.green,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 20),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      Text("Building : $building",style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 12),),
+                                      Text("House No : $houseNo",style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 12),),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
