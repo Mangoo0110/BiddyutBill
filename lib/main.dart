@@ -1,13 +1,15 @@
 import 'package:e_bill/admin_info/adminModel.dart';
-import 'package:e_bill/admin_panel/admin_Dashboard.dart';
+import 'package:e_bill/admin_panel/admin_dashboard.dart';
 import 'package:e_bill/admin_panel/houseTab/houseView/addHouse.dart';
 import 'package:e_bill/admin_panel/houseTab/houseView/updateHouse.dart';
 import 'package:e_bill/authentication/logIn.dart';
 import 'package:e_bill/constants/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  await SharedPreferences.getInstance();
   runApp(const MyApp());
 }
 

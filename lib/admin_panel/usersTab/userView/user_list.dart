@@ -1,13 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:e_bill/admin_panel/usersTab/userView/add_user.dart';
 import 'package:e_bill/admin_panel/usersTab/userView/update_user.dart';
 import 'package:e_bill/admin_panel/usersTab/user_model/user.dart';
 import 'package:e_bill/admin_panel/usersTab/user_model/userCRUDs.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:e_bill/api_connection/api_connection.dart';
+
 
 
 
@@ -20,22 +18,37 @@ class UserList extends StatefulWidget {
 
 class _UserListState extends State<UserList> {
   List<User> allUserData = [];
-  final StreamController _allUserStreamController = StreamController.broadcast();
-  Future<void> getRecord() async {
+
+  String searchText = "";
+
+  final StreamController _allUserStreamController = StreamController();
+
+  final TextEditingController _searchBoxTextEditingController = TextEditingController();
+
+  Future<void> getUserRecord() async {
     allUserData = await UserStorage().fetchAllUsers();
-    _allUserStreamController.sink.add(allUserData);
+     List<User> filteredRecord= [];
+      allUserData.forEach((user) {
+      if( user.fullName.toString().toLowerCase().contains(searchText.toLowerCase())){
+        filteredRecord.add(user);
+      }
+     });
+    _allUserStreamController.sink.add(filteredRecord);
   }
+
 
   String idEmailMeterNo(String a, String b, String c) {
     String s = "Id: $a    Email: $b    Meter No: $c";
     return s;
   }
 
-
+int cnt =1;
   @override
   void initState() {
     Timer.periodic(const Duration(seconds: 2), (timer) {
-       getRecord();
+      // print("hi$cnt");
+      // cnt++;
+       getUserRecord();
        //currentAdmin = getCurrentAdmin();
      });
     super.initState();
@@ -43,7 +56,9 @@ class _UserListState extends State<UserList> {
 @override
   void dispose() {
     // TODO: implement dispose
-    //_allUserStreamController.close();
+    _allUserStreamController;
+    _searchBoxTextEditingController.dispose();
+    
     super.dispose();
   }
 
@@ -69,6 +84,7 @@ class _UserListState extends State<UserList> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                    controller: _searchBoxTextEditingController,
                     decoration: const InputDecoration(
                       hintText: " Search...",
                       hintStyle:
@@ -79,6 +95,10 @@ class _UserListState extends State<UserList> {
                     //hdjfkhaskjfdhsdftextAlign: TextAlign.center,
                     cursorColor: Colors.white,
                     style: const TextStyle(color: Colors.white),
+                    onChanged: (text) {
+                      searchText = text;
+                      getUserRecord();
+                    },
                   ),
                 ),
               ),
@@ -100,22 +120,25 @@ class _UserListState extends State<UserList> {
                           itemCount: allUserData.length,
                           itemBuilder: (context, index) {
                             final userData = allUserData[index];
-                            return Card(
-                              margin: const EdgeInsets.all(10),
-                              child: ListTile(
-                                title: Text(userData.fullName,style: TextStyle(color: Colors.black, fontSize: 28),),
-                                subtitle: Text(
-                                  idEmailMeterNo(userData.id, userData.email, userData.assignedMeterNo),
+                            return Column(
+                              children: [
+                                ListTile(
+                                  title: Text(userData.fullName,style: const TextStyle(color: Colors.grey, fontSize: 28),),
+                                  subtitle: Text(
+                                    idEmailMeterNo(userData.id, userData.email, userData.assignedMeterNo),
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  onTap: (){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=> UpdateUser(userInfo: userData,)));
+                                  },
                                 ),
-                                onTap: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context)=> UpdateUser(userInfo: userData,)));
-                                },
-                              ),
+                                const Divider(color: Colors.black,thickness: 6,),
+                              ],
                             );
                           });
                     }
                     else{
-                      return const Center(child: Text("No users yet!!",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30,color: Colors.grey),));
+                      return const Center(child: Text("No users!!",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30,color: Colors.grey),));
                     }
                   default: return const Center(child: CircularProgressIndicator(),);
                     }

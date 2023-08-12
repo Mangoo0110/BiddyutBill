@@ -1,11 +1,11 @@
 import 'package:e_bill/admin_panel/houseTab/houseView/allhouseView.dart';
 import 'package:e_bill/admin_panel/unitCostTab/unitCostView.dart';
-import 'package:e_bill/admin_panel/usersTab/userView/userList.dart';
+import 'package:e_bill/admin_panel/usersTab/userView/user_list.dart';
 import 'package:e_bill/constants/responsive_constants.dart';
 import 'package:flutter/material.dart';
 
 class DesktopLayout extends StatefulWidget {
-  DesktopLayout({super.key});
+  const DesktopLayout({super.key});
 
   @override
   State<DesktopLayout> createState() => _DesktopLayoutState();
@@ -36,12 +36,14 @@ class _DesktopLayoutState extends State<DesktopLayout> {
       body: Row(
         children: [
           Expanded(
+            flex: 1,
             child: Drawer(
               backgroundColor: defaultColor,
               child: Column(
                 children: [
                   const DrawerHeader(child: Text("Good day, Admin")),
                   ListTile(
+                  tileColor: (_index==0)?Colors.green.shade300 : Colors.transparent,
                     leading: const Icon(Icons.home_work,),
                     title: const Text("H O U S E S"),
                     onTap: (){
@@ -52,6 +54,7 @@ class _DesktopLayoutState extends State<DesktopLayout> {
                     },
                   ),
                   ListTile(
+                    tileColor: (_index==1)?Colors.green.shade300 : Colors.transparent,
                     leading: const Icon(Icons.monetization_on,),
                     title: const Text("U N I T C O S T"),
                     onTap: (){
@@ -62,6 +65,7 @@ class _DesktopLayoutState extends State<DesktopLayout> {
                     },
                   ),
                   ListTile(
+                    tileColor: (_index==2)?Colors.green.shade300 : Colors.transparent,
                     leading: const Icon(Icons.person_2_rounded,),
                     title: const Text("U S E R S"),
                     onTap: (){
@@ -72,6 +76,7 @@ class _DesktopLayoutState extends State<DesktopLayout> {
                     },
                   ),
                   ListTile(
+                    tileColor: (_index==3)?Colors.green.shade300 : Colors.transparent,
                     leading: const Icon(Icons.message_outlined,),
                     title: const Text("C O M P L A I N S"),
                     onTap: (){
@@ -80,49 +85,48 @@ class _DesktopLayoutState extends State<DesktopLayout> {
                     });
                     _pageController.jumpToPage(3);
                     },
+                  ),]),),
                   ),
-                  Scaffold(
-                    backgroundColor: Colors.black,
-                    appBar: AppBar(
-                      title: const Center(
-                          child: Text(
-                        "C o n t r o l  P a n e l",
-                        style: TextStyle(color: Colors.white),
-                      )),
-                      backgroundColor: Colors.black,
-                     ),
-                    body: Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: PageView.builder(
-                        itemCount: 4,
-                        controller: _pageController,
-                        onPageChanged: (page) {
-                          setState(() {
-                            _index = page;
-                          });
-                        },
-                        itemBuilder: (context, page) {
-                          print(page);
-                          return Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(width: 4, color: Colors.white70),
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                            ),
-                            child: chooseBot(context, page),
-                          );
-                        },
-                      ),
-                    ),
-                      ),
-                    ],
-                          ),
-                        ),
-          ),
 
-                    ],
+                  Expanded(
+                    flex: 5,
+                    child: Scaffold(
+                      backgroundColor: Colors.black,
+                      appBar: AppBar(
+                        title: const Center(
+                            child: Text(
+                          "C o n t r o l  P a n e l",
+                          style: TextStyle(color: Colors.white),
+                        )),
+                        backgroundColor: Colors.black,
+                       ),
+                      body: Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: PageView.builder(
+                          itemCount: 4,
+                          controller: _pageController,
+                          onPageChanged: (page) {
+                            setState(() {
+                              _index = page;
+                            });
+                          },
+                          itemBuilder: (context, page) {
+                            print(page);
+                            return Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(width: 4, color: Colors.white70),
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white,
+                              ),
+                              child: chooseBot(context, page),
+                            );
+                          },
+                        ),
+                      ),
+                        ),
                   ),
-                );
+                    ],));
+                    
   }
 
   Widget userComplains(BuildContext context) {
