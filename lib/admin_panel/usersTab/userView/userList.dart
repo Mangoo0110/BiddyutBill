@@ -64,7 +64,7 @@ class _UserListState extends State<UserList> {
                 height: 50,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Colors.black,
+                  color: Colors.blueGrey,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -72,7 +72,7 @@ class _UserListState extends State<UserList> {
                     decoration: const InputDecoration(
                       hintText: " Search...",
                       hintStyle:
-                          TextStyle(color: Color.fromARGB(255, 97, 69, 69)),
+                          TextStyle(color: Colors.white70,fontSize: 20),
                       focusColor: Colors.white,
                       fillColor: Colors.white,
                     ),
