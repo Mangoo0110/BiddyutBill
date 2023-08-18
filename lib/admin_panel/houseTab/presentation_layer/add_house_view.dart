@@ -1,7 +1,7 @@
-
+import 'dart:async';
 import 'dart:convert';
 
-import 'package:e_bill/admin_panel/houseTab/house_model/house.dart';
+import 'package:e_bill/admin_panel/houseTab/data_layer/houseModel.dart';
 import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -16,60 +16,63 @@ class AddHouse extends StatefulWidget {
 
 class _AddHouseState extends State<AddHouse> {
   final String _createHouseBtn = "create-a-house";
-  String buildingName =  "";
-  String houseNo =  "";
+  String buildingName = "";
+  String houseNo = "";
   String meterNo = "";
   String assignedUserID = "";
+
   var buildingNameFormKey = GlobalKey<FormState>();
+
   var meterNoFormKey = GlobalKey<FormState>();
+
   var houseNoFormKey = GlobalKey<FormState>();
+
   var assignedUserIdFormKey = GlobalKey<FormState>();
+
   TextEditingController buildingNameInputController = TextEditingController();
   TextEditingController meterNoInputController = TextEditingController();
   TextEditingController houseNoInputController = TextEditingController();
   TextEditingController assignedUserIDInputController = TextEditingController();
-  
-  addHouse()async{
+
+
+  addHouse() async {
     try {
-       buildingName =  buildingNameInputController.text.trim();
-       houseNo =  houseNoInputController.text.trim();
-       meterNo = meterNoInputController.text.trim();
-       assignedUserID = assignedUserIDInputController.text.trim();
-      var res = await http.post(
-        Uri.parse(API.addHouse),
-        body: {
-          "buildingName":  buildingName,
-          "houseNo" : houseNo,
-          "meterNo" : meterNo,
-          "assignedUserID" : assignedUserID,
-        }
-      ); 
+      buildingName = buildingNameInputController.text.trim();
+      houseNo = houseNoInputController.text.trim();
+      meterNo = meterNoInputController.text.trim();
+      assignedUserID = assignedUserIDInputController.text.trim();
+      var res = await http.post(Uri.parse(API.addHouse), body: {
+        "buildingName": buildingName,
+        "houseNo": houseNo,
+        "meterNo": meterNo,
+        "assignedUserID": assignedUserID,
+      });
       print(res.statusCode);
-      if(res.statusCode == 200){
+      if (res.statusCode == 200) {
         var data = jsonDecode(res.body);
-        if(data["Success"]==true) {
+        if (data["Success"] == true) {
           Fluttertoast.showToast(
-              msg: "New House (Building Name : $buildingName and House No : $houseNo) added.");
+              msg:
+                  "New House (Building Name : $buildingName and House No : $houseNo) added.");
           Future.delayed(const Duration(seconds: 1), () {
             Navigator.pop(context);
           });
-        }
-        else {
+        } else {
           Fluttertoast.showToast(
-              msg: "Could not add House (Building Name : $buildingName and House No : $houseNo). [Building Name] and [House No] should be unique.");
+              msg:
+                  "Could not add House (Building Name : $buildingName and House No : $houseNo). [Building Name] and [House No] should be unique.");
         }
       }
-    }
-    catch(e){
+    } catch (e) {
       print(e);
     }
   }
 
-  getExistingHouse(){
-   final modalRoute = ModalRoute.of(context);
-    if(modalRoute!=null){
+  getExistingHouse() {
+    final modalRoute = ModalRoute.of(context);
+    if (modalRoute != null) {
       final args = modalRoute.settings.arguments;
-      if(args != null && args is House){
+      if (args != null && args is House) {
         House thisHouse = args;
         buildingNameInputController.text = thisHouse.buildingName;
         houseNoInputController.text = thisHouse.houseNo;
@@ -78,11 +81,13 @@ class _AddHouseState extends State<AddHouse> {
       }
     }
   }
-@override
+
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     getExistingHouse();
@@ -95,52 +100,54 @@ class _AddHouseState extends State<AddHouse> {
           backgroundColor: Colors.black,
           title: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Column(
-              children: [
-                Row(children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: size.height * 0.01,
-                      horizontal: size.width * 0.01,
-                    ),
-                    child: CloseButton(
-                      color: Colors.white,
-                      onPressed: (){
-                        Navigator.pop(context);
+            child: Column(children: [
+              Row(children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: size.height * 0.01,
+                    horizontal: size.width * 0.01,
+                  ),
+                  child: CloseButton(
+                    color: Colors.white,
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: size.height * 0.01,
+                    horizontal: size.width * 0.2,
+                  ),
+                  child: const Text(
+                    "New house",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: size.height * 0.01,
+                    horizontal: size.width * 0.01,
+                  ),
+                  child: IconButton(
+                      onPressed: () {
+                        // if(buildingNameFormKey.currentState!.validate() & houseNoFormKey.currentState!.validate()){
+                        //   addHouse();
+                        // }
+                        addHouse();
                       },
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: size.height * 0.01,
-                      horizontal: size.width * 0.2,
-                    ),
-                    child: const Text("New house",style: TextStyle(color: Colors.white),),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: size.height * 0.01,
-                      horizontal: size.width * 0.01,
-                    ),
-                    child: IconButton(
-                          onPressed: (){
-                           // if(buildingNameFormKey.currentState!.validate() & houseNoFormKey.currentState!.validate()){
-                           //   addHouse();
-                           // }
-                            addHouse();
-                          },
-                          icon: const Icon(Icons.check,color: Colors.white,)),
-                  ),
-                ]),
-              ]
-            ),
+                      icon: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                      )),
+                ),
+              ]),
+            ]),
           ),
           content: SingleChildScrollView(
             child: Padding(
-              padding:  EdgeInsets.symmetric(
-                vertical: size.height * 0.03,
-                horizontal: size.width * 0.01
-              ),
+              padding: EdgeInsets.symmetric(
+                  vertical: size.height * 0.03, horizontal: size.width * 0.01),
               child: Column(
                 children: [
                   //Category textField
@@ -151,12 +158,11 @@ class _AddHouseState extends State<AddHouse> {
                     child: TextFormField(
                       key: buildingNameFormKey,
                       controller: buildingNameInputController,
-                      validator: (val){
-                        RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
-                        if(val==""){
+                      validator: (val) {
+                        RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
+                        if (val == "") {
                           return "This field can not be empty!";
-                        }
-                        else if(rg.hasMatch(val!)){
+                        } else if (rg.hasMatch(val!)) {
                           return "Enter character as (a-z),(0-9)..";
                         }
                       },
@@ -178,12 +184,11 @@ class _AddHouseState extends State<AddHouse> {
                     child: TextFormField(
                       key: houseNoFormKey,
                       controller: houseNoInputController,
-                      validator: (val){
-                        RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
-                        if(val==""){
+                      validator: (val) {
+                        RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
+                        if (val == "") {
                           return "This field can not be empty!";
-                          }
-                        else if(rg.hasMatch(val!)){
+                        } else if (rg.hasMatch(val!)) {
                           return "Enter character as (a-z),(0-9)..";
                         }
                       },
@@ -205,12 +210,11 @@ class _AddHouseState extends State<AddHouse> {
                     child: TextFormField(
                       key: meterNoFormKey,
                       controller: meterNoInputController,
-                      validator: (val){
-                        RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
-                        if(val==""){
+                      validator: (val) {
+                        RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
+                        if (val == "") {
                           return "This field can not be empty!";
-                        }
-                        else if(rg.hasMatch(val!)){
+                        } else if (rg.hasMatch(val!)) {
                           return "Enter character as (a-z),(0-9)..";
                         }
                       },
@@ -232,12 +236,11 @@ class _AddHouseState extends State<AddHouse> {
                     child: TextFormField(
                       key: assignedUserIdFormKey,
                       controller: assignedUserIDInputController,
-                      validator: (val){
-                        RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
-                        if(val==""){
+                      validator: (val) {
+                        RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
+                        if (val == "") {
                           return "This field can not be empty!";
-                        }
-                        else if(rg.hasMatch(val!)){
+                        } else if (rg.hasMatch(val!)) {
                           return "Enter character as (a-z),(0-9)..";
                         }
                       },
@@ -253,33 +256,33 @@ class _AddHouseState extends State<AddHouse> {
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                
                 ],
               ),
             ),
-          ),),
+          ),
+        ),
       ),
     );
-      // appBar: AppBar(
-      //   backgroundColor: Colors.black,
-      //   title: const Text("New house",style: TextStyle(color: Colors.white),),
-      //   leading: CloseButton(
-      //     color: Colors.white,
-      //     onPressed: (){
-      //       Navigator.pop(context);
-      //     },
-      //   ),
-      //   actions: [
-      //     IconButton(
-      //         onPressed: (){
-      //          // if(buildingNameFormKey.currentState!.validate() & houseNoFormKey.currentState!.validate()){
-      //          //   addHouse();
-      //          // }
-      //           addHouse();
-      //         },
-      //         icon: const Icon(Icons.check,color: Colors.white,))
-      //   ],
-      // ),
+    // appBar: AppBar(
+    //   backgroundColor: Colors.black,
+    //   title: const Text("New house",style: TextStyle(color: Colors.white),),
+    //   leading: CloseButton(
+    //     color: Colors.white,
+    //     onPressed: (){
+    //       Navigator.pop(context);
+    //     },
+    //   ),
+    //   actions: [
+    //     IconButton(
+    //         onPressed: (){
+    //          // if(buildingNameFormKey.currentState!.validate() & houseNoFormKey.currentState!.validate()){
+    //          //   addHouse();
+    //          // }
+    //           addHouse();
+    //         },
+    //         icon: const Icon(Icons.check,color: Colors.white,))
+    //   ],
+    // ),
     //   body: SingleChildScrollView(
     //     child: Column(
     //       children: [
@@ -397,6 +400,5 @@ class _AddHouseState extends State<AddHouse> {
     //       ],
     //     ),
     //   ),
-    
   }
 }

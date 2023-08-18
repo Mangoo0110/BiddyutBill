@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:e_bill/admin_panel/usersTab/user_model/user.dart';
+import 'package:e_bill/admin_panel/usersTab/data_layer/user.dart';
 import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

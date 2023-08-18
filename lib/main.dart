@@ -1,7 +1,7 @@
 import 'package:e_bill/admin_info/adminModel.dart';
 import 'package:e_bill/admin_panel/admin_dashboard.dart';
-import 'package:e_bill/admin_panel/houseTab/houseView/addHouse.dart';
-import 'package:e_bill/admin_panel/houseTab/houseView/updateHouse.dart';
+import 'package:e_bill/admin_panel/houseTab/presentation_layer/add_house_view.dart';
+import 'package:e_bill/admin_panel/houseTab/presentation_layer/updateHouse.dart';
 import 'package:e_bill/authentication/logIn.dart';
 import 'package:e_bill/constants/routes.dart';
 import 'package:flutter/material.dart';

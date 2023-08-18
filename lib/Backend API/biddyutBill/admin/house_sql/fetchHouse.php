@@ -5,6 +5,7 @@ $password = "";
 $database = "biddyutBill";
 
 $connectionNow = new mysqli($serverHost,$user,$password,$database);
+header("Access-Control-Allow-Origin: *");
 
 $buildingName = $_POST["category"];
 $houseNo = $_POST["houseNo"];

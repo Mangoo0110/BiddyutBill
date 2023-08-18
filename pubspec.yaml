@@ -40,6 +40,8 @@ dependencies:
   fluttertoast: ^8.2.2
   shared_preferences: ^2.2.0
   hive: ^2.2.3
+  dartz: ^0.10.1
+  riverpod: ^2.3.6
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +68,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - images/e_bill.png
+    - images/thunder.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:e_bill/admin_info/adminModel.dart';
 import 'package:e_bill/admin_info/adminPreferences.dart';
-import 'package:e_bill/admin_panel/houseTab/houseView/addHouse.dart';
-import 'package:e_bill/admin_panel/houseTab/houseView/updateHouse.dart';
-import 'package:e_bill/admin_panel/houseTab/house_model/house.dart';
-import 'package:e_bill/admin_panel/houseTab/house_model/houseCRUDs.dart';
+import 'package:e_bill/admin_panel/houseTab/presentation_layer/add_house_view.dart';
+import 'package:e_bill/admin_panel/houseTab/presentation_layer/updateHouse.dart';
+import 'package:e_bill/admin_panel/houseTab/data_layer/houseModel.dart';
+import 'package:e_bill/admin_panel/houseTab/data_layer/houseCRUDs.dart';
+import 'package:e_bill/admin_panel/new_month_record/presentation_layer/new_month_record_view.dart';
 import 'package:e_bill/constants/routes.dart';
 import 'package:flutter/material.dart';
 
@@ -29,10 +30,14 @@ class _AllHouseViewState extends State<AllHouseView> {
   List<House> allHouses = [];
   final String _createHouseBtn = "create-a-house";
   final String _updateHouseBtn = "update-a-house";
+  final String _workBtn = "lets-work";
+
+  late Timer _timer;
+
   @override
   void initState() {
     // TODO: implement initState
-    Timer.periodic(const Duration(seconds: 2), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       getAllHouses();
       //currentAdmin = getCurrentAdmin();
     });
@@ -42,7 +47,7 @@ class _AllHouseViewState extends State<AllHouseView> {
   @override
   void dispose() {
     // TODO: implement dispose
-    _allHouseStreamController;
+    if(_timer.isActive) _timer.cancel();
     _searchBoxTextEditingController.dispose();
     super.dispose();
   }
@@ -62,33 +67,70 @@ class _AllHouseViewState extends State<AllHouseView> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      floatingActionButton: Hero(
-        tag: _createHouseBtn,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: Colors.green.shade200,
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Hero(
+              tag: _workBtn,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.orange.shade200,
+                  border: Border.all(width: 4,color: Colors.white)
+                ),
+                // width: size.width * 0.2,
+                // height: size.height * 0.08,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(PageRouteBuilder(
+                        opaque: false,
+                        transitionDuration: const Duration(milliseconds: 500),
+                        reverseTransitionDuration: const Duration(milliseconds: 500),
+                        pageBuilder: (BuildContext context, b, e) {
+                          return const NewMonthRecord();
+                        }));
+                  },
+                  child: SizedBox(
+                    height: 60,
+                    width: 60,
+                    child: Image.asset("images/thunder.png",color: Colors.orange,)),
+                ),
+              ),
+            ),
           ),
-          // width: size.width * 0.2,
-          // height: size.height * 0.08,
-          child: IconButton(
-            icon: const Icon(Icons.add_home_work_rounded),
-            iconSize: 50,
-            color: Colors.green,
-            onPressed: () {
-              Navigator.of(context).push(PageRouteBuilder(
-                  opaque: false,
-                  transitionDuration: const Duration(milliseconds: 500),
-                  reverseTransitionDuration: const Duration(milliseconds: 500),
-                  pageBuilder: (BuildContext context, b, e) {
-                    return const AddHouse();
-                  }));
-            },
+  
+          Hero(
+            tag: _createHouseBtn,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.green.shade200,
+                border: Border.all(width: 4,color: Colors.white)
+              ),
+              // width: size.width * 0.2,
+              // height: size.height * 0.08,
+              child: IconButton(
+                icon: const Icon(Icons.add_home_work_rounded),
+                iconSize: 50,
+                color: Colors.green,
+                onPressed: () {
+                  Navigator.of(context).push(PageRouteBuilder(
+                      opaque: false,
+                      transitionDuration: const Duration(milliseconds: 500),
+                      reverseTransitionDuration: const Duration(milliseconds: 500),
+                      pageBuilder: (BuildContext context, b, e) {
+                        return const AddHouse();
+                      }));
+                },
+              ),
+            ),
           ),
-        ),
+        ],
       ),
       body: Container(
-        decoration: const BoxDecoration(color: Colors.black87),
+        decoration: const BoxDecoration(color: Colors.black),
         child: Column(
           children: [
             Padding(
@@ -97,7 +139,7 @@ class _AllHouseViewState extends State<AllHouseView> {
                 height: 50,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Colors.blueGrey,
+                  color: Colors.black38,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),

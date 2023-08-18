@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:e_bill/admin_panel/usersTab/userView/add_user.dart';
-import 'package:e_bill/admin_panel/usersTab/userView/update_user.dart';
-import 'package:e_bill/admin_panel/usersTab/user_model/user.dart';
-import 'package:e_bill/admin_panel/usersTab/user_model/userCRUDs.dart';
+import 'package:e_bill/admin_panel/usersTab/data_layer/user.dart';
+import 'package:e_bill/admin_panel/usersTab/data_layer/userCRUDs.dart';
+import 'package:e_bill/admin_panel/usersTab/presentation_layer/add_user.dart';
+import 'package:e_bill/admin_panel/usersTab/presentation_layer/update_user.dart';
+
 import 'package:flutter/material.dart';
 
 
@@ -21,9 +22,11 @@ class _UserListState extends State<UserList> {
 
   String searchText = "";
 
-  final StreamController _allUserStreamController = StreamController();
+  StreamController _allUserStreamController = StreamController();
 
   final TextEditingController _searchBoxTextEditingController = TextEditingController();
+
+  late Timer _timer;
 
   Future<void> getUserRecord() async {
     allUserData = await UserStorage().fetchAllUsers();
@@ -45,10 +48,10 @@ class _UserListState extends State<UserList> {
 int cnt =1;
   @override
   void initState() {
-    Timer.periodic(const Duration(seconds: 2), (timer) {
-      // print("hi$cnt");
-      // cnt++;
-       getUserRecord();
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      print("hi$cnt");
+      cnt++;     
+       getUserRecord();     
        //currentAdmin = getCurrentAdmin();
      });
     super.initState();
@@ -57,8 +60,8 @@ int cnt =1;
   void dispose() {
     // TODO: implement dispose
     _allUserStreamController;
+    if(_timer.isActive) _timer.cancel();
     _searchBoxTextEditingController.dispose();
-    
     super.dispose();
   }
 

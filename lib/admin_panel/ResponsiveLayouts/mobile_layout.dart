@@ -1,6 +1,5 @@
-import 'package:e_bill/admin_panel/houseTab/houseView/allhouseView.dart';
-import 'package:e_bill/admin_panel/unitCostTab/unitCostView.dart';
-import 'package:e_bill/admin_panel/usersTab/userView/user_list.dart';
+import 'package:e_bill/admin_panel/houseTab/presentation_layer/allhouseView.dart';
+import 'package:e_bill/admin_panel/usersTab/presentation_layer/user_list.dart';
 import 'package:e_bill/constants/responsive_constants.dart';
 import 'package:flutter/material.dart';
 
@@ -129,7 +128,7 @@ class _MobileLayoutState extends State<MobileLayout> {
 
   Widget chooseView(BuildContext context, int pageIndex) {
     if (pageIndex == 0) return const AllHouseView();
-    if (pageIndex == 1) return const UnitCostView();
+    if (pageIndex == 1) return const Center(child: Text("No data yet"),);
     if (pageIndex == 2) {
       return const UserList();
     } else {

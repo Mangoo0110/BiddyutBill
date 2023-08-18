@@ -1,7 +1,7 @@
 
 import 'dart:convert';
 
-import 'package:e_bill/admin_panel/houseTab/house_model/house.dart';
+import 'package:e_bill/admin_panel/houseTab/data_layer/houseModel.dart';
 import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,7 +11,7 @@ class HouseStorage{
     final data = json.decode(jsonString);
     //print(data);
     return List<House>.from(
-        (data.map((item) =>House.fromJson(item)))
+        data.map((item) =>House.fromJson(item))
     );
   }
 
@@ -20,6 +20,7 @@ class HouseStorage{
         Uri.parse(API.fetchAllHouses),
       );
       if(result.statusCode == 200){
+        //print(result.body);
         List<House> list = housesFromJson(result.body);
         return list;
       }

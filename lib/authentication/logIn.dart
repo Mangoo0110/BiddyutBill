@@ -48,17 +48,17 @@ class LogInState extends State<LogIn> {
         print("success");
         var resBodyOfLogin = jsonDecode(res.body);
         if(resBodyOfLogin["Success"]==true){
-
+          print(resBodyOfLogin["Success"]);
           Fluttertoast.showToast(msg: "Congrats, You are Logged In successfully");
           final data =resBodyOfLogin["AdminAuth"];
           //print(data);
-          Admin adminInfo = Admin.fromJson(data);
+          //Admin adminInfo = Admin.fromJson(data);
           // CurrrentAdmin.setCurrentAdmin(adminInfo);
           // CurrrentAdmin().setLoggedIn(setter: true);
           Future.delayed(
              const Duration(milliseconds: 2000),()
           {
-            Navigator.pushNamedAndRemoveUntil(context, adminDashboardRoute, (route) => false, arguments: adminInfo);
+            Navigator.pushNamedAndRemoveUntil(context, adminDashboardRoute, (route) => false);
           }
           );
         }
