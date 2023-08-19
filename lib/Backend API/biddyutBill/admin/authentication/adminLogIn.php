@@ -7,16 +7,16 @@ $database = "biddyutBill";
 
 $connectionNow = new mysqli($serverhost, $user, $password, $database);
 header("Access-Control-Allow-Origin: *");
-// $adminId = $_POST['varsityID'];
-// $adminPassword = $_POST['password'];
+$adminId = $_POST['varsityID'];
+$adminPassword = $_POST['password'];
 
 
-$adminId = "1702062";
-$adminPassword = "1702062";
+// $adminId = "1702062";
+// $adminPassword = "1702062";
 
 //query...
 
-$sqlQuery = "SELECT * FROM adminAuth WHERE varsityID = '$adminId' AND password = '$adminPassword'";
+$sqlQuery = "SELECT * FROM admin_auth WHERE varsity_id = '$adminId' AND ipassword = '$adminPassword'";
 
 $resultOfQuery = $connectionNow->query($sqlQuery);
 

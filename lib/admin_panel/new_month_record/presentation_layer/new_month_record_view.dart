@@ -232,6 +232,7 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                 ),
               ),
             ),
+            Text("Showing result from date : $presentMonthAndYear",style: const TextStyle(color: Colors.white70, fontSize: 18),),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(4.0),

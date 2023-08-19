@@ -17,8 +17,9 @@ $uId = $_POST["varsity_id"];
 $uName = $_POST["full_name"];
 $uEmail = $_POST["email"];
 $assignedMeterNo = $_POST["assignedMeterNo"];
+$houseAddress = $_POST["house_address"];
 
-$sqlQuery = "INSERT INTO users SET varsity_id = '$uId', full_name = '$uName', email = '$uEmail', assignedMeterNo = '$assignedMeterNo'";
+$sqlQuery = "INSERT INTO users SET varsity_id = '$uId', house_address = '$houseAddress', full_name = '$uName', email = '$uEmail', assignedMeterNo = '$assignedMeterNo'";
 
 //INSERT INTO `users`(`id`, `name`, `number`, `Assignedhouse`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]')
 
