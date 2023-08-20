@@ -11,13 +11,13 @@ final String meterno ;
  double unitcostTk;
 final double demandchargeTk ;
  double firsttotalTk;
-final double vatpercentage;
+final double vatTk;
  double secondtotalTk;
  double finaltotalTk;
 
   MonthlyRecord({required this.varsityid, required this.fullName, required this.houseAddress,required this.meterno,required this.presentmeteRreading,
   required this.previousmeterReading,required this.usedunit, required this.unitcostTk,required this.demandchargeTk, 
-  required this.firsttotalTk,required this.vatpercentage,required this.secondtotalTk,required this.finaltotalTk});
+  required this.firsttotalTk,required this.vatTk,required this.secondtotalTk,required this.finaltotalTk});
 
   factory MonthlyRecord.fromJson(Map<String,dynamic>json){
     print("monthly hi...");
@@ -32,7 +32,7 @@ final double vatpercentage;
       unitcostTk: double.parse(json[unitCostTk]),
       demandchargeTk: double.parse(json[demandChargeTk]),
       firsttotalTk: double.parse(json[firstTotalTk]),
-      vatpercentage: double.parse(json[vatPercentage]),
+      vatTk: double.parse(json[vat]),
       secondtotalTk: double.parse(json[secondTotalTk]),
       finaltotalTk: double.parse(json[finalTotalTk]),
       );

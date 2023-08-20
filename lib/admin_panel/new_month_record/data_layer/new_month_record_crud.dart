@@ -29,7 +29,7 @@ class MonthRecordStorage{
           unitCostTk : record.unitcostTk.toString(),
           demandChargeTk : record.demandchargeTk.toString(),
           firstTotalTk : record.firsttotalTk.toString(),
-          vatPercentage : record.vatpercentage.toString(),
+          vat : record.vatTk.toString(),
           secondTotalTk : record.secondtotalTk.toString(),
           finalTotalTk : record.finaltotalTk.toString(),
         }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_model.dart';
 import 'package:e_bill/admin_panel/new_month_record/domain_layer/active_users_records.dart';
+import 'package:e_bill/admin_panel/new_month_record/domain_layer/check_valid_double.dart';
 import 'package:e_bill/admin_panel/new_month_record/domain_layer/final_total_calculation.dart';
 import 'package:e_bill/admin_panel/new_month_record/domain_layer/get_all_unit_cost_range.dart';
 import 'package:e_bill/admin_panel/new_month_record/domain_layer/get_demand_charge_vat_percentage.dart';
@@ -206,7 +207,7 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
               child: Container(
                 height: 50,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(10),
                   color: Colors.black38,
                 ),
                 child: Padding(
@@ -270,7 +271,8 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                                   ),
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.grey.shade900,
+                                      color: Colors.black54,
+                                      borderRadius: BorderRadius.circular(10)
                                       
                                     ),
                                     child: ListView.builder(
@@ -319,10 +321,44 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                                                           child: TextFormField(
                                                             key: _previousMeterReadFormKeys[index],
                                                             controller: _previousMeterReadControllers[index],
+                                                            validator: (value) {
+                                                              if(!isValidDoubleText(text: value!)){
+                                                                return "Enter valid a number";
+                                                              }
+                                                            },
                                                             onChanged: (value) {
-                                                             setState(() {                                                  
-                                                              thisMonthRecords[index].previousmeterReading = double.parse(_previousMeterReadControllers[index].text) ;                                                               
+                                                             if(value.length>10){
+                                                              _previousMeterReadControllers[index].text = thisMonthRecords[index].previousmeterReading.toString();
+                                                             }
+                                                             else{
+                                                            if(_previousMeterReadControllers[index].text ==''){
+                                                              print("why......");
+                                                              setState(() {
+                                                                _previousMeterReadControllers[index].text = '0';
+                                                                thisMonthRecords[index].previousmeterReading = 0 ;                                                               
                                                               });
+                                                              
+                                                            }
+                                                            
+                                                              if(isValidDoubleText(text: _previousMeterReadControllers[index].text)){
+                                                                print("why not...");
+                                                                thisMonthRecords[index].previousmeterReading = double.parse(_previousMeterReadControllers[index].text) ;
+                                                                if(!value.endsWith(".")){
+                                                                  setState(() {
+                                                                    
+                                                                  });
+                                                                }
+                                                              }
+                                                              else{
+                                                                setState(() {
+                                                                  _previousMeterReadControllers[index].text = thisMonthRecords[index].previousmeterReading.toString();
+                                                                });
+                                                              }
+                                                             }
+                                                            
+                                                            //  setState(() {                                                  
+                                                            //   thisMonthRecords[index].previousmeterReading = double.parse(_previousMeterReadControllers[index].text) ;                                                               
+                                                            //   });
                                                             },
                                                             style: const TextStyle(
                                                               color: Colors.black,
@@ -355,11 +391,42 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                                                           child: TextFormField(                                                       
                                                             key: _presentMeterReadFormKeys[index],
                                                             controller: _presentMeterReadControllers[index],
-                                                            onChanged: (value) {
+                                                            
+                                                            validator: (value) {
+                                                              if(!isValidDoubleText(text: value!)){
+                                                                return "Enter a valid number";
+                                                              }
                                                               
+                                                            },
+                                                            onChanged: (value) {
+                                                             if(value.length>10){
+                                                              _presentMeterReadControllers[index].text = thisMonthRecords[index].presentmeteRreading.toString();
+                                                             }
+                                                             else{
+                                                            if(_presentMeterReadControllers[index].text ==''){
+                                                              print("why......");
                                                               setState(() {
-                                                                thisMonthRecords[index].presentmeteRreading = double.parse(_presentMeterReadControllers[index].text);
+                                                                _presentMeterReadControllers[index].text = '0';
+                                                                thisMonthRecords[index].presentmeteRreading = 0 ;                                                               
                                                               });
+                                                              
+                                                            }
+                                                            
+                                                              if(isValidDoubleText(text: _presentMeterReadControllers[index].text)){
+                                                                print("why not...");
+                                                                thisMonthRecords[index].presentmeteRreading= double.parse(_presentMeterReadControllers[index].text) ;
+                                                                if(!value.endsWith(".")){
+                                                                  setState(() {
+                                                                    
+                                                                  });
+                                                                }
+                                                              }
+                                                              else{
+                                                                setState(() {
+                                                                  _presentMeterReadControllers[index].text = thisMonthRecords[index].presentmeteRreading.toString();
+                                                                });
+                                                              }
+                                                             }
                                                             },
                                                             style: const TextStyle(
                                                               color: Colors.black,

@@ -134,7 +134,10 @@ class _AddHouseState extends State<AddHouse> {
                         // if(buildingNameFormKey.currentState!.validate() & houseNoFormKey.currentState!.validate()){
                         //   addHouse();
                         // }
+                        var isValid = buildingNameFormKey.currentState!.validate()&&houseNoFormKey.currentState!.validate()&&meterNoFormKey.currentState!.validate()&&assignedUserIdFormKey.currentState!.validate();
+                        if(isValid){
                         addHouse();
+                        }
                       },
                       icon: const Icon(
                         Icons.check,
@@ -238,11 +241,10 @@ class _AddHouseState extends State<AddHouse> {
                       controller: assignedUserIDInputController,
                       validator: (val) {
                         RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
-                        if (val == "") {
-                          return "This field can not be empty!";
-                        } else if (rg.hasMatch(val!)) {
+                        if (rg.hasMatch(val!)) {
                           return "Enter character as (a-z),(0-9)..";
                         }
+                        return "all good";
                       },
                       decoration: const InputDecoration(
                         labelText: "Assign a user",
@@ -263,142 +265,6 @@ class _AddHouseState extends State<AddHouse> {
         ),
       ),
     );
-    // appBar: AppBar(
-    //   backgroundColor: Colors.black,
-    //   title: const Text("New house",style: TextStyle(color: Colors.white),),
-    //   leading: CloseButton(
-    //     color: Colors.white,
-    //     onPressed: (){
-    //       Navigator.pop(context);
-    //     },
-    //   ),
-    //   actions: [
-    //     IconButton(
-    //         onPressed: (){
-    //          // if(buildingNameFormKey.currentState!.validate() & houseNoFormKey.currentState!.validate()){
-    //          //   addHouse();
-    //          // }
-    //           addHouse();
-    //         },
-    //         icon: const Icon(Icons.check,color: Colors.white,))
-    //   ],
-    // ),
-    //   body: SingleChildScrollView(
-    //     child: Column(
-    //       children: [
-    //         //Category textField
-    //         Padding(
-    //           padding: const EdgeInsets.symmetric(
-    //             vertical: 15,
-    //           ),
-    //           child: TextFormField(
-    //             key: buildingNameFormKey,
-    //             controller: buildingNameInputController,
-    //             validator: (val){
-    //               RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
-    //               if(val==""){
-    //                 return "This field can not be empty!";
-    //               }
-    //               else if(rg.hasMatch(val!)){
-    //                 return "Enter character as (a-z),(0-9)..";
-    //               }
-    //             },
-    //             decoration: const InputDecoration(
-    //               labelText: "Name of the building",
-    //               labelStyle: TextStyle(color: Colors.white),
-    //               focusColor: Colors.white,
-    //               fillColor: Colors.white,
-    //             ),
-    //             cursorColor: Colors.white,
-    //             style: TextStyle(color: Colors.white),
-    //           ),
-    //         ),
-    //         //House no textField
-    //         Padding(
-    //           padding: const EdgeInsets.symmetric(
-    //             vertical: 14,
-    //           ),
-    //           child: TextFormField(
-    //             key: houseNoFormKey,
-    //             controller: houseNoInputController,
-    //             validator: (val){
-    //               RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
-    //               if(val==""){
-    //                 return "This field can not be empty!";
-    //                 }
-    //               else if(rg.hasMatch(val!)){
-    //                 return "Enter character as (a-z),(0-9)..";
-    //               }
-    //             },
-    //             decoration: const InputDecoration(
-    //               labelText: "House No",
-    //               labelStyle: TextStyle(color: Colors.white),
-    //               focusColor: Colors.white,
-    //               fillColor: Colors.white,
-    //             ),
-    //             cursorColor: Colors.white,
-    //             style: const TextStyle(color: Colors.white),
-    //           ),
-    //         ),
-    //         //Meter no textField
-    //         Padding(
-    //           padding: const EdgeInsets.symmetric(
-    //             vertical: 14,
-    //           ),
-    //           child: TextFormField(
-    //             key: meterNoFormKey,
-    //             controller: meterNoInputController,
-    //             validator: (val){
-    //               RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
-    //               if(val==""){
-    //                 return "This field can not be empty!";
-    //               }
-    //               else if(rg.hasMatch(val!)){
-    //                 return "Enter character as (a-z),(0-9)..";
-    //               }
-    //             },
-    //             decoration: const InputDecoration(
-    //               labelText: "Meter No",
-    //               labelStyle: TextStyle(color: Colors.white),
-    //               focusColor: Colors.white,
-    //               fillColor: Colors.white,
-    //             ),
-    //             cursorColor: Colors.white,
-    //             style: const TextStyle(color: Colors.white),
-    //           ),
-    //         ),
-    //         // Assign a user textField
-    //         Padding(
-    //           padding: const EdgeInsets.symmetric(
-    //             vertical: 14,
-    //           ),
-    //           child: TextFormField(
-    //             key: assignedUserIdFormKey,
-    //             controller: assignedUserIDInputController,
-    //             validator: (val){
-    //               RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
-    //               if(val==""){
-    //                 return "This field can not be empty!";
-    //               }
-    //               else if(rg.hasMatch(val!)){
-    //                 return "Enter character as (a-z),(0-9)..";
-    //               }
-    //             },
-    //             decoration: const InputDecoration(
-    //               labelText: "Assign a user",
-    //               labelStyle: TextStyle(color: Colors.white),
-    //               focusColor: Colors.white,
-    //               fillColor: Colors.white,
-    //               hintText: "Type a userId...",
-    //               hintStyle: TextStyle(color: Colors.grey),
-    //             ),
-    //             cursorColor: Colors.white,
-    //             style: TextStyle(color: Colors.white),
-    //           ),
-    //         ),
-
-    //       ],
-    //     ),
-    //   ),
+  
   }
 }

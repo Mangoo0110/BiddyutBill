@@ -16,6 +16,13 @@ class UserStorage{
     );
   }
 
+  List<User> oneUserFromJson(String jsonString){
+    final data = jsonDecode(jsonString);
+    //print(data);
+    return 
+        List<User>.from((data.map((item) =>User.fromJson(item))));
+  }
+
   Future<List<User>>fetchAllUsers()async{
       var result = await http.post(
         Uri.parse(API.userList),
@@ -29,20 +36,23 @@ class UserStorage{
       }
 
 }
- Future<List<User>>fetchUser(
+
+ Future<List<User>>fetchOneUser(
   {
     required String varsityId,
   }
  )async{
       var result = await http.post(
-        Uri.parse(API.userList),
+        Uri.parse(API.fetchOneUser),
         body: {
           "varsity_id" : varsityId,
         }
       );
+      print(result.body);
       if(result.statusCode == 200){
-        List<User> list = usersFromJson(result.body);
-        return list;
+        if(result.body == "")return <User>[];
+        List<User> user = oneUserFromJson(result.body);
+        return user;
       }
       else {
         return <User>[];

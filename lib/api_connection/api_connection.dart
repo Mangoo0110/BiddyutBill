@@ -14,8 +14,10 @@ class API {
   static const fetchAllHouses = "$hostConnectAdmin/$houseSql/fetchAllHouses.php";
   static const addUser = "$hostConnectAdmin/$userSql/addUser.php";
   static const userList = "$hostConnectAdmin/$userSql/userList.php";
+  static const fetchOneUser = "$hostConnectAdmin/$userSql/fetchUser.php";
   static const newMonthRecord = "$hostConnectAdmin/montly_record_sql/newMonthRecord.php";
   static const fetchMonthRecord = "$hostConnectAdmin/montly_record_sql/fetchMonthRecord.php";
   static const fetchAllUnitCostAndOther = "$hostConnectAdmin/$unitCostSql/fetchUnitCostAndOther.php";
   static const fetchDemandChargeVatPercentage= "$hostConnectAdmin/$demandChargeVatSql/fetchDemandCharge.php";
+  static const onlineEmailjsApi = "https://api.emailjs.com/api/v1.0/email/send";
 }

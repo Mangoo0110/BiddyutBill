@@ -30,7 +30,7 @@ class RecordDetails extends StatelessWidget {
             customDuoLabel("Demand Charge(Tk) : ", record.demandchargeTk.toString(), Colors.black, Colors.black),
             const Divider(),
             customDuoLabel("Principle Amount(Tk) : ", record.firsttotalTk.toString(), Colors.black, Colors.black),
-            customDuoLabel("Vat Percentage : ", record.vatpercentage.toString() + "%", Colors.black, Colors.black),
+            customDuoLabel("Vat Percentage : ", record.vatTk.toString() + "%", Colors.black, Colors.black),
             const Divider(),
             customDuoLabel("Bill Month Total(Tk) : ", record.secondtotalTk.toString(), Colors.black, Colors.black),
             customDuoLabel("Total amount to be paid(Tk) : ", record.finaltotalTk.toString(), Colors.black, Colors.black),

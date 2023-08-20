@@ -10,7 +10,7 @@ Future<MonthlyRecord> fillEmptyRecords({ required user, required List<DemandChar
       varsityid: user.id, fullName: user.fullName, houseAddress: user.houseAddress,
       meterno: user.assignedMeterNo, presentmeteRreading: 0, previousmeterReading: 0,
       usedunit: 0, unitcostTk: 0, demandchargeTk: dvx.demandChargeTk, firsttotalTk: 0,
-      vatpercentage: dvx.vatPercentageTk, secondtotalTk: 0, finaltotalTk: 0);
+      vatTk: dvx.vatPercentageTk, secondtotalTk: 0, finaltotalTk: 0);
 
       return filledRecord;
    }
