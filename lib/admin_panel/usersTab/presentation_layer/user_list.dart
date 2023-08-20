@@ -18,7 +18,7 @@ class UserList extends StatefulWidget {
 }
 
 class _UserListState extends State<UserList> {
-  List<User> allUserData = [];
+  List<User> allUserData = []; 
 
   String searchText = "";
 

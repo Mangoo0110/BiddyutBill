@@ -10,7 +10,7 @@
     $responseOfFetchQuery = $connectionNow->query($query);
 
     if(!$responseOfFetchQuery){
-        die('Could not get data: '.mysql_error());
+        die('Could not get data: '.mysqli_error());
     }
     if($responseOfFetchQuery->num_rows>0){
         //echo json_encode(array("Success"=>true));
