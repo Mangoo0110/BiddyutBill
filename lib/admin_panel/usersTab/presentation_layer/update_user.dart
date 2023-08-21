@@ -63,9 +63,9 @@ class UpdateUser extends StatelessWidget {
   }
   void getUserInfo(){
     fullNameInputController.text = userInfo.fullName;
-    print(fullNameInputController.text);
+    //print(fullNameInputController.text);
     varsityIdInputController.text = userInfo.id;
-    print(userInfo.id);
+    //print(userInfo.id);
     emailInputController.text = userInfo.email;
     assignedMeterNoInputController.text = userInfo.assignedMeterNo;
 
