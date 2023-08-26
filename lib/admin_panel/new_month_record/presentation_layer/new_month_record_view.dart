@@ -5,6 +5,7 @@ import 'package:e_bill/admin_panel/new_month_record/domain_layer/active_users_re
 import 'package:e_bill/admin_panel/new_month_record/domain_layer/final_total_calculation.dart';
 import 'package:e_bill/admin_panel/new_month_record/domain_layer/get_all_unit_cost_range.dart';
 import 'package:e_bill/admin_panel/new_month_record/domain_layer/get_demand_charge_vat_percentage.dart';
+import 'package:e_bill/admin_panel/new_month_record/domain_layer/pdf_generation.dart';
 import 'package:e_bill/admin_panel/new_month_record/domain_layer/push_all_records.dart';
 import 'package:e_bill/admin_panel/new_month_record/presentation_layer/details_view.dart';
 import 'package:e_bill/admin_panel/new_month_record/presentation_layer/month_picker.dart';
@@ -15,6 +16,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_constant.dart';
 
+import '../domain_layer/pdf_api.dart';
+import '../domain_layer/send_mail.dart';
 
 class NewMonthRecord extends StatefulWidget {
   const NewMonthRecord({super.key});
@@ -25,11 +28,22 @@ class NewMonthRecord extends StatefulWidget {
 
 class _NewMonthRecordState extends State<NewMonthRecord> {
   String searchText = "";
-  List<String> allMonths=[
-      "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-    ];
-  String presentMonthAndYear= "";
-  String previousMonthAndYear= "";
+  List<String> allMonths = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+  String presentMonthAndYear = "";
+  String previousMonthAndYear = "";
   final List<GlobalKey<FormState>> _presentMeterReadFormKeys = [];
   final List<GlobalKey<FormState>> _previousMeterReadFormKeys = [];
 
@@ -38,45 +52,50 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
 
   final TextEditingController _searchBoxTextEditingController =
       TextEditingController();
-  
-   final List<TextEditingController> _previousMeterReadControllers = [];
-   final List<TextEditingController> _presentMeterReadControllers = [];
-   List<User> allUsers = [];
-   List<String> labels = [
+
+  final List<TextEditingController> _previousMeterReadControllers = [];
+  final List<TextEditingController> _presentMeterReadControllers = [];
+  List<User> allUsers = [];
+  List<String> labels = [
     name,
     houseAddresS,
     previousMeterReading,
     presentMeterReading,
     finalTotalTk,
-   ];
-   List<UnitCost> allUnitCost = [];
-   List<DemandChargeVatPercentage> demandChargeAndVatPercentage =[];
-   List<MonthlyRecord>allRecordOfThisMonth = [];
-   List<MonthlyRecord> searchedRecords = [];
-   List<MonthlyRecord> pushCanditates = [];
-     @override
+  ];
+  List<UnitCost> allUnitCost = [];
+  List<DemandChargeVatPercentage> demandChargeAndVatPercentage = [];
+  List<MonthlyRecord> allRecordOfThisMonth = [];
+  List<MonthlyRecord> searchedRecords = [];
+  List<MonthlyRecord> pushCanditates = [];
+  @override
   void initState() {
-    
     // TODO: implement initState
-    presentMonthAndYear =  allMonths[DateTime.now().month-1].toLowerCase() + "_" + DateTime.now().year.toString();
+    presentMonthAndYear = allMonths[DateTime.now().month - 1].toLowerCase() +
+        "_" +
+        DateTime.now().year.toString();
     int prvYear = DateTime.now().year;
-    if(DateTime.now().month==1){
+    if (DateTime.now().month == 1) {
       prvYear = prvYear - 1;
-      previousMonthAndYear = allMonths[11].toLowerCase() + "_" + prvYear.toString();
+      previousMonthAndYear =
+          allMonths[11].toLowerCase() + "_" + prvYear.toString();
+    } else {
+      previousMonthAndYear =
+          allMonths[DateTime.now().month - 2] + DateTime.now().year.toString();
     }
-    else{
-      previousMonthAndYear =  allMonths[DateTime.now().month-2] + DateTime.now().year.toString();
-    }
-    
+
     print(presentMonthAndYear);
     print(previousMonthAndYear);
-    Future.delayed(const Duration(seconds:2),()async{
-    allUnitCost = await getAllUnitCost();
-    demandChargeAndVatPercentage = await getDemandChargeAndVatPercentage();
-    allRecordOfThisMonth = await getAllActiveUserRecords(previousMonthAndYear: previousMonthAndYear, presentMonthAndYear:  presentMonthAndYear,demandChargeAndVatPercentage: demandChargeAndVatPercentage);
-    _allRecordStreamController.sink.add(allRecordOfThisMonth);
+    Future.delayed(const Duration(seconds: 2), () async {
+      allUnitCost = await getAllUnitCost();
+      demandChargeAndVatPercentage = await getDemandChargeAndVatPercentage();
+      allRecordOfThisMonth = await getAllActiveUserRecords(
+          previousMonthAndYear: previousMonthAndYear,
+          presentMonthAndYear: presentMonthAndYear,
+          demandChargeAndVatPercentage: demandChargeAndVatPercentage);
+      _allRecordStreamController.sink.add(allRecordOfThisMonth);
     });
-    
+
     super.initState();
   }
 
@@ -87,20 +106,26 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
     super.dispose();
   }
 
-   Future<void>reload()async{
-    allRecordOfThisMonth = await getAllActiveUserRecords(previousMonthAndYear: previousMonthAndYear,presentMonthAndYear: monthAndYear, demandChargeAndVatPercentage: demandChargeAndVatPercentage);
+  Future<void> reload() async {
+    allRecordOfThisMonth = await getAllActiveUserRecords(
+        previousMonthAndYear: previousMonthAndYear,
+        presentMonthAndYear: monthAndYear,
+        demandChargeAndVatPercentage: demandChargeAndVatPercentage);
     _allRecordStreamController.sink.add(allRecordOfThisMonth);
-   }
+  }
 
-   Future searchedRecordStream() async{
+  Future searchedRecordStream() async {
     searchedRecords = [];
-    for(int index = 0; index<allRecordOfThisMonth.length; index++){
-      if(allRecordOfThisMonth[index].fullName.toLowerCase().contains(searchText.toLowerCase())) {
+    for (int index = 0; index < allRecordOfThisMonth.length; index++) {
+      if (allRecordOfThisMonth[index]
+          .fullName
+          .toLowerCase()
+          .contains(searchText.toLowerCase())) {
         searchedRecords.add(allRecordOfThisMonth[index]);
+      }
+      _allRecordStreamController.sink.add(searchedRecords);
     }
-    _allRecordStreamController.sink.add(searchedRecords);
-   }
-   }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,70 +142,158 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    decoration: BoxDecoration(
-                    color: Colors.green[100],
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                    child: Row(children: [
-                     const Padding(
-                        padding: EdgeInsets.all(6.0),
-                        child: Icon(Icons.date_range,size: 20,),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            PageRouteBuilder(
-                              opaque: false,
-                              transitionDuration: const Duration(milliseconds: 500),
-                              reverseTransitionDuration: const Duration(milliseconds: 500),
-                              pageBuilder: (context,b,e){
-                                return MonthPickerUI(monthAndYear: presentMonthAndYear,
-                                  onDone: (pickedPreviousMonthAndYear, pickedPresentMonthAndYear) {
-                                    Future.delayed(const Duration(seconds: 1),() async{
-                                  allRecordOfThisMonth = await getAllActiveUserRecords(previousMonthAndYear: pickedPreviousMonthAndYear,presentMonthAndYear: pickedPresentMonthAndYear, demandChargeAndVatPercentage: demandChargeAndVatPercentage);
-                                  _allRecordStreamController.sink.add(allRecordOfThisMonth);
-                                  });
-                                  Navigator.pop(context);
-                                  setState(() {
-                                  _allRecordStreamController.sink.add(allRecordOfThisMonth);
-                                  presentMonthAndYear = pickedPresentMonthAndYear;
-                                  previousMonthAndYear = pickedPreviousMonthAndYear;
-                                  print("selected date: $presentMonthAndYear");
-                                  });
+                      decoration: BoxDecoration(
+                          color: Colors.green[100],
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.all(6.0),
+                            child: Icon(
+                              Icons.date_range,
+                              size: 20,
+                            ),
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.of(context).push(PageRouteBuilder(
+                                  opaque: false,
+                                  transitionDuration:
+                                      const Duration(milliseconds: 500),
+                                  reverseTransitionDuration:
+                                      const Duration(milliseconds: 500),
+                                  pageBuilder: (context, b, e) {
+                                    return MonthPickerUI(
+                                      monthAndYear: presentMonthAndYear,
+                                      onDone: (pickedPreviousMonthAndYear,
+                                          pickedPresentMonthAndYear) {
+                                        Future.delayed(
+                                            const Duration(seconds: 1),
+                                            () async {
+                                          allRecordOfThisMonth =
+                                              await getAllActiveUserRecords(
+                                                  previousMonthAndYear:
+                                                      pickedPreviousMonthAndYear,
+                                                  presentMonthAndYear:
+                                                      pickedPresentMonthAndYear,
+                                                  demandChargeAndVatPercentage:
+                                                      demandChargeAndVatPercentage);
+                                          _allRecordStreamController.sink
+                                              .add(allRecordOfThisMonth);
+                                        });
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          _allRecordStreamController.sink
+                                              .add(allRecordOfThisMonth);
+                                          presentMonthAndYear =
+                                              pickedPresentMonthAndYear;
+                                          previousMonthAndYear =
+                                              pickedPreviousMonthAndYear;
+                                          print(
+                                              "selected date: $presentMonthAndYear");
+                                        });
+                                      },
+                                    );
                                   },
-                                  );
+                                ));
                               },
-                            )
-                          );
-                        },
-                         child: const Text("Pick a date",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.black,fontSize: 17),))
-                    ],)
-                  ),
+                              child: const Text(
+                                "Pick a date",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                    fontSize: 17),
+                              ))
+                        ],
+                      )),
                 ),
-              
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.orange[100],
-                    borderRadius: BorderRadius.circular(7)
-                  ),
+                      color: Colors.orange[100],
+                      borderRadius: BorderRadius.circular(7)),
                   child: TextButton(
-                    onPressed: () async{
-                      await pushallRecords(allRecordOfThisMonth, presentMonthAndYear);
+                    onPressed: () async {
+                      await pushallRecords(
+                          allRecordOfThisMonth, presentMonthAndYear);
                       setState(() {
                         reload();
                       });
                     },
-                    child: const Text("Push all",style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 17,color: Colors.black)),
+                    child: const Text("Push all",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                            color: Colors.black)),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
                     decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)
+                        color: const Color.fromARGB(255, 234, 255, 178),
+                        borderRadius: BorderRadius.circular(7)),
+                    child: TextButton(
+                      onPressed: ()  {
+                        CreatePdf().generate(allRecordOfThisMonth, presentMonthAndYear);
+                      },
+                      child: const  Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                                Icons.download,
+                                size: 20,
+                              ),
+                          ),
+                           Text("PDF",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                  color: Colors.black)),
+                        ],
+                      ),
+                    ),
                   ),
+                ),
+
+                 Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 234, 255, 178),
+                        borderRadius: BorderRadius.circular(7)),
+                    child: TextButton(
+                      onPressed: ()  {
+                        SendMail.sendMail(
+ recieverMail: 'arrow360degree@gmail.com', message: 'Hi anik');
+                      },
+                      child: const  Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                                Icons.mail,
+                                size: 20,
+                              ),
+                          ),
+                           Text("Gmail",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                  color: Colors.black)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10)),
                     child: TextButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
@@ -194,7 +307,9 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                       label: const Text(
                         "Back to control panel",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 17,color: Colors.green),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                            color: Colors.green),
                       ),
                     ),
                   ),
@@ -224,20 +339,23 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                     style: const TextStyle(color: Colors.white),
                     onChanged: (text) {
                       setState(() {
-                      searchText = _searchBoxTextEditingController.text;
-                      searchedRecordStream();
+                        searchText = _searchBoxTextEditingController.text;
+                        searchedRecordStream();
                       });
                     },
                   ),
                 ),
               ),
             ),
-            Text("Showing result from date : $presentMonthAndYear",style: const TextStyle(color: Colors.white70, fontSize: 18),),
+            Text(
+              "Showing result from date : $presentMonthAndYear",
+              style: const TextStyle(color: Colors.white70, fontSize: 18),
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: StreamBuilder(
-                  stream:  _allRecordStreamController.stream,
+                  stream: _allRecordStreamController.stream,
                   builder: (context, snapshot) {
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
@@ -246,7 +364,8 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                         );
                       case ConnectionState.active:
                         if (snapshot.hasData) {
-                          var thisMonthRecords = snapshot.data as List<MonthlyRecord>;
+                          var thisMonthRecords =
+                              snapshot.data as List<MonthlyRecord>;
                           if (thisMonthRecords.isEmpty) {
                             return const Center(
                                 child: Text(
@@ -256,168 +375,286 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                                   fontSize: 30,
                                   color: Colors.grey),
                             ));
-                          }
-                          else {
-                          for (int index = 0; index<thisMonthRecords.length; index++){
-                            thisMonthRecords[index]= calcOfFinalTotal(record: thisMonthRecords[index], demandChargeAndVatPercentage: demandChargeAndVatPercentage, allUnitCost: allUnitCost);
-                          }
-                          return Column(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                  ),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade900,
-                                      
+                          } else {
+                            for (int index = 0;
+                                index < thisMonthRecords.length;
+                                index++) {
+                              thisMonthRecords[index] = calcOfFinalTotal(
+                                  record: thisMonthRecords[index],
+                                  demandChargeAndVatPercentage:
+                                      demandChargeAndVatPercentage,
+                                  allUnitCost: allUnitCost);
+                            }
+                            return Column(
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
                                     ),
-                                    child: ListView.builder(
-                                      itemCount: thisMonthRecords.length,
-                                      itemBuilder: (context, index) {
-                                        MonthlyRecord record = thisMonthRecords[index];
-                                        _presentMeterReadControllers.add(TextEditingController());
-                                        _previousMeterReadControllers.add(TextEditingController());
-                                        _previousMeterReadControllers[index].text = record.previousmeterReading.toString();
-                                        _presentMeterReadControllers[index].text = record.presentmeteRreading.toString();
-                                        _presentMeterReadControllers[index].selection 
-                                                               = TextSelection.collapsed(offset: _presentMeterReadControllers[index].text.length);
-                                        _previousMeterReadControllers[index].selection =
-                                                                TextSelection.collapsed(offset: _previousMeterReadControllers[index].text.length);
-                                        _presentMeterReadFormKeys.add(GlobalKey<FormState>());
-                                        _previousMeterReadFormKeys.add(GlobalKey<FormState>());
-                                        return Column(
-                                          children: [
-                                            const Divider(
-                                              thickness: 2,
-                                            ) ,
-                                            Container(                                            
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.circular(6),
-                                                
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade900,
+                                      ),
+                                      child: ListView.builder(
+                                        itemCount: thisMonthRecords.length,
+                                        itemBuilder: (context, index) {
+                                          MonthlyRecord record =
+                                              thisMonthRecords[index];
+                                          _presentMeterReadControllers
+                                              .add(TextEditingController());
+                                          _previousMeterReadControllers
+                                              .add(TextEditingController());
+                                          _previousMeterReadControllers[index]
+                                                  .text =
+                                              record.previousmeterReading
+                                                  .toString();
+                                          _presentMeterReadControllers[index]
+                                                  .text =
+                                              record.presentmeteRreading
+                                                  .toString();
+                                          _presentMeterReadControllers[index]
+                                                  .selection =
+                                              TextSelection.collapsed(
+                                                  offset:
+                                                      _presentMeterReadControllers[
+                                                              index]
+                                                          .text
+                                                          .length);
+                                          _previousMeterReadControllers[index]
+                                                  .selection =
+                                              TextSelection.collapsed(
+                                                  offset:
+                                                      _previousMeterReadControllers[
+                                                              index]
+                                                          .text
+                                                          .length);
+                                          _presentMeterReadFormKeys
+                                              .add(GlobalKey<FormState>());
+                                          _previousMeterReadFormKeys
+                                              .add(GlobalKey<FormState>());
+                                          return Column(
+                                            children: [
+                                              const Divider(
+                                                thickness: 2,
                                               ),
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                children: [
-                                                  customDuoLabel("Name: ", record.fullName, Colors.black54, Colors.black54),
-                                                  customDuoLabel("Address: ", record.houseAddress, Colors.black54, Colors.black54),
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.all(8.0),
-                                                      child: Container(
-                                                        decoration: BoxDecoration(
-                                                           color: Colors.orange.shade100,
-                                                           borderRadius: BorderRadius.circular(3),
-                                                        ),
-                                                        child: Padding(
-                                                          padding: const EdgeInsets.symmetric(
-                                                            horizontal: 12,
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    customDuoLabel(
+                                                        "Name: ",
+                                                        record.fullName,
+                                                        Colors.black54,
+                                                        Colors.black54),
+                                                    customDuoLabel(
+                                                        "Address: ",
+                                                        record.houseAddress,
+                                                        Colors.black54,
+                                                        Colors.black54),
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.orange
+                                                                .shade100,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        3),
                                                           ),
-                                                          child: TextFormField(
-                                                            key: _previousMeterReadFormKeys[index],
-                                                            controller: _previousMeterReadControllers[index],
-                                                            onChanged: (value) {
-                                                             setState(() {                                                  
-                                                              thisMonthRecords[index].previousmeterReading = double.parse(_previousMeterReadControllers[index].text) ;                                                               
-                                                              });
-                                                            },
-                                                            style: const TextStyle(
-                                                              color: Colors.black,
-                                                              fontSize: 20,
-                                                              fontWeight: FontWeight.bold,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                              horizontal: 12,
                                                             ),
-                                                            decoration: InputDecoration(
-                                                              labelText: labels[2],
-                                                              labelStyle: TextStyle(color: Colors.orange.shade600),
-                                                              fillColor: Colors.orange.shade200,
+                                                            child:
+                                                                TextFormField(
+                                                              key:
+                                                                  _previousMeterReadFormKeys[
+                                                                      index],
+                                                              controller:
+                                                                  _previousMeterReadControllers[
+                                                                      index],
+                                                              onChanged:
+                                                                  (value) {
+                                                                setState(() {
+                                                                  thisMonthRecords[
+                                                                          index]
+                                                                      .previousmeterReading = double.parse(_previousMeterReadControllers[
+                                                                          index]
+                                                                      .text);
+                                                                });
+                                                              },
+                                                              style:
+                                                                  const TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 20,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                labelText:
+                                                                    labels[2],
+                                                                labelStyle: TextStyle(
+                                                                    color: Colors
+                                                                        .orange
+                                                                        .shade600),
+                                                                fillColor: Colors
+                                                                    .orange
+                                                                    .shade200,
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.all(8.0),
-                                                      child: Container(
-                                                        decoration: BoxDecoration(
-                                                             color: Colors.green.shade100,
-                                                             borderRadius: BorderRadius.circular(3)
-                                                          ),
-                                                        child: Padding(
-                                                          padding: const EdgeInsets.symmetric(
-                                                            horizontal: 12,
-                                                          ),
-                                                          child: TextFormField(                                                       
-                                                            key: _presentMeterReadFormKeys[index],
-                                                            controller: _presentMeterReadControllers[index],
-                                                            onChanged: (value) {
-                                                              
-                                                              setState(() {
-                                                                thisMonthRecords[index].presentmeteRreading = double.parse(_presentMeterReadControllers[index].text);
-                                                              });
-                                                            },
-                                                            style: const TextStyle(
-                                                              color: Colors.black,
-                                                              fontSize: 20,
-                                                              fontWeight: FontWeight.bold,
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                              color: Colors
+                                                                  .green
+                                                                  .shade100,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          3)),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                              horizontal: 12,
                                                             ),
-                                                            decoration: InputDecoration(
-                                                              hoverColor: Colors.greenAccent.shade200,
-                                                              fillColor: Colors.blueGrey,
-                                                              labelText: labels[3],
-                                                              labelStyle: TextStyle(color: Colors.green.shade600)
+                                                            child:
+                                                                TextFormField(
+                                                              key:
+                                                                  _presentMeterReadFormKeys[
+                                                                      index],
+                                                              controller:
+                                                                  _presentMeterReadControllers[
+                                                                      index],
+                                                              onChanged:
+                                                                  (value) {
+                                                                setState(() {
+                                                                  thisMonthRecords[
+                                                                          index]
+                                                                      .presentmeteRreading = double.parse(_presentMeterReadControllers[
+                                                                          index]
+                                                                      .text);
+                                                                });
+                                                              },
+                                                              style:
+                                                                  const TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 20,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                              decoration: InputDecoration(
+                                                                  hoverColor: Colors
+                                                                      .greenAccent
+                                                                      .shade200,
+                                                                  fillColor: Colors
+                                                                      .blueGrey,
+                                                                  labelText:
+                                                                      labels[3],
+                                                                  labelStyle: TextStyle(
+                                                                      color: Colors
+                                                                          .green
+                                                                          .shade600)),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                customDuoLabel("Total (TK) : ", record.finaltotalTk.toString(), Colors.black, Colors.black),
-                                                  Padding(
-                                                    padding: const EdgeInsets.symmetric(
-                                                      horizontal: 16,
-                                                    ),
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        Navigator.of(context).push(
-                                                          PageRouteBuilder(
+                                                    customDuoLabel(
+                                                        "Total (TK) : ",
+                                                        record.finaltotalTk
+                                                            .toString(),
+                                                        Colors.black,
+                                                        Colors.black),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                        horizontal: 16,
+                                                      ),
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          Navigator.of(context)
+                                                              .push(
+                                                                  PageRouteBuilder(
                                                             opaque: false,
-                                                            pageBuilder: (context, animation, secondaryAnimation) {
-                                                              return RecordDetails(monthOfRecord: presentMonthAndYear, record: thisMonthRecords[index]);
+                                                            pageBuilder: (context,
+                                                                animation,
+                                                                secondaryAnimation) {
+                                                              return RecordDetails(
+                                                                  monthOfRecord:
+                                                                      presentMonthAndYear,
+                                                                  record:
+                                                                      thisMonthRecords[
+                                                                          index]);
                                                             },
-                                                          )
-                                                        );
-                                                      },
-                                                      child: Container(
-                                                        decoration: BoxDecoration(
-                                                          color: Colors.green.shade100,
-                                                          borderRadius: BorderRadius.circular(8)
-                                                        ),
-                                                        child: const Padding(
-                                                          padding: EdgeInsets.all(10.0),
-                                                          child: Text("Details",style: TextStyle(color: Colors.green,fontSize: 18),),
+                                                          ));
+                                                        },
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                              color: Colors
+                                                                  .green
+                                                                  .shade100,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8)),
+                                                          child: const Padding(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    10.0),
+                                                            child: Text(
+                                                              "Details",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .green,
+                                                                  fontSize: 18),
+                                                            ),
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  )
-                                                ],
+                                                    )
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        );
-                                     
-                                      },
+                                            ],
+                                          );
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
+                              ],
+                            );
                           }
                         } else {
                           return const Center(
@@ -439,19 +676,24 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
     );
   }
 
-  Widget customDuoLabel(String label1, String label2, Color color1, Color color2){
-   return Expanded(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Container(
-              child: Row(
-                children: [
-                  Text(label1,style: const TextStyle(fontSize: 20,color: Colors.black54),),
-                  Text(label2,style: const TextStyle(fontSize: 20,color: Colors.black54)),
-                ],
+  Widget customDuoLabel(
+      String label1, String label2, Color color1, Color color2) {
+    return Expanded(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Container(
+          child: Row(
+            children: [
+              Text(
+                label1,
+                style: const TextStyle(fontSize: 20, color: Colors.black54),
               ),
-            ),
+              Text(label2,
+                  style: const TextStyle(fontSize: 20, color: Colors.black54)),
+            ],
           ),
-        );
+        ),
+      ),
+    );
   }
 }
