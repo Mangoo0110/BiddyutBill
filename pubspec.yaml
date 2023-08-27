@@ -42,6 +42,12 @@ dependencies:
   hive: ^2.2.3
   dartz: ^0.10.1
   riverpod: ^2.3.6
+  syncfusion_flutter_pdf: ^22.2.10
+  pdf: ^3.10.4
+  universal_html: ^2.2.3
+  path_provider: ^2.1.0
+  open_file: ^3.3.2
+  mailer: ^6.0.1
   google_fonts: ^5.1.0
 
 dev_dependencies:
