@@ -62,7 +62,7 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
     int prvYear = DateTime.now().year;
     if(DateTime.now().month==1){
       prvYear = prvYear - 1;
-      previousMonthAndYear = "${allMonths[11].toLowerCase()}_${prvYear.toString()}";
+      previousMonthAndYear = allMonths[11].toLowerCase() + "_" + prvYear.toString();
     }
     else{
       previousMonthAndYear =  allMonths[DateTime.now().month-2] + DateTime.now().year.toString();
