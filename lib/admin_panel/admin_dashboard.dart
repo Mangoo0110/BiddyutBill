@@ -13,7 +13,7 @@ class AdminHome extends StatelessWidget {
           return MobileLayout();
         }
         else {
-        return DesktopLayout();
+        return const DesktopLayout();
         }
       },
     );

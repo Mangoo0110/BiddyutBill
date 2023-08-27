@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:e_bill/admin_panel/usersTab/data_layer/user_cruds.dart';
+import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
 import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -13,47 +15,34 @@ class AddUser extends StatefulWidget {
 }
 
 class _AddUserState extends State<AddUser> {
-  var userIdFormKey = GlobalKey<FormState>();
-  var mobileNoFormKey = GlobalKey<FormState>();
-  var nameFormKey = GlobalKey<FormState>();
-  var assignedHouseIdFormKey = GlobalKey<FormState>();
-  TextEditingController userIdInputController = TextEditingController();
-  TextEditingController mobileNoInputController = TextEditingController();
-  TextEditingController nameInputController = TextEditingController();
-  TextEditingController assignedHouseIDInputController =
+  var varsityIdFormKey = GlobalKey<FormState>();
+  var occupationFormKey = GlobalKey<FormState>();
+  var emailFormKey = GlobalKey<FormState>();
+  var fullNameFormKey = GlobalKey<FormState>();
+  var accountNoFormKey = GlobalKey<FormState>();
+  TextEditingController varsityIdInputController = TextEditingController();
+  TextEditingController emailInputController = TextEditingController();
+  TextEditingController fullNameInputController = TextEditingController();
+  TextEditingController occupationInputController = TextEditingController();
+  TextEditingController accountNoInputController =
       TextEditingController();
 
   addUser() async {
-    try {
-      var varsityId = userIdInputController.text.trim();
-      var fullName = nameInputController.text.trim();
-      //var mobileNo = mobileNoInputController.text.trim();
-      //var assignedHouseID = assignedHouseIDInputController.text.trim();
+    
+      var varsityId = varsityIdInputController.text.trim();
+      var fullName = fullNameInputController.text.trim();
+      var occupation = occupationInputController.text.trim();
+      var email = emailInputController.text.trim();
+      var accountNo = accountNoInputController.text.trim();
       print("pressed\n");
-      var res = await http.post(Uri.parse(API.addUser), headers: {
-        "Accept": "application/json"
-      }, body: {
-        "varsity_id": userIdInputController.text.trim(),
-        "full_name": nameInputController.text.trim(),
-        "email": mobileNoInputController.text.trim(),
-        "assignedMeterNo": assignedHouseIDInputController.text.trim(),
-      });
-      print(res.statusCode);
-      if (res.statusCode == 200) {
-        var data = jsonDecode(res.body);
-        if (data["Success"] == true) {
-          Fluttertoast.showToast(
-              timeInSecForIosWeb: 5,
-              msg: "New User (User Id : $varsityId and Name : $varsityId) added.");
-        } else {
-          Fluttertoast.showToast(
-            timeInSecForIosWeb: 10,
-              msg: "Could not add User (Id : $varsityId and Name : $varsityId).");
-        }
+       
+      var user = User(varsityId: varsityId, fullName: fullName, emailAdress: email, accountNo: accountNo, occupation: occupation, buildingName: "", houseNo: "", meteNo: "", isEmailVerified: "false");
+      var res = await UserStorage().addOrUpdateUser(user: user);
+      if(res==true){
+        Future.delayed(const Duration(milliseconds: 500),(){
+          Navigator.of(context).pop();
+        }); 
       }
-    } catch (e) {
-      print(e);
-    }
   }
 
   @override
@@ -88,15 +77,15 @@ class _AddUserState extends State<AddUser> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            //Category textField
+            //varsity id textField
             Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 15,
                 horizontal: 15,
               ),
               child: TextFormField(
-                key: userIdFormKey,
-                controller: userIdInputController,
+                key: varsityIdFormKey,
+                controller: varsityIdInputController,
                 validator: (val) {
                   RegExp rg = RegExp(r"^[0-9]", caseSensitive: false);
                   if (val == "") {
@@ -116,15 +105,15 @@ class _AddUserState extends State<AddUser> {
                 style: const TextStyle(color: Colors.white),
               ),
             ),
-            //House no textField
+            //Full Name textField
             Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 14,
                 horizontal: 15,
               ),
               child: TextFormField(
-                key: nameFormKey,
-                controller: nameInputController,
+                key: fullNameFormKey,
+                controller: fullNameInputController,
                 validator: (val) {
                   RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
                   if (val == "") {
@@ -144,15 +133,43 @@ class _AddUserState extends State<AddUser> {
                 style: const TextStyle(color: Colors.white),
               ),
             ),
-            //Meter no textField
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 15,
+                horizontal: 15,
+              ),
+              child: TextFormField(
+                key: occupationFormKey,
+                controller: occupationInputController,
+                validator: (val) {
+                  RegExp rg = RegExp(r"^[0-9]", caseSensitive: false);
+                  if (val == "") {
+                    return "This field can not be empty!";
+                  } else if (rg.hasMatch(val!)) {
+                    return "Enter Numbers(0-9)..";
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  labelText: "Occupation...",
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusColor: Colors.white,
+                  fillColor: Colors.white,
+                ),
+                cursorColor: Colors.white,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+            
+            //email textField
             Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 14,
                 horizontal: 15,
               ),
               child: TextFormField(
-                key: mobileNoFormKey,
-                controller: mobileNoInputController,
+                key: emailFormKey,
+                controller: emailInputController,
                 validator: (val) {
                   RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
                   if (val == "") {
@@ -179,8 +196,8 @@ class _AddUserState extends State<AddUser> {
                 horizontal: 15,
               ),
               child: TextFormField(
-                key: assignedHouseIdFormKey,
-                controller: assignedHouseIDInputController,
+                key: accountNoFormKey,
+                controller: accountNoInputController,
                 validator: (val) {
                   RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
                   if (val == "") {
@@ -191,11 +208,11 @@ class _AddUserState extends State<AddUser> {
                   return null;
                 },
                 decoration: const InputDecoration(
-                  labelText: "Meter No",
+                  labelText: "Account No",
                   labelStyle: TextStyle(color: Colors.white),
                   focusColor: Colors.white,
                   fillColor: Colors.white,
-                  hintText: "Type a Meter No...",
+                  hintText: "Type User's Account No...",
                   hintStyle: TextStyle(color: Colors.grey),
                 ),
                 cursorColor: Colors.white,

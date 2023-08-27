@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:e_bill/admin_info/adminModel.dart';
 import 'package:e_bill/admin_info/adminPreferences.dart';
 import 'package:e_bill/admin_panel/houseTab/presentation_layer/add_house_view.dart';
-import 'package:e_bill/admin_panel/houseTab/presentation_layer/updateHouse.dart';
-import 'package:e_bill/admin_panel/houseTab/data_layer/houseModel.dart';
-import 'package:e_bill/admin_panel/houseTab/data_layer/houseCRUDs.dart';
+import 'package:e_bill/admin_panel/houseTab/presentation_layer/update_house.dart';
+import 'package:e_bill/admin_panel/houseTab/data_layer/house_model.dart';
+import 'package:e_bill/admin_panel/houseTab/data_layer/house_cruds.dart';
 import 'package:e_bill/admin_panel/new_month_record/presentation_layer/new_month_record_view.dart';
 import 'package:e_bill/constants/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AllHouseView extends StatefulWidget {
   const AllHouseView({super.key});
@@ -56,7 +57,7 @@ class _AllHouseViewState extends State<AllHouseView> {
     allHouses = await HouseStorage().fetchAllHouses();
     List<House>filteredRecord = [];
     allHouses.forEach((house) { 
-      if(house.assignedUserID.toString().toLowerCase().contains(searchText)){
+      if(house.buildingName.toString().toLowerCase().contains(searchText)){
         filteredRecord.add(house);
       }
     });
@@ -74,24 +75,24 @@ class _AllHouseViewState extends State<AllHouseView> {
             padding: const EdgeInsets.all(8.0),
             child: Hero(
               tag: _workBtn,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.orange.shade200,
-                  border: Border.all(width: 4,color: Colors.white)
-                ),
-                // width: size.width * 0.2,
-                // height: size.height * 0.08,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(PageRouteBuilder(
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(PageRouteBuilder(
                         opaque: false,
                         transitionDuration: const Duration(milliseconds: 500),
                         reverseTransitionDuration: const Duration(milliseconds: 500),
                         pageBuilder: (BuildContext context, b, e) {
                           return const NewMonthRecord();
                         }));
-                  },
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.orange.shade200,
+                    border: Border.all(width: 4,color: Colors.white)
+                  ),
+                  // width: size.width * 0.2,
+                  // height: size.height * 0.08,
                   child: SizedBox(
                     height: 60,
                     width: 60,
@@ -146,7 +147,7 @@ class _AllHouseViewState extends State<AllHouseView> {
                   child: TextFormField(
                     controller: _searchBoxTextEditingController,
                     decoration: const InputDecoration(
-                      hintText: " Search...",
+                      hintText: " Search by building name...",
                       hintStyle: TextStyle(color: Colors.white70, fontSize: 20),
                       focusColor: Colors.white,
                       fillColor: Colors.white,
@@ -200,50 +201,105 @@ class _AllHouseViewState extends State<AllHouseView> {
                                 var building = thisHouse.buildingName;
                                 var houseNo = thisHouse.houseNo;
                                 var assignedUserID = thisHouse.assignedUserID;
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).push(PageRouteBuilder(
-                                        opaque: false,
-                                        transitionDuration:
-                                            const Duration(milliseconds: 500),
-                                        reverseTransitionDuration:
-                                            const Duration(milliseconds: 200),
-                                        pageBuilder:
-                                            (BuildContext context, b, e) {
-                                          return UpdateHouse(
-                                            thisHouse: thisHouse,
-                                          );
-                                        }));
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: (assignedUserID == "")
-                                          ? Colors.grey
-                                          : Colors.green,
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 20),
-                                      child: SingleChildScrollView(
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              "Building : $building",
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 12),
+                                return SingleChildScrollView(
+                                  
+                                  child: InkWell(
+                                    onTap: () {
+                                     
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              color: (assignedUserID == "")
+                                                  ? Colors.grey
+                                                  : Colors.green,
                                             ),
-                                            Text(
-                                              "House No : $houseNo",
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 12),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 20),
+                                            child: SingleChildScrollView(
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                    "Building : $building",
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 12),
+                                                  ),
+                                                  Text(
+                                                    "House No : $houseNo",
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 12),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.all(4.0),
+                                                child: InkWell(
+                                                  onTap: (){
+                                                  Navigator.of(context).push(PageRouteBuilder(
+                                                  opaque: false,
+                                                  transitionDuration:
+                                                  const Duration(milliseconds: 500),
+                                                   reverseTransitionDuration:
+                                                  const Duration(milliseconds: 200),
+                                                  pageBuilder:
+                                                  (BuildContext context, b, e) {
+                                                return UpdateHouse(
+                                                  thisHouse: thisHouse,
+                                                );
+                                                  }));
+                                                  },
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white54,
+                                                      borderRadius: BorderRadius.circular(5),
+                                                    ),
+                                                    child: const Padding(
+                                                      padding:  EdgeInsets.all(2.0),
+                                                      child: Icon(Icons.edit,size: 27,color: Colors.black38,),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.all(4.0),
+                                                child: InkWell(
+                                                  onTap: ()async{
+                                                    var res = await HouseStorage().deleteHouse(house: thisHouse);
+                                                    if(res){
+                                                      Fluttertoast.showToast(msg: "Success! House deleted.");
+                                                    }
+                                                    else{
+                                                      Fluttertoast.showToast(msg: "Failed! Could not delete the house.");
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white54,
+                                                      borderRadius: BorderRadius.circular(5),
+                                                    ),
+                                                    child:  const Padding(
+                                                      padding: EdgeInsets.all(2.0),
+                                                      child: Icon(Icons.delete_outline,size: 27,color: Colors.black38,),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          )
+                                        ],
                                       ),
                                     ),
                                   ),

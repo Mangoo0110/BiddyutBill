@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:e_bill/admin_panel/usersTab/data_layer/user.dart';
-import 'package:e_bill/admin_panel/usersTab/data_layer/userCRUDs.dart';
+import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
+import 'package:e_bill/admin_panel/usersTab/data_layer/user_cruds.dart';
 import 'package:e_bill/admin_panel/usersTab/presentation_layer/add_user.dart';
 import 'package:e_bill/admin_panel/usersTab/presentation_layer/update_user.dart';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 
 
@@ -18,7 +19,7 @@ class UserList extends StatefulWidget {
 }
 
 class _UserListState extends State<UserList> {
-  List<User> allUserData = [];
+  List<User> allUserData = []; 
 
   String searchText = "";
 
@@ -41,7 +42,7 @@ class _UserListState extends State<UserList> {
 
 
   String idEmailMeterNo(String a, String b, String c) {
-    String s = "Id: $a    Email: $b    Meter No: $c";
+    String s = "Id: $a    Email: $b    Account No: $c";
     return s;
   }
 
@@ -128,13 +129,72 @@ int cnt =1;
                                 ListTile(
                                   title: Text(userData.fullName,style: const TextStyle(color: Colors.grey, fontSize: 28),),
                                   subtitle: Text(
-                                    idEmailMeterNo(userData.id, userData.email, userData.assignedMeterNo),
+                                    idEmailMeterNo(userData.varsityId, userData.emailAdress!, userData.accountNo),
                                     style: const TextStyle(color: Colors.white),
                                   ),
                                   onTap: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=> UpdateUser(userInfo: userData,)));
+                                    //Navigator.push(context, MaterialPageRoute(builder: (context)=> UpdateUser(userInfo: userData,)));
                                   },
-                                ),
+                                  trailing:  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.all(4.0),
+                                                child: InkWell(
+                                                  onTap: (){
+                                                  Navigator.of(context).push(PageRouteBuilder(
+                                                  opaque: false,
+                                                  transitionDuration:
+                                                  const Duration(milliseconds: 500),
+                                                   reverseTransitionDuration:
+                                                  const Duration(milliseconds: 200),
+                                                  pageBuilder:
+                                                  (BuildContext context, b, e) {
+                                                return UpdateUser(userInfo: userData);
+                                                  }));
+                                                  },
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white54,
+                                                      borderRadius: BorderRadius.circular(5),
+                                                    ),
+                                                    child: const Padding(
+                                                      padding:  EdgeInsets.all(2.0),
+                                                      child: Icon(Icons.edit,size: 27,color: Colors.black38,),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.all(4.0),
+                                                child: InkWell(
+                                                  onTap: () async{
+                                                   var res = await UserStorage().deleteUser(user: userData);
+                                                   if(res){
+                                                    Fluttertoast.showToast(msg: "Success!! User deleted.");
+                                                   }
+                                                   else{
+                                                    Fluttertoast.showToast(msg: "Failed!! User could not be deleted.");
+                                                   }
+                                                  },
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white54,
+                                                      borderRadius: BorderRadius.circular(5),
+                                                    ),
+                                                    child:  const Padding(
+                                                      padding: EdgeInsets.all(2.0),
+                                                      child: Icon(Icons.delete_outline,size: 27,color: Colors.black38,),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                  ),
+                                      
+                                  ),
                                 const Divider(color: Colors.black,thickness: 6,),
                               ],
                             );

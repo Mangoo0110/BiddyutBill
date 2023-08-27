@@ -14,7 +14,7 @@ class UnitCostStorage {
 
   Future<List<UnitCost>> fetchAllUnitCost() async {
     var result = await http.post(
-      Uri.parse(API.fetchAllUnitCostAndOther),
+      Uri.parse(API.fetchAllUnitCost),
     );
     if (result.statusCode == 200) {
       List<UnitCost> list = unitCostFromJson(result.body);

@@ -1,7 +1,10 @@
 const String varsityId = "varsity_id";
 const String name = "full_name";
-const String houseAddresS = "house_address";
-const String meterNo = "meter_no";
+const String occupatioN = "occupation";
+const String buildingname = "building_name";
+const String houseno =  "house_no";
+const String accountno = "account_no";
+const String meterno = "meter_no";
 const String presentMeterReading = "present_meter_reading";
 const String previousMeterReading = "previous_meter_reading";
 const String usedUnit = "used_unit";

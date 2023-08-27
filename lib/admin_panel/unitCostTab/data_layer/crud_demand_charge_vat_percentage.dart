@@ -17,7 +17,7 @@ class DemandChargeVatPercentageStorage {
       Uri.parse(API.fetchDemandChargeVatPercentage),
     );
     if (result.statusCode == 200) {
-      print(result.body);
+      //print(result.body);
       List<DemandChargeVatPercentage> list =demandChargeVatPercentage(result.body);
       return list;
     } else {

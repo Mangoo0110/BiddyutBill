@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:e_bill/admin_panel/usersTab/data_layer/user.dart';
+import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
 import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -13,21 +13,14 @@ class UpdateUser extends StatelessWidget {
   User userInfo;
   UpdateUser({super.key,required this.userInfo});
 
-  var userIdFormKey = GlobalKey<FormState>();
-
-  var mobileNoFormKey = GlobalKey<FormState>();
-
-  var nameFormKey = GlobalKey<FormState>();
-
-  var assignedHouseIdFormKey = GlobalKey<FormState>();
-
+  var varsityIdFormKey = GlobalKey<FormState>();
+  var emailFormKey = GlobalKey<FormState>();
+  var fullNameFormKey = GlobalKey<FormState>();
+  var accountNoFormKey = GlobalKey<FormState>();
   TextEditingController varsityIdInputController = TextEditingController();
-
   TextEditingController emailInputController = TextEditingController();
-
   TextEditingController fullNameInputController = TextEditingController();
-
-  TextEditingController assignedMeterNoInputController =
+  TextEditingController accountNoInputController =
       TextEditingController();
 
   updateUser() async {
@@ -35,15 +28,15 @@ class UpdateUser extends StatelessWidget {
       var varsityId = varsityIdInputController.text.trim();
       var full_Name= fullNameInputController.text.trim();
       var email = emailInputController.text.trim();
-      var assignedMeterNo = assignedMeterNoInputController.text.trim();
+      var assignedMeterNo = accountNoInputController.text.trim();
       print("pressed\n");
-      var res = await http.post(Uri.parse(API.addUser), headers: {
+      var res = await http.post(Uri.parse(API.addOrUpdateUser), headers: {
         "Accept": "application/json"
       }, body: {
         "varsity_id": varsityId,
         "full_name": full_Name,
         "email": emailInputController.text.trim(),
-        "assignedMeterNo": assignedMeterNoInputController.text.trim(),
+        "account_no": accountNoInputController.text.trim(),
       });
       print(res.statusCode);
       if (res.statusCode == 200) {
@@ -64,15 +57,14 @@ class UpdateUser extends StatelessWidget {
   void getUserInfo(){
     fullNameInputController.text = userInfo.fullName;
     print(fullNameInputController.text);
-    varsityIdInputController.text = userInfo.id;
-    print(userInfo.id);
-    emailInputController.text = userInfo.email;
-    assignedMeterNoInputController.text = userInfo.assignedMeterNo;
+    varsityIdInputController.text = userInfo.varsityId;
+    print(userInfo.varsityId);
+    emailInputController.text = userInfo.emailAdress!;
+    accountNoInputController.text = userInfo.accountNo;
 
   }
   @override
   Widget build(BuildContext context) {
-    print("started");
     getUserInfo();
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 2, 22, 8),
@@ -110,7 +102,7 @@ class UpdateUser extends StatelessWidget {
                 horizontal: 15,
               ),
               child: TextFormField(
-                key: userIdFormKey,
+                key: varsityIdFormKey,
                 controller: varsityIdInputController,
                 validator: (val) {
                   RegExp rg = RegExp(r"^[0-9]", caseSensitive: false);
@@ -138,7 +130,7 @@ class UpdateUser extends StatelessWidget {
                 horizontal: 15,
               ),
               child: TextFormField(
-                key: nameFormKey,
+                key: fullNameFormKey,
                 controller: fullNameInputController,
                 validator: (val) {
                   RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
@@ -166,7 +158,7 @@ class UpdateUser extends StatelessWidget {
                 horizontal: 15,
               ),
               child: TextFormField(
-                key: mobileNoFormKey,
+                key: emailFormKey,
                 controller: emailInputController,
                 validator: (val) {
                   RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
@@ -194,8 +186,8 @@ class UpdateUser extends StatelessWidget {
                 horizontal: 15,
               ),
               child: TextFormField(
-                key: assignedHouseIdFormKey,
-                controller: assignedMeterNoInputController,
+                key: accountNoFormKey,
+                controller: accountNoInputController,
                 validator: (val) {
                   RegExp rg = RegExp(r"^[a-z0-9]", caseSensitive: false);
                   if (val == "") {
@@ -206,11 +198,11 @@ class UpdateUser extends StatelessWidget {
                   return null;
                 },
                 decoration: const InputDecoration(
-                  labelText: "Meter No",
+                  labelText: "Account No",
                   labelStyle: TextStyle(color: Colors.white),
                   focusColor: Colors.white,
                   fillColor: Colors.white,
-                  hintText: "Type a Meter No...",
+                  hintText: "Type User's Account No...",
                   hintStyle: TextStyle(color: Colors.grey),
                 ),
                 cursorColor: Colors.white,

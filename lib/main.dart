@@ -1,7 +1,6 @@
 import 'package:e_bill/admin_info/adminModel.dart';
 import 'package:e_bill/admin_panel/admin_dashboard.dart';
 import 'package:e_bill/admin_panel/houseTab/presentation_layer/add_house_view.dart';
-import 'package:e_bill/admin_panel/houseTab/presentation_layer/updateHouse.dart';
 import 'package:e_bill/authentication/logIn.dart';
 import 'package:e_bill/constants/routes.dart';
 import 'package:flutter/material.dart';
@@ -22,9 +21,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
 
-  bool adminExist = false;
-  String adId = '';
-  Admin? thisAdmin;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +30,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        fontFamily: 'Roboto',
         useMaterial3: true,
       ),
       home: const LogIn(),

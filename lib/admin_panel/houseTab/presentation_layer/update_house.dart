@@ -1,5 +1,5 @@
+
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:e_bill/admin_panel/houseTab/data_layer/house_cruds.dart';
 import 'package:e_bill/admin_panel/houseTab/data_layer/house_model.dart';
@@ -7,23 +7,26 @@ import 'package:e_bill/admin_panel/houseTab/presentation_layer/add_user_to_house
 import 'package:e_bill/admin_panel/houseTab/presentation_layer/assigned_user_list.dart';
 import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
 import 'package:e_bill/admin_panel/usersTab/data_layer/user_cruds.dart';
-import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart' as http;
 
-class AddHouse extends StatefulWidget {
-  const AddHouse({super.key});
+class UpdateHouse extends StatefulWidget {
+  House thisHouse ;
+  UpdateHouse({Key? key, required this.thisHouse}) : super(key: key);
 
   @override
-  State<AddHouse> createState() => _AddHouseState();
+  State<UpdateHouse> createState() => _UpdateHouseState();
 }
 
-class _AddHouseState extends State<AddHouse> {
-  final String _createHouseBtn = "create-a-house";
-  String buildingName = "";
-  String houseNo = "";
+class _UpdateHouseState extends State<UpdateHouse> {
+  final String _updateHouseBtn = "update-a-house";
+
+  String buildingName =  "";
+
+  String houseNo =  "";
+
   String meterNo = "";
+
   String assignedUserID = "";
 
   var buildingNameFormKey = GlobalKey<FormState>();
@@ -34,14 +37,19 @@ class _AddHouseState extends State<AddHouse> {
 
   var assignedUserIdFormKey = GlobalKey<FormState>();
 
-
   TextEditingController buildingNameInputController = TextEditingController();
-  TextEditingController meterNoInputController = TextEditingController();
-  TextEditingController houseNoInputController = TextEditingController();
-  TextEditingController assignedUserIDInputController = TextEditingController();
-  StreamController assignedUserStreamController = StreamController();
 
-  addHouse() async {
+  TextEditingController meterNoInputController = TextEditingController();
+
+  TextEditingController houseNoInputController = TextEditingController();
+
+  TextEditingController assignedUserIDInputController = TextEditingController();
+
+
+  late List<User> allUsers = [];
+  bool userAssigned = false;
+
+  updateHouse(BuildContext context)async{
       var house = makeAHouse();
       if(house==null)return;
       var success = await HouseStorage().addOrUpdateHouse(house: house);
@@ -67,7 +75,6 @@ class _AddHouseState extends State<AddHouse> {
               msg:
                   "Success! New House (Building Name : ${house.buildingName} and House No : ${house.houseNo} without user added.");
         Fluttertoast.showToast(
-            textColor: Colors.orange,
               msg:
                   "UserId ${house.assignedUserID} is not valid!!");
         Future.delayed(const Duration(seconds: 1), () {
@@ -85,11 +92,11 @@ class _AddHouseState extends State<AddHouse> {
         }
       
   }
+
   House? makeAHouse(){
       buildingName = buildingNameInputController.text.trim();
       if(buildingName==''){
         Fluttertoast.showToast(msg: "BuildingName can not be empty!!",
-          //webBgColor: "linear-gradient(to right, #00000, #00000)",
           toastLength: Toast.LENGTH_LONG,
           );
         return null;
@@ -104,68 +111,74 @@ class _AddHouseState extends State<AddHouse> {
       House house = House(buildingName: buildingName, houseNo: houseNo, meterNo: meterNo, assignedUserID: assignedUserID);
       return house;
   }
- 
+
+  getExistingHouse(){
+   
+        buildingNameInputController.text = widget.thisHouse.buildingName;
+        houseNoInputController.text = widget.thisHouse.houseNo;
+        meterNoInputController.text = widget.thisHouse.meterNo;
+        assignedUserID = widget.thisHouse.assignedUserID;
+        if(widget.thisHouse.assignedUserID != '')userAssigned =true;
+        // assignedUserIDInputController.text = widget.thisHouse.assignedUserID;
+  }
   @override
   void initState() {
+    getExistingHouse();
     // TODO: implement initState
     super.initState();
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    
+    getExistingHouse();
     Size size = MediaQuery.of(context).size;
     return Hero(
-      tag: _createHouseBtn,
+      tag: _updateHouseBtn,
       child: AlertDialog(
-        scrollable: true,
         // alignment: Alignment.topRight,
         backgroundColor: Colors.white,
         title: Column(
           children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  //crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: size.height * 0.01,
-                      horizontal: size.width * 0.02,
-                    ),
-                    child: CloseButton(
-                      color: Colors.black,
-                      onPressed: (){
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: size.height * 0.01,
-                    ),
-                    child: const Text("New house",style: TextStyle(color: Colors.black),),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: size.height * 0.01,
-                      horizontal: size.width * 0.02,
-                    ),
-                    child: IconButton(
-                          onPressed: (){
-                           // if(buildingNameFormKey.currentState!.validate() & houseNoFormKey.currentState!.validate()){
-                           //   addHouse();
-                           // }
-                            addHouse();
-                          },
-                          icon: const Icon(Icons.check,color: Colors.black,)),
-                  ),
-                ]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: size.height * 0.01,
+                ),
+                child: CloseButton(
+                  color: Colors.black,
+                  onPressed: (){
+                    Navigator.pop(context);
+                  },
+                ),
               ),
-            ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: size.height * 0.01,
+                ),
+                child: const Text("Update house",style: TextStyle(color: Colors.black),),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: size.height * 0.01,
+                ),
+                child: IconButton(
+                      onPressed: (){
+                       // if(buildingNameFormKey.currentState!.validate() & houseNoFormKey.currentState!.validate()){
+                       //   addHouse();
+                       // }
+                        updateHouse(context);
+                      },
+                      icon: const Icon(Icons.check,color: Colors.black,)),
+              ),
+            ]),
           ]
         ),
         content: SingleChildScrollView(
@@ -184,6 +197,7 @@ class _AddHouseState extends State<AddHouse> {
                   child: TextFormField(
                     key: buildingNameFormKey,
                     controller: buildingNameInputController,
+                    readOnly: true,
                     validator: (val){
                       RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
                       if(val==""){
@@ -212,6 +226,7 @@ class _AddHouseState extends State<AddHouse> {
                   child: TextFormField(
                     key: houseNoFormKey,
                     controller: houseNoInputController,
+                    readOnly: true,
                     validator: (val){
                       RegExp rg = RegExp(r"^[a-z0-9]",caseSensitive: false);
                       if(val==""){
@@ -260,48 +275,44 @@ class _AddHouseState extends State<AddHouse> {
                 ),
                 // Assign a user textField
                 SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const Text("Assigned User :",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 20),),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: AssignedUserList(
-                        onRemove: () async{
-                           bool res = await UserStorage().deleteHouseOfUser(varsityId: assignedUserID);
-                            Future.delayed(const Duration(seconds: 1),(){
-                            setState(() {
-                             assignedUserID = "";
-                            print("house added");
-                          });
-                            });                         
-                        },
-                        assignedUserID: assignedUserID),
-                      ),
+                      Container(
+                        alignment: Alignment.topLeft,
+                        child: const Text("Assigned User :",style: TextStyle(color: Colors.black),)
+                        ),
+                      AssignedUserList(
+                      onRemove: () async{
+                      bool res = await UserStorage().deleteHouseOfUser(varsityId: assignedUserID);
+                      setState(() {
+                          assignedUserID ='';
+                          widget.thisHouse.assignedUserID = '';
+                          userAssigned =false;
+                          print("house updated");
+                        });
+                      },
+                      assignedUserID: assignedUserID, ),
                     ],
                     ),
                   ),
                 ),
-                AddUserToHouse(
+                (!userAssigned)?AddUserToHouse(
                   assignedUserId: assignedUserID,
-                  userSelected: (userId) {
+                  userSelected: (userId) async{
                     setState(() {
-                      assignedUserID = userId;
+                     widget.thisHouse.assignedUserID = userId;
+                     assignedUserID = userId;
                     });
                   },
-                )
+                ):const Text(""),
               ],
             ),
           ),
         ),),
     );
        
-  }
-
-
+       }
+   
 }
-
-                

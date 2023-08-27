@@ -42,6 +42,7 @@ dependencies:
   hive: ^2.2.3
   dartz: ^0.10.1
   riverpod: ^2.3.6
+  google_fonts: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -66,9 +67,14 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/google_fonts/Roboto-Regular.ttf
   assets:
-    - images/e_bill.png
-    - images/thunder.png
+    - assets/images/e_bill.png
+    - assets/images/thunder.png
+    - assets/google_fonts/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

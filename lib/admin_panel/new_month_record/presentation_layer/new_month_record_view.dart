@@ -11,7 +11,7 @@ import 'package:e_bill/admin_panel/new_month_record/presentation_layer/details_v
 import 'package:e_bill/admin_panel/new_month_record/presentation_layer/month_picker.dart';
 import 'package:e_bill/admin_panel/unitCostTab/data_layer/demand_charge_vat_percentage.dart';
 import 'package:e_bill/admin_panel/unitCostTab/data_layer/unit_cost_model.dart';
-import 'package:e_bill/admin_panel/usersTab/data_layer/user.dart';
+import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_constant.dart';
@@ -45,7 +45,7 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
    List<User> allUsers = [];
    List<String> labels = [
     name,
-    houseAddresS,
+    occupatioN,
     previousMeterReading,
     presentMeterReading,
     finalTotalTk,
@@ -58,12 +58,11 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
      @override
   void initState() {
     
-    // TODO: implement initState
-    presentMonthAndYear =  allMonths[DateTime.now().month-1].toLowerCase() + "_" + DateTime.now().year.toString();
+    presentMonthAndYear =  "${allMonths[DateTime.now().month-1].toLowerCase()}_${DateTime.now().year.toString()}";
     int prvYear = DateTime.now().year;
     if(DateTime.now().month==1){
       prvYear = prvYear - 1;
-      previousMonthAndYear = allMonths[11].toLowerCase() + "_" + prvYear.toString();
+      previousMonthAndYear = "${allMonths[11].toLowerCase()}_${prvYear.toString()}";
     }
     else{
       previousMonthAndYear =  allMonths[DateTime.now().month-2] + DateTime.now().year.toString();
@@ -120,7 +119,7 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                   child: Container(
                     decoration: BoxDecoration(
                     color: Colors.green[100],
-                    borderRadius: BorderRadius.circular(10)
+                    borderRadius: BorderRadius.circular(5)
                   ),
                     child: Row(children: [
                      const Padding(
@@ -162,7 +161,7 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.orange[100],
-                    borderRadius: BorderRadius.circular(7)
+                    borderRadius: BorderRadius.circular(5)
                   ),
                   child: TextButton(
                     onPressed: () async{
@@ -180,7 +179,7 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                   child: Container(
                     decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)
+                    borderRadius: BorderRadius.circular(5)
                   ),
                     child: TextButton.icon(
                       onPressed: () {
@@ -304,7 +303,8 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                 children: [
                                                   customDuoLabel("Name: ", record.fullName, Colors.black54, Colors.black54),
-                                                  customDuoLabel("Address: ", record.houseAddress, Colors.black54, Colors.black54),
+
+                                                  customDuoLabel("Occupation: ", record.occupation, Colors.black54, Colors.black54),
                                                   Expanded(
                                                     flex: 1,
                                                     child: Padding(
@@ -510,7 +510,8 @@ class _NewMonthRecordState extends State<NewMonthRecord> {
    return Expanded(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Container(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 children: [
                   Text(label1,style: const TextStyle(fontSize: 20,color: Colors.black54),),

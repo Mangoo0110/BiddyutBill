@@ -1,0 +1,9 @@
+const String varsityid = "varsity_id";
+const String name = "full_name";
+const String email = "email";
+const String occupatioN = "occupation";
+const String buildingname = "building_name";
+const String houseno =  "house_no";
+const String accountno = "account_no";
+const String meterno = "meter_no";
+const String isEmailverified = "is_email_verified";

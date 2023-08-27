@@ -20,8 +20,8 @@ class RecordDetails extends StatelessWidget {
         child: Column(
           children: [
             customDuoLabel("Name : ", record.fullName, Colors.black, Colors.black),
-            customDuoLabel("Address : ", record.houseAddress, Colors.black, Colors.black),
-            customDuoLabel("Meter No : ", record.meterno, Colors.black, Colors.black),
+            customDuoLabel("Occupation : ", record.occupation, Colors.black, Colors.black),
+            customDuoLabel("Meter No : ", record.meterNo, Colors.black, Colors.black),
             customDuoLabel("Previous Meter Reading : ", record.previousmeterReading.toString(), Colors.black, Colors.black),
             customDuoLabel("Present Meter Reading : ", record.presentmeteRreading.toString(), Colors.black, Colors.black),
             customDuoLabel("Consumed Unit : ", record.usedunit.toString(), Colors.black, Colors.black),
@@ -30,7 +30,7 @@ class RecordDetails extends StatelessWidget {
             customDuoLabel("Demand Charge(Tk) : ", record.demandchargeTk.toString(), Colors.black, Colors.black),
             const Divider(),
             customDuoLabel("Principle Amount(Tk) : ", record.firsttotalTk.toString(), Colors.black, Colors.black),
-            customDuoLabel("Vat Percentage : ", record.vatTk.toString() + "%", Colors.black, Colors.black),
+            customDuoLabel("Vat Percentage : ", record.vatTk.toString(), Colors.black, Colors.black),
             const Divider(),
             customDuoLabel("Bill Month Total(Tk) : ", record.secondtotalTk.toString(), Colors.black, Colors.black),
             customDuoLabel("Total amount to be paid(Tk) : ", record.finaltotalTk.toString(), Colors.black, Colors.black),

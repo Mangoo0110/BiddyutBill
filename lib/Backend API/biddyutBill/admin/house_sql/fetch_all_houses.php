@@ -7,13 +7,28 @@ $database = "biddyutBill";
 $connectionNow = new mysqli($serverHost,$user,$password,$database);
 header("Access-Control-Allow-Origin: *");
 
-$buildingName = $_POST["category"];
-$houseNo = $_POST["houseNo"];
-$MeterNo = $_POST["meterNo"];
-$assignedUserID = $_POST["assignedUserID"];
-$sqlFetchQuery = "SELECT * FROM houses WHERE BuildingName = '$buildingName' AND HouseNo = '$houseNo'";
+$buildingName = "building_name";
+$houseNo = "house_no";
+$meterNo = "meter_no";
+$assignedUserID = "assigned_user_id";
 
+$sqlCreateQuery = "CREATE TABLE IF NOT EXISTS houses(
+$buildingName TEXT,
+$houseNo TEXT,
+$meterNo TEXT,
+$assignedUserID TEXT,
+CONSTRAINT house_unique_key UNIQUE ($buildingName, $houseNo)
+)";
+
+$responseOfCreateQuery = $connectionNow->query($sqlCreateQuery);
+if(!$responseOfCreateQuery){
+    die("Sorry API problem : ".mysql_error());
+}
+else{
+$sqlFetchQuery = "SELECT * FROM houses";
+$houseRecord = [];
 $responseOfFetchQuery = $connectionNow->query($sqlFetchQuery);
+
 if(!$responseOfFetchQuery){
     die('Could not get data: '.mysql_error());
 }
@@ -28,3 +43,5 @@ if($responseOfFetchQuery->num_rows>0){
 echo json_encode(
     $houseRecord
     );
+}
+?>
