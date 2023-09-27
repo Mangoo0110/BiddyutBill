@@ -34,10 +34,10 @@ class _UnitRangeCostState extends State<UnitRangeCost> {
         .fetchDemandChargeVatPercentageStorage();
     _vatAndDemandStreamController.sink.add(vatAndDemandData);
   }
-
+  late Timer _timer ;
   @override
   void initState() {
-    Timer.periodic(const Duration(seconds: 2), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       // print("hi$cnt");
       // cnt++;
       getUnitCostRecord();
@@ -50,7 +50,7 @@ class _UnitRangeCostState extends State<UnitRangeCost> {
   @override
   void dispose() {
     _unitCostStreamController;
-
+    if(_timer.isActive)_timer.cancel();
     super.dispose();
   }
 
@@ -94,6 +94,7 @@ class _UnitRangeCostState extends State<UnitRangeCost> {
                               color: Colors.grey),
                         ));
                       }
+                      //if(_timer.isActive)_timer.cancel();
                       return GridView(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: size.width.toInt() ~/ 300,
@@ -186,7 +187,6 @@ class _UnitRangeCostState extends State<UnitRangeCost> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        heroTag: "btn1",
         backgroundColor: Colors.green.shade200,
         foregroundColor: const Color.fromARGB(255, 21, 70, 23),
         onPressed: () {
@@ -265,6 +265,7 @@ class _UnitRangeCostState extends State<UnitRangeCost> {
                                         color: Colors.grey),
                                   ));
                                 }
+                                
                                 return GridView.builder(
                                   gridDelegate:
                                       SliverGridDelegateWithFixedCrossAxisCount(
@@ -329,7 +330,6 @@ class _UnitRangeCostState extends State<UnitRangeCost> {
                   ),
                 ),
                 floatingActionButton: FloatingActionButton.extended(
-                  heroTag: "btn1",
                   backgroundColor: Colors.green.shade200,
                   foregroundColor: const Color.fromARGB(255, 21, 70, 23),
                   onPressed: () {

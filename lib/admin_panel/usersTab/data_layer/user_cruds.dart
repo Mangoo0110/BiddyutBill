@@ -9,22 +9,32 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class UserStorage {
-  List<User> usersFromJson(String jsonString) {
+ Future< List<User>> usersFromJson(String jsonString) async{
     final data = jsonDecode(jsonString);
-    return List<User>.from((data.map((item) => User.fromJson(item))));
+    return List<User>.from((data.map((item) {
+      final user = User.fromJson(item);
+      final b = addOrUpdateUser(user: user);
+      return user;
+    })));
   }
 
   Future<List<User>> fetchAllUsers() async {
-    var result = await http.post(
+    try {
+      var result = await http.post(
       Uri.parse(API.fetchAllUsers),
     );
+    //print(result.body);
     if (result.statusCode == 200) {
-      //print(result.body);
-      List<User> list = usersFromJson(result.body);
+      
+      List<User> list = await usersFromJson(result.body);
       return list;
     } else {
       return <User>[];
     }
+    } catch (e) {
+      print(e.toString());
+    }
+    return <User>[];
   }
 
   User? oneUserFromJson(String jsonString){
@@ -41,7 +51,8 @@ class UserStorage {
   {
     required String varsityId,
   }) async {
-    var result = await http.post(Uri.parse(API.fetchOneUser), body: {
+    try {
+      var result = await http.post(Uri.parse(API.fetchOneUser), body: {
       varsityid: varsityId,
     });
     if (result.statusCode == 200) {    
@@ -50,6 +61,10 @@ class UserStorage {
     } else {
       return null;
     }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Error: $e");
+    }
+    return null;
   }
 
   Future<bool> assignUserHouse(
@@ -95,17 +110,22 @@ class UserStorage {
          occupatioN : user.occupation,
          accountno : user.accountNo,
          email : user.emailAdress,
-         isEmailverified : user.isEmailVerified,
+         isEmailverified : user.isEmailVerified==true?"true":"false",
          buildingname : user.buildingName,
          houseno : user.houseNo,
-         meterno : user.meteNo
+         meterno : user.meteNo,
+         aType : user.typeA.toString(),
+         bType : user.typeB.toString(),
+         sType : user.typeS.toString(),
       });
+      
+      print(res.body);
       var data = jsonDecode(res.body);
        //Fluttertoast.showToast(msg:data.toString());
       if (res.statusCode == 200) {
         
-        print(data.toString());
-        return data["Success"];
+       // print(data.toString());
+       return data["Success"];
       }
     } catch (e) {
       print(e.toString());
@@ -126,14 +146,13 @@ class UserStorage {
         varsityid : user.varsityId
       });
       if(res.statusCode ==200){
-        print("user data:: ${res.body}");
         var data = jsonDecode(res.body);
         if(data["Success"]){
           if(user.buildingName.isEmpty && user.houseNo.isEmpty)return true;
           House house = House(buildingName: user.buildingName, houseNo: user.houseNo, meterNo: user.meteNo, assignedUserID: user.varsityId);
           var deleteHouseUser = await HouseStorage().deleteHouseAssignedUser(house: house);
           if(!deleteHouseUser){
-            var regainUser = addOrUpdateUser(user: user);
+            var restoreUser = addOrUpdateUser(user: user);
             return false;
           }
           else{

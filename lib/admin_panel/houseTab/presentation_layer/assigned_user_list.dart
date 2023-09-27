@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:e_bill/admin_panel/houseTab/data_layer/house_cruds.dart';
-import 'package:e_bill/admin_panel/houseTab/data_layer/house_model.dart';
 import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
 import 'package:e_bill/admin_panel/usersTab/data_layer/user_cruds.dart';
 import 'package:flutter/material.dart';
@@ -23,9 +21,7 @@ class _AssignedUserListState extends State<AssignedUserList> {
 
   streamAssignedUsers()async{
 
-    print("varsity id: ${widget.assignedUserID}");
     var user = await UserStorage().fetchOneUser(varsityId: widget.assignedUserID); 
-    //print("User is ${users[0].fullName}");
     List<User> users = [];
     if(user!=null)users.add(user);
     assignedUserStreamController.sink.add(users);
@@ -128,8 +124,6 @@ class _AssignedUserListState extends State<AssignedUserList> {
                             child: InkWell(
                               onTap: () async{
                                 widget.assignedUserID = '';
-                                print("now");
-                                print(widget.assignedUserID);
                                 widget.onRemove();
                                 setState(() {
                                   streamAssignedUsers();

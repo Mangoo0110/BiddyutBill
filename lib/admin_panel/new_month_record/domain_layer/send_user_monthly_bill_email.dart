@@ -19,15 +19,20 @@ Future<bool> monthly_bill_email({ required MonthlyRecord record, required String
   var vatPercentage = record.vatTk;
   var secondTotalTk = record.secondtotalTk;
   var finalTotalTk = record.finaltotalTk;
+  var houseAddress = "${record.buildingName},${record.houseNo}";
 
    var userDetails = await UserStorage().fetchOneUser(varsityId: record.varsityid);
-   if(userDetails!=null){
+   
+   if(userDetails!=null&&userDetails.isEmailVerified=="true"){
+
   var userEmail = userDetails.emailAdress;
   var serviceId = "service_biqwnhe";
   var templateId = "template_2b5rtuc";
   var userId = "bPhZhhuhyVlvOAFBy";
   var accessToken = "imABnvJAMBGAdhlVDcy-z";
-  Future.delayed(const Duration(seconds: 1),() async{
+
+   print("occupation is $occupation");
+  Future.delayed(const Duration(seconds: 3),() async{
     var res = await http.post(
     Uri.parse(API.onlineEmailjsApi),
     headers: {"Content-Type":"application/json"},
@@ -39,8 +44,8 @@ Future<bool> monthly_bill_email({ required MonthlyRecord record, required String
       "template_params" :{
       "recipient_email" : userEmail,
       "month_year" : monthAndYear,
-      "full_name" : name,
-      "occupation" : occupation,
+      "full_name" : name+ ", "+occupation,
+      "house_address" : houseAddress,
       "meter_no" : meterNo,
       "previous_meter_reading" : previousMeterReading,
       "present_meter_reading" : presentMeterReading,
@@ -54,6 +59,7 @@ Future<bool> monthly_bill_email({ required MonthlyRecord record, required String
       }
     })
   );
+  print("email sent to $name at $userEmail");
   print(res.body);
   }); 
   return true;

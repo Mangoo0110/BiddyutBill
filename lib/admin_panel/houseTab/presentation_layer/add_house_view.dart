@@ -11,9 +11,10 @@ import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-
+typedef houseCallBack = void Function ();
 class AddHouse extends StatefulWidget {
-  const AddHouse({super.key});
+  houseCallBack onOk;
+   AddHouse({super.key, required this.onOk});
 
   @override
   State<AddHouse> createState() => _AddHouseState();
@@ -42,7 +43,7 @@ class _AddHouseState extends State<AddHouse> {
   StreamController assignedUserStreamController = StreamController();
 
   addHouse() async {
-      var house = makeAHouse();
+      var house = await makeAHouse();
       if(house==null)return;
       var success = await HouseStorage().addOrUpdateHouse(house: house);
       if(!success){
@@ -57,9 +58,7 @@ class _AddHouseState extends State<AddHouse> {
         Fluttertoast.showToast(
               msg:
                   "Success! New House (Building Name : ${house.buildingName} and House No : ${house.houseNo} with UserID ${house.assignedUserID} added.");
-        Future.delayed(const Duration(seconds: 1), () {
-            Navigator.pop(context);
-          });
+          widget.onOk();
           return;
       }
       else{
@@ -70,22 +69,18 @@ class _AddHouseState extends State<AddHouse> {
             textColor: Colors.orange,
               msg:
                   "UserId ${house.assignedUserID} is not valid!!");
-        Future.delayed(const Duration(seconds: 1), () {
-            Navigator.pop(context);
-          });
+         widget.onOk();
       }
       }
         if(assignedUserID.isEmpty){
           Fluttertoast.showToast(
               msg:
                   "Success! New House (Building Name : ${house.buildingName} and House No : ${house.houseNo} without user added.");
-        Future.delayed(const Duration(seconds: 1), () {
-            Navigator.pop(context);
-          });
+         widget.onOk();
         }
       
   }
-  House? makeAHouse(){
+  Future<House?> makeAHouse()async{
       buildingName = buildingNameInputController.text.trim();
       if(buildingName==''){
         Fluttertoast.showToast(msg: "BuildingName can not be empty!!",
@@ -100,8 +95,14 @@ class _AddHouseState extends State<AddHouse> {
         return null;
       }
       meterNo = meterNoInputController.text.trim();
-      print(" adding meterNo = $meterNo");
       House house = House(buildingName: buildingName, houseNo: houseNo, meterNo: meterNo, assignedUserID: assignedUserID);
+      var check = await HouseStorage().fetchHouse(house: house);
+      if(check.isNotEmpty){
+        Fluttertoast.showToast(
+              msg:
+                  "This house already exists. [Building Name] and [House No] should be unique.");
+      return null;
+      }
       return house;
   }
  
@@ -275,7 +276,6 @@ class _AddHouseState extends State<AddHouse> {
                             Future.delayed(const Duration(seconds: 1),(){
                             setState(() {
                              assignedUserID = "";
-                            print("house added");
                           });
                             });                         
                         },

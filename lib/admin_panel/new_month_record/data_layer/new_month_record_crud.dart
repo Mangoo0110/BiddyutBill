@@ -6,14 +6,15 @@ import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 class MonthRecordStorage{
 
-  Future<String>pushMonthlyRecord(
+  Future<bool>pushMonthlyRecord(
     {
       required String monthYear,
       required MonthlyRecord record,
     }
   ) async{
+    bool pushed =false;
     try {
-      print("pushing " + record.fullName.toString());
+      print("pushing  + ${record.fullName.toString()} ${record.typeA} ${record.typeB} ${record.typeS}");
         final res = await http.post(
         Uri.parse(API.newMonthRecord),
         headers: {"Accept":"application/json"},
@@ -21,7 +22,10 @@ class MonthRecordStorage{
           monthAndYear : monthYear.toString(),
           varsityId : record.varsityid.toString(),
           name : record.fullName.toString(),
+          occupatioN : record.occupation.toString(),
           buildingname : record.buildingName.toString(),
+          houseno : record.houseNo.toString(),
+          meterno: record.meterNo,
           accountno : record.accountNo.toString(),
           presentMeterReading : record.presentmeteRreading.toString(),
           previousMeterReading : record.previousmeterReading.toString(),
@@ -32,25 +36,31 @@ class MonthRecordStorage{
           vat : record.vatTk.toString(),
           secondTotalTk : record.secondtotalTk.toString(),
           finalTotalTk : record.finaltotalTk.toString(),
+          aType : record.typeA.toString(),
+          bType : record.typeB.toString(),
+          sType : record.typeS.toString(),
         }
       );
-      print(res.body);
+       //final  resBodyData = jsonDecode(res.body);
+       print(res.body);
       if(res.statusCode == 500){
-        return res.body;
+        return false;
       }
       else if(res.statusCode == 404){
-        return res.body;
+        return false;
       }
       else{
         final  resBodyData = jsonDecode(res.body);
+        if(resBodyData["Success"]==true)pushed = true;
+        print(resBodyData);
         Fluttertoast.showToast(msg: resBodyData);
-        return resBodyData;
+        return pushed;
       }
     } catch (e) {
       
       //Fluttertoast.showToast(msg: e.toString());
       print(e.toString());
-      return e.toString();
+      return pushed;
     }
   }
 Future <List<MonthlyRecord>> fetchRecord(
@@ -67,7 +77,30 @@ Future <List<MonthlyRecord>> fetchRecord(
         varsityId : varsityid,
       }
     );
-    //print(res.body);
+    if(res.statusCode == 200){      
+      return monthlyRecordConvert(res.body);
+    }
+    else {
+    return <MonthlyRecord>[];
+    }
+  } catch (e) {
+    print(e.toString());
+    return <MonthlyRecord>[];
+  }
+}
+
+Future <List<MonthlyRecord>> fetchAllRecord(
+  {
+    required String monthYear,
+  }
+) async{
+  try {
+    final res = await http.post(
+      Uri.parse(API.fetchMonthAllRecord),
+      body: {
+        monthAndYear: monthYear,
+      }
+    );
     if(res.statusCode == 200){      
       return monthlyRecordConvert(res.body);
     }

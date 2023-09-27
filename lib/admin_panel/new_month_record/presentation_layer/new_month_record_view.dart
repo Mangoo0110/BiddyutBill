@@ -1,690 +1,505 @@
-import 'dart:async';
 
+import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_crud.dart';
 import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_model.dart';
-import 'package:e_bill/admin_panel/new_month_record/domain_layer/active_users_records.dart';
-import 'package:e_bill/admin_panel/new_month_record/domain_layer/final_total_calculation.dart';
-import 'package:e_bill/admin_panel/new_month_record/domain_layer/get_all_unit_cost_range.dart';
-import 'package:e_bill/admin_panel/new_month_record/domain_layer/get_demand_charge_vat_percentage.dart';
-import 'package:e_bill/admin_panel/new_month_record/domain_layer/pdf_generation.dart';
-import 'package:e_bill/admin_panel/new_month_record/domain_layer/push_all_records.dart';
-import 'package:e_bill/admin_panel/new_month_record/presentation_layer/details_view.dart';
+import 'package:e_bill/admin_panel/new_month_record/domain_layer/riverpod_monthly_record_helper.dart';
+import 'package:e_bill/admin_panel/new_month_record/domain_layer/send_user_monthly_bill_email.dart';
 import 'package:e_bill/admin_panel/new_month_record/presentation_layer/month_picker.dart';
-import 'package:e_bill/admin_panel/unitCostTab/data_layer/demand_charge_vat_percentage.dart';
-import 'package:e_bill/admin_panel/unitCostTab/data_layer/unit_cost_model.dart';
-import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
+import 'package:e_bill/admin_panel/new_month_record/presentation_layer/monthly_record_list.dart';
+import 'package:e_bill/admin_panel/new_month_record/presentation_layer/pdf_ui.dart';
+import 'package:e_bill/common_ui/confirm_dialog_box.dart';
+import 'package:e_bill/common_ui/okay_dialog_box.dart';
+import 'package:e_bill/constants/responsive_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_constant.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 
-class NewMonthRecord extends StatefulWidget {
+class NewMonthRecord extends ConsumerStatefulWidget {
   const NewMonthRecord({super.key});
-
   @override
-  State<NewMonthRecord> createState() => _NewMonthRecordState();
+  ConsumerState<NewMonthRecord> createState() => _NewMonthRecordState();
 }
 
-class _NewMonthRecordState extends State<NewMonthRecord> {
+class _NewMonthRecordState extends ConsumerState<NewMonthRecord> {
+
   String searchText = "";
-  List<String> allMonths = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-  ];
-  String presentMonthAndYear = "";
-  String previousMonthAndYear = "";
-  final List<GlobalKey<FormState>> _presentMeterReadFormKeys = [];
-  final List<GlobalKey<FormState>> _previousMeterReadFormKeys = [];
-
-  late final StreamController _allRecordStreamController =
-      StreamController.broadcast();
-
+  bool selectedAll = false;
+  bool typeA = false;
+  bool typeB = false;
+  bool typeS  = false;
+  bool typeAll = true;
+  bool emailService = false;
   final TextEditingController _searchBoxTextEditingController =
       TextEditingController();
-
-  final List<TextEditingController> _previousMeterReadControllers = [];
-  final List<TextEditingController> _presentMeterReadControllers = [];
-  List<User> allUsers = [];
   List<String> labels = [
     name,
-    buildingname,
+    occupatioN,
     previousMeterReading,
     presentMeterReading,
     finalTotalTk,
   ];
-  List<UnitCost> allUnitCost = [];
-  List<DemandChargeVatPercentage> demandChargeAndVatPercentage = [];
-  List<MonthlyRecord> allRecordOfThisMonth = [];
-  List<MonthlyRecord> searchedRecords = [];
-  List<MonthlyRecord> pushCanditates = [];
+
+  recordSearching(){
+    print(" printing ${ref.watch(selectedUserType)}");
+    ref.read(searchedRecordText.notifier).update((state) => searchText);
+    var cc = ref.watch(monthlyRecordProvider);
+    var dd = ref.watch(searchedMonthlyRecordsProvider);
+  }
+
+  String getSelectedDate(){
+        var recordsDate = ref.read(selectedPresentMonthAndYear);
+        return recordsDate;
+  }
+  markAllSelected(){
+    var readyToPush = ref.read(readyToPushProvider);
+    for(var readyState in readyToPush.keys){
+      readyToPush[readyState] = selectedAll;
+    }
+    ref.read(readyToPushProvider.notifier).update((state) => readyToPush);
+  }
+  // List<MonthlyRecord>callForPushAll(){
+  //   List<MonthlyRecord> failedToSend = [];
+  //   final data = ref.watch(pushallRecordsProvider);
+  //   return data.when(
+  //     error: (error, stackTrace) => failedToSend,
+  //     loading: () => failedToSend,
+  //     data: (failedToSendData) => ref.read(failedToPush)
+  //   );
+  // }
+  Future pushRecords()async{
+  print("pushing");
+  selectedAll = false;
+  List<MonthlyRecord>failedToSend = [];
+  List<MonthlyRecord>records = ref.read(recordsToBePushProvider);
+  final readyToPush = ref.read(readyToPushProvider);
+  String monthAndYear = ref.read(selectedPresentMonthAndYear);
+  for(int index =0;index<records.length; index++){
+    print(readyToPush[records[index].varsityid]);
+  if(readyToPush[records[index].varsityid]==true){
+    readyToPush[records[index].varsityid] = false;
+   var success =  await MonthRecordStorage().pushMonthlyRecord(monthYear: monthAndYear, record: records[index]);
+  if(!success){
+    failedToSend.add(records[index]);
+      }
+      else{
+        if(emailService){
+       success = await monthly_bill_email(record: records[index], monthAndYear: monthAndYear);
+       if(!success){
+        Fluttertoast.showToast(msg: "Failed sending user ${records[index].fullName} email");
+       }
+       else{
+        Fluttertoast.showToast(msg: "Email sent to user ${records[index].fullName}");
+       }
+        }
+      }
+    }
+  }
+  ref.read(newRecordPush.notifier).update((state) => true);
+  ref.watch(readyToPushProvider.notifier).update((state) => {});
+  ref.watch(failedToPush.notifier).update((state) => failedToSend);
+  }
+
+
   @override
   void initState() {
     // TODO: implement initState
-    presentMonthAndYear = "${allMonths[DateTime.now().month - 1].toLowerCase()}_${DateTime.now().year.toString()}";
-    int prvYear = DateTime.now().year;
-    if (DateTime.now().month == 1) {
-      prvYear = prvYear - 1;
-      previousMonthAndYear =
-          "${allMonths[11].toLowerCase()}_${prvYear.toString()}";
-    } else {
-      previousMonthAndYear =
-          allMonths[DateTime.now().month - 2] + DateTime.now().year.toString();
-    }
-
-    print(presentMonthAndYear);
-    print(previousMonthAndYear);
-    Future.delayed(const Duration(seconds: 2), () async {
-      allUnitCost = await getAllUnitCost();
-      demandChargeAndVatPercentage = await getDemandChargeAndVatPercentage();
-      allRecordOfThisMonth = await getAllActiveUserRecords(
-          previousMonthAndYear: previousMonthAndYear,
-          presentMonthAndYear: presentMonthAndYear,
-          demandChargeAndVatPercentage: demandChargeAndVatPercentage);
-      _allRecordStreamController.sink.add(allRecordOfThisMonth);
-    });
-
     super.initState();
   }
-
-  @override
+   @override
   void dispose() {
     // TODO: implement dispose
     _searchBoxTextEditingController.dispose();
     super.dispose();
   }
 
-  Future<void> reload() async {
-    allRecordOfThisMonth = await getAllActiveUserRecords(
-        previousMonthAndYear: previousMonthAndYear,
-        presentMonthAndYear: monthAndYear,
-        demandChargeAndVatPercentage: demandChargeAndVatPercentage);
-    _allRecordStreamController.sink.add(allRecordOfThisMonth);
-  }
-
-  Future searchedRecordStream() async {
-    searchedRecords = [];
-    for (int index = 0; index < allRecordOfThisMonth.length; index++) {
-      if (allRecordOfThisMonth[index]
-          .fullName
-          .toLowerCase()
-          .contains(searchText.toLowerCase())) {
-        searchedRecords.add(allRecordOfThisMonth[index]);
-      }
-      _allRecordStreamController.sink.add(searchedRecords);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    //Size size = MediaQuery.of(context).size;
-    print("monthYear = $presentMonthAndYear");
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(color: Colors.black),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.green[100],
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Row(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.all(6.0),
-                            child: Icon(
-                              Icons.date_range,
-                              size: 20,
-                            ),
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                Navigator.of(context).push(PageRouteBuilder(
-                                  opaque: false,
-                                  transitionDuration:
-                                      const Duration(milliseconds: 500),
-                                  reverseTransitionDuration:
-                                      const Duration(milliseconds: 500),
-                                  pageBuilder: (context, b, e) {
-                                    return MonthPickerUI(
-                                      monthAndYear: presentMonthAndYear,
-                                      onDone: (pickedPreviousMonthAndYear,
-                                          pickedPresentMonthAndYear) {
-                                        Future.delayed(
-                                            const Duration(seconds: 1),
-                                            () async {
-                                          allRecordOfThisMonth =
-                                              await getAllActiveUserRecords(
-                                                  previousMonthAndYear:
-                                                      pickedPreviousMonthAndYear,
-                                                  presentMonthAndYear:
-                                                      pickedPresentMonthAndYear,
-                                                  demandChargeAndVatPercentage:
-                                                      demandChargeAndVatPercentage);
-                                          _allRecordStreamController.sink
-                                              .add(allRecordOfThisMonth);
-                                        });
-                                        Navigator.pop(context);
-                                        setState(() {
-                                          _allRecordStreamController.sink
-                                              .add(allRecordOfThisMonth);
-                                          presentMonthAndYear =
-                                              pickedPresentMonthAndYear;
-                                          previousMonthAndYear =
-                                              pickedPreviousMonthAndYear;
-                                          print(
-                                              "selected date: $presentMonthAndYear");
-                                        });
-                                      },
-                                    );
-                                  },
-                                ));
+    
+    Size size = MediaQuery.of(context).size;
+    return LayoutBuilder(
+      builder:(context,constraints)=> Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(color: Colors.white),
+          child: Column(
+            children: [
+               Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                 children: [
+                   Expanded(
+                     child: Padding(
+                         padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                         child: Container(
+                           height: 50,
+                           width: responsiveSearchWidth(boxConstraints: constraints),
+                           decoration: BoxDecoration(
+                             borderRadius: BorderRadius.circular(8),
+                             border: Border.all(color: Colors.white,width: 2),
+                             color: Colors.grey.shade300,
+                           ),
+                           child: Padding(
+                             padding: const EdgeInsets.all(5.0),
+                             child: TextFormField(
+                               controller: _searchBoxTextEditingController,
+                               decoration: const InputDecoration(
+                                border:  InputBorder.none,
+                                 hintText: " Search by name...",
+                                 hintStyle: TextStyle(color: Colors.black45, fontSize: 20),
+                                 focusColor: Colors.white,
+                                 fillColor: Colors.white,
+                               ),
+                               //hdjfkhaskjfdhsdftextAlign: TextAlign.center,
+                               cursorColor: Colors.black,
+                               style: const TextStyle(color: Colors.black),
+                               onChanged: (text) {
+                                   searchText = _searchBoxTextEditingController.text;
+                                   recordSearching();
+                               },
+                             ),
+                           ),
+                         ),
+                       ),
+                   ),
+               
+                   MonthPickerUI(
+                    onDone: (){
+                     //recordSearching();
+                     Navigator.pop(context);
+                     
+                    },
+                    onCancel: (){
+                     Navigator.pop(context);
+                    },
+                    ),
+                   Container(
+                     decoration: BoxDecoration(
+                         color: Colors.grey[200],
+                         borderRadius: BorderRadius.circular(6)),
+                     child: Padding(
+                       padding: const EdgeInsets.all(2.0),
+                       child:
+                         TextButton(
+                           onPressed: () async {
+                             Navigator.of(context).push(PageRouteBuilder(
+                                     opaque: false,
+                                     transitionDuration:
+                                     const Duration(milliseconds: 500),
+                                       reverseTransitionDuration:
+                                     const Duration(milliseconds: 200),
+                                     pageBuilder:
+                                     (BuildContext context, b, e) {
+                                     return ConfirmDialogBox(
+                                     titleText: "Push Selected Records",
+                                     bodyText: "Are you sure to push records of ${ref.read(selectedPresentMonthAndYear)} to the database",
+                                       onConfirm: ()async{
+                                         Navigator.of(context).pop();
+                                         print("Push now");
+                                         
+                                         await pushRecords();
+                                         var failedToSend = ref.read(failedToPush);
+                                         if(failedToSend.isEmpty){
+                                           Navigator.of(context).push(PageRouteBuilder(
+                                             opaque: false,
+                                             transitionDuration:
+                                             const Duration(milliseconds: 500),
+                                               reverseTransitionDuration:
+                                             const Duration(milliseconds: 200),
+                                             pageBuilder:
+                                             (BuildContext context, b, e) {
+                                             return OkayDialogBox(
+                                             onDone: () {
+                                               Navigator.of(context).pop();
+                                             },
+                                           );
+                                             }));
+                                 
+                                         }
+               
+                                 ref.read(failedToPush.notifier).update((state) => []);
+                               },
+                                onCancel: (){
+                                 Navigator.of(context).pop();
+                                 }
+                                );
                               },
-                              child: const Text(
-                                "Pick a date",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    fontSize: 17),
-                              ))
-                        ],
-                      )),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: Colors.orange[100],
-                      borderRadius: BorderRadius.circular(7)),
-                  child: TextButton(
-                    onPressed: () async {
-                      await pushallRecords(
-                          allRecordOfThisMonth, presentMonthAndYear);
-                      setState(() {
-                        reload();
-                      });
-                    },
-                    child: const Text("Push all",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17,
-                            color: Colors.black)),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 234, 255, 178),
-                        borderRadius: BorderRadius.circular(7)),
-                    child: TextButton(
-                      onPressed: ()  {
-                        CreatePdf().generate(allRecordOfThisMonth, presentMonthAndYear);
-                      },
-                      child: const  Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                                Icons.download,
-                                size: 20,
-                              ),
-                          ),
-                           Text("PDF",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                  color: Colors.black)),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 234, 255, 178),
-                        borderRadius: BorderRadius.circular(7)),
-                    child: TextButton(
-                      onPressed: ()  {
-                        
-                      },
-                      child: const  Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                                Icons.mail,
-                                size: 20,
-                              ),
-                          ),
-                           Text("Gmail",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                  color: Colors.black)),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(
-                        Icons.arrow_left,
-                        color: Colors.black,
-                        weight: 70,
-                        size: 20,
-                      ),
-                      label: const Text(
-                        "Back to control panel",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17,
-                            color: Colors.green),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.black38,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    controller: _searchBoxTextEditingController,
-                    decoration: const InputDecoration(
-                      hintText: " Search...",
-                      hintStyle: TextStyle(color: Colors.white70, fontSize: 20),
-                      focusColor: Colors.white,
-                      fillColor: Colors.white,
-                    ),
-                    //hdjfkhaskjfdhsdftextAlign: TextAlign.center,
-                    cursorColor: Colors.white,
-                    style: const TextStyle(color: Colors.white),
-                    onChanged: (text) {
-                      setState(() {
-                        searchText = _searchBoxTextEditingController.text;
-                        searchedRecordStream();
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-            Text(
-              "Showing result from date : $presentMonthAndYear",
-              style: const TextStyle(color: Colors.white70, fontSize: 18),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: StreamBuilder(
-                  stream: _allRecordStreamController.stream,
-                  builder: (context, snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      case ConnectionState.active:
-                        if (snapshot.hasData) {
-                          var thisMonthRecords =
-                              snapshot.data as List<MonthlyRecord>;
-                          if (thisMonthRecords.isEmpty) {
-                            return const Center(
-                                child: Text(
-                              "No user!!",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 30,
-                                  color: Colors.grey),
                             ));
-                          } else {
-                            for (int index = 0;
-                                index < thisMonthRecords.length;
-                                index++) {
-                              thisMonthRecords[index] = calcOfFinalTotal(
-                                  record: thisMonthRecords[index],
-                                  demandChargeAndVatPercentage:
-                                      demandChargeAndVatPercentage,
-                                  allUnitCost: allUnitCost);
-                            }
-                            return Column(
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                    ),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade900,
-                                      ),
-                                      child: ListView.builder(
-                                        itemCount: thisMonthRecords.length,
-                                        itemBuilder: (context, index) {
-                                          MonthlyRecord record =
-                                              thisMonthRecords[index];
-                                          _presentMeterReadControllers
-                                              .add(TextEditingController());
-                                          _previousMeterReadControllers
-                                              .add(TextEditingController());
-                                          _previousMeterReadControllers[index]
-                                                  .text =
-                                              record.previousmeterReading
-                                                  .toString();
-                                          _presentMeterReadControllers[index]
-                                                  .text =
-                                              record.presentmeteRreading
-                                                  .toString();
-                                          _presentMeterReadControllers[index]
-                                                  .selection =
-                                              TextSelection.collapsed(
-                                                  offset:
-                                                      _presentMeterReadControllers[
-                                                              index]
-                                                          .text
-                                                          .length);
-                                          _previousMeterReadControllers[index]
-                                                  .selection =
-                                              TextSelection.collapsed(
-                                                  offset:
-                                                      _previousMeterReadControllers[
-                                                              index]
-                                                          .text
-                                                          .length);
-                                          _presentMeterReadFormKeys
-                                              .add(GlobalKey<FormState>());
-                                          _previousMeterReadFormKeys
-                                              .add(GlobalKey<FormState>());
-                                          return Column(
-                                            children: [
-                                              const Divider(
-                                                thickness: 2,
-                                              ),
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    customDuoLabel(
-                                                        "Name: ",
-                                                        record.fullName,
-                                                        Colors.black54,
-                                                        Colors.black54),
-                                                    customDuoLabel(
-                                                        "Occupation: ",
-                                                        record.occupation,
-                                                        Colors.black54,
-                                                        Colors.black54),
-                                                    Expanded(
-                                                      flex: 1,
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.orange
-                                                                .shade100,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        3),
-                                                          ),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                              horizontal: 12,
-                                                            ),
-                                                            child:
-                                                                TextFormField(
-                                                              key:
-                                                                  _previousMeterReadFormKeys[
-                                                                      index],
-                                                              controller:
-                                                                  _previousMeterReadControllers[
-                                                                      index],
-                                                              onChanged:
-                                                                  (value) {
-                                                                setState(() {
-                                                                  thisMonthRecords[
-                                                                          index]
-                                                                      .previousmeterReading = double.parse(_previousMeterReadControllers[
-                                                                          index]
-                                                                      .text);
-                                                                });
-                                                              },
-                                                              style:
-                                                                  const TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 20,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                              ),
-                                                              decoration:
-                                                                  InputDecoration(
-                                                                labelText:
-                                                                    labels[2],
-                                                                labelStyle: TextStyle(
-                                                                    color: Colors
-                                                                        .orange
-                                                                        .shade600),
-                                                                fillColor: Colors
-                                                                    .orange
-                                                                    .shade200,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 1,
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Container(
-                                                          decoration: BoxDecoration(
-                                                              color: Colors
-                                                                  .green
-                                                                  .shade100,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          3)),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                              horizontal: 12,
-                                                            ),
-                                                            child:
-                                                                TextFormField(
-                                                              key:
-                                                                  _presentMeterReadFormKeys[
-                                                                      index],
-                                                              controller:
-                                                                  _presentMeterReadControllers[
-                                                                      index],
-                                                              onChanged:
-                                                                  (value) {
-                                                                setState(() {
-                                                                  thisMonthRecords[
-                                                                          index]
-                                                                      .presentmeteRreading = double.parse(_presentMeterReadControllers[
-                                                                          index]
-                                                                      .text);
-                                                                });
-                                                              },
-                                                              style:
-                                                                  const TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 20,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                              ),
-                                                              decoration: InputDecoration(
-                                                                  hoverColor: Colors
-                                                                      .greenAccent
-                                                                      .shade200,
-                                                                  fillColor: Colors
-                                                                      .blueGrey,
-                                                                  labelText:
-                                                                      labels[3],
-                                                                  labelStyle: TextStyle(
-                                                                      color: Colors
-                                                                          .green
-                                                                          .shade600)),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    customDuoLabel(
-                                                        "Total (TK) : ",
-                                                        record.finaltotalTk
-                                                            .toString(),
-                                                        Colors.black,
-                                                        Colors.black),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                        horizontal: 16,
-                                                      ),
-                                                      child: GestureDetector(
-                                                        onTap: () {
-                                                          Navigator.of(context)
-                                                              .push(
-                                                                  PageRouteBuilder(
-                                                            opaque: false,
-                                                            pageBuilder: (context,
-                                                                animation,
-                                                                secondaryAnimation) {
-                                                              return RecordDetails(
-                                                                  monthOfRecord:
-                                                                      presentMonthAndYear,
-                                                                  record:
-                                                                      thisMonthRecords[
-                                                                          index]);
-                                                            },
-                                                          ));
-                                                        },
-                                                        child: Container(
-                                                          decoration: BoxDecoration(
-                                                              color: Colors
-                                                                  .green
-                                                                  .shade100,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          8)),
-                                                          child: const Padding(
-                                                            padding:
-                                                                EdgeInsets.all(
-                                                                    10.0),
-                                                            child: Text(
-                                                              "Details",
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .green,
-                                                                  fontSize: 18),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
-                        } else {
-                          return const Center(
-                            child: Text("Facing some problems!!"),
+                             
+                           },
+                           child:  Row(
+                             children: [
+                               const Icon(Icons.arrow_upward_sharp,color: Colors.orange,),
+                               Text("Push all marked",
+                                   style: TextStyle(
+                                       fontWeight: FontWeight.bold,
+                                       fontSize: responsiveNormalButtonFontSize(boxConstraints: constraints),
+                                       color: Colors.black)),
+                             ],
+                           ),
+                         ),
+                     ),
+                   ),
+                   PDFUI(),
+                  
+                 
+                 ],
+               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Consumer(
+                      builder: (context, ref, child){ 
+                        ref.watch(selectedPresentMonthAndYear);
+                        var month = getSelectedDate().split('_')[0].toUpperCase();
+                        var year = getSelectedDate().split('_')[1];
+                       return Text(
+                        " $month, $year",
+                        style:  TextStyle(color: Colors.black, fontSize: responsiveNormalButtonFontSize(boxConstraints: constraints),),
                           );
                         }
-                      default:
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                    }
-                  },
-                ),
-              ),
-            ),
-          ],
+                      ),
+                  ),
+                    Align(
+              alignment: Alignment.topRight,
+              child: Row(
+                children: [
+                   Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      children: [
+                        Checkbox(
+                          value: emailService,
+                         onChanged: (val){
+                          setState(() {
+                            emailService = val!;
+                          });
+                         }
+                         ),
+                          Text("Email Service",style: TextStyle(color: (emailService==true)?Colors.black: Colors.black87,fontSize: responsiveNormalButtonFontSize(boxConstraints: constraints)),),
+                          Icon(Icons.email,color: (emailService==true)?Colors.green: Colors.black26,),
+                      ],
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                         Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text("User Type :",style: TextStyle(color: Colors.black,fontSize: responsiveNormalButtonFontSize(boxConstraints: constraints)),),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: (typeAll==true)?Border.all(color: Colors.green.shade200):Border.all(color: Colors.white),
+                          color: (typeAll==true)?Colors.green.shade200:Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Row( 
+                            children: [
+                              Checkbox(
+                                value: typeAll,
+                                 onChanged: (val){
+                                  setState(() {
+                                    typeAll = true;
+                                    typeA = false;
+                                    typeS = false;
+                                    typeB = false;
+                                    ref.read(selectedUserType.notifier).update((state) => "all");
+                                  });
+                                 }
+                               ),
+                               Text("All",style: TextStyle(color: (typeAll==true)?Colors.black: Colors.black54,fontSize: responsiveNormalButtonFontSize(boxConstraints: constraints)),),
+                              
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: (typeA==true)?Border.all(color: Colors.green.shade200):Border.all(color: Colors.white),
+                            color: (typeA==true)?Colors.green.shade200:Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(9),
+                          ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Checkbox(
+                                value: typeA,
+                                 onChanged: (val){
+                                  setState(() {
+                                    typeA = true;
+                                    typeAll = false;
+                                    typeS = false;
+                                    typeB = false;
+                                    ref.read(selectedUserType.notifier).update((state) => aType);
+                                  });
+                                 }
+                               ),
+                               Text("A",style: TextStyle(color: (typeA==true)?Colors.black: Colors.black54,fontSize: responsiveNormalButtonFontSize(boxConstraints: constraints)),),
+                              
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: (typeB==true)?Border.all(color: Colors.green.shade200):Border.all(color: Colors.white),
+                            color: (typeB==true)?Colors.green.shade200:Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(9),
+                          ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Checkbox(
+                                value: typeB,
+                               onChanged: (val){
+                                
+                                setState(() {
+                                  typeB = true;
+                                  typeAll = false;
+                                  typeA = false;
+                                  typeS = false;
+                                  ref.read(selectedUserType.notifier).update((state) => bType);
+                                });
+                               }
+                               ),
+                                Text("B",style: TextStyle(color: (typeB==true)?Colors.black: Colors.black54,fontSize: responsiveNormalButtonFontSize(boxConstraints: constraints)),),
+                              
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: (typeS==true)?Border.all(color: Colors.green.shade200):Border.all(color: Colors.white),
+                            color: (typeS==true)?Colors.green.shade200:Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(9),
+                          ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                               Checkbox(
+                                value: typeS,
+                               onChanged: (val){
+                                
+                                setState(() {
+                                  typeS = true;
+                                  typeAll = false;
+                                  typeA = false;
+                                  typeB = false;
+                                  ref.read(selectedUserType.notifier).update((state) => sType);
+                                });
+                               }
+                               ),
+                                Text("S",style: TextStyle(color: (typeS==true)?Colors.black: Colors.black54,fontSize: responsiveNormalButtonFontSize(boxConstraints: constraints)),),
+                             
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                                    
+                      ],
+                    ),
+                  )
+                ],
+              ), ),
+                        
+                ],),
+                   
+                      Container(
+                        color: Colors.blue,
+                        child: Table(
+                          columnWidths: const {0:FractionColumnWidth(.2),1:FractionColumnWidth(.2),
+                                  2:FractionColumnWidth(.15),3:FractionColumnWidth(.15),4:FractionColumnWidth(.12),
+                                  5:FractionColumnWidth(.09),6:FractionColumnWidth(.09),
+                                  },
+                          border: TableBorder.all(color: Colors.white),
+                          children: [
+                            TableRow(
+                              children: [
+                                customLabel("Name", Colors.black),
+                                customLabel("Occupation", Colors.black),
+                                customLabel("Previous Meter Reading", Colors.black),
+                                customLabel("Present Meter Reading", Colors.black),
+                                customLabel("Total Cost", Colors.black),
+                                customLabel("Details", Colors.black),
+                                InkWell(
+                                  onTap: (){
+                                    {
+                                    setState(() {
+                                    selectedAll = !selectedAll;
+                                    markAllSelected();
+                                    });
+                                  }
+                                  },
+                                  child: Column(
+                                    children: [
+                                      customLabel("Select All", Colors.black),
+                                      SizedBox(
+                                            child: Consumer(
+                                             builder:(context, ref, child) {
+                                               
+                                               var k = ref.watch(readyToPushProvider);
+                                              return Center(
+                                               child: Checkbox(
+                                                 value: selectedAll,
+                                                 onChanged: (val) {
+                                                   setState(() {
+                                                  selectedAll = !selectedAll;
+                                                   markAllSelected();
+                                                   });
+                                                 },
+                                               ),
+                                             );
+                                             },
+                                             
+                                                ),
+                                          ),
+                                    ],
+                                  ),
+                                ),
+                              ]
+                            )
+                          ],
+                        ),
+                      ),
+                      
+                    MonthlyRecordListView(labels: labels),            
+            ],
+          ),
         ),
       ),
     );
   }
-
-  Widget customDuoLabel(
-      String label1, String label2, Color color1, Color color2) {
-    return Expanded(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Container(
-          child: Row(
-            children: [
-              Text(
-                label1,
-                style: const TextStyle(fontSize: 20, color: Colors.black54),
-              ),
-              Text(label2,
-                  style: const TextStyle(fontSize: 20, color: Colors.black54)),
-            ],
+    Widget customLabel(
+      String label, Color color) {
+    return Container(
+      color: Colors.blue,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(
+            label,
+            style: const TextStyle(fontSize: 20, color: Colors.white),
           ),
         ),
       ),

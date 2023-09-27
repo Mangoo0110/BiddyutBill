@@ -17,13 +17,15 @@ final double demandchargeTk ;
 final double vatTk;
  double secondtotalTk;
  double finaltotalTk;
+ bool typeA;
+ bool typeB;
+ bool typeS;
 
   MonthlyRecord({required this.varsityid, required this.fullName, required this.occupation, required this.buildingName,required this.houseNo,required this.accountNo, required this.meterNo,required this.presentmeteRreading,
   required this.previousmeterReading,required this.usedunit, required this.unitcostTk,required this.demandchargeTk, 
-  required this.firsttotalTk,required this.vatTk,required this.secondtotalTk,required this.finaltotalTk});
+  required this.firsttotalTk,required this.vatTk,required this.secondtotalTk,required this.finaltotalTk, required this.typeA, required this.typeB, required this.typeS});
 
   factory MonthlyRecord.fromJson(Map<String,dynamic>json){
-    print("monthly hi...");
     return MonthlyRecord(
       varsityid: json[varsityId],
       fullName: json[name],
@@ -41,6 +43,9 @@ final double vatTk;
       vatTk: double.parse(json[vat]),
       secondtotalTk: double.parse(json[secondTotalTk]),
       finaltotalTk: double.parse(json[finalTotalTk]),
+      typeA: json[aType]=="0"?false:true,
+      typeB: json[bType]=="0"?false:true ,
+      typeS: json[sType]=="0"?false:true ,
       );
        }
 }

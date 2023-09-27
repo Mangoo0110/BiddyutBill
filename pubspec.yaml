@@ -41,7 +41,6 @@ dependencies:
   shared_preferences: ^2.2.0
   hive: ^2.2.3
   dartz: ^0.10.1
-  riverpod: ^2.3.6
   syncfusion_flutter_pdf: ^22.2.10
   pdf: ^3.10.4
   universal_html: ^2.2.3
@@ -49,6 +48,8 @@ dependencies:
   open_file: ^3.3.2
   mailer: ^6.0.1
   google_fonts: ^5.1.0
+  flutter_riverpod: ^2.3.10
+  riverpod_lint: ^2.0.3
 
 dev_dependencies:
   flutter_test:
@@ -82,6 +83,7 @@ flutter:
     - assets/images/e_bill.png
     - assets/images/thunder.png
     - assets/google_fonts/
+    - assets/bangla_fonts/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

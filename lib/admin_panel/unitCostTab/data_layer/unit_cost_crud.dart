@@ -16,6 +16,7 @@ class UnitCostStorage {
     var result = await http.post(
       Uri.parse(API.fetchAllUnitCost),
     );
+    print(result.body);
     if (result.statusCode == 200) {
       List<UnitCost> list = unitCostFromJson(result.body);
       return list;

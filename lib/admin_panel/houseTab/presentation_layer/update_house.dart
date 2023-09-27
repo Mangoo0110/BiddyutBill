@@ -9,10 +9,11 @@ import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
 import 'package:e_bill/admin_panel/usersTab/data_layer/user_cruds.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
+typedef houseCallBack = void Function ();
 class UpdateHouse extends StatefulWidget {
   House thisHouse ;
-  UpdateHouse({Key? key, required this.thisHouse}) : super(key: key);
+  houseCallBack onOk;
+  UpdateHouse({Key? key, required this.thisHouse, required this.onOk}) : super(key: key);
 
   @override
   State<UpdateHouse> createState() => _UpdateHouseState();
@@ -49,15 +50,16 @@ class _UpdateHouseState extends State<UpdateHouse> {
   late List<User> allUsers = [];
   bool userAssigned = false;
 
-  updateHouse(BuildContext context)async{
+  Future<bool> updateHouse(BuildContext context)async{
       var house = makeAHouse();
-      if(house==null)return;
+      if(house==null)return false;
+      print("updating house");
       var success = await HouseStorage().addOrUpdateHouse(house: house);
       if(!success){
         Fluttertoast.showToast(
               msg:
                   "Could not add House (Building Name : ${house.buildingName} and House No : ${house.houseNo}). [Building Name] and [House No] should be unique.");
-      return;
+      return false;
       }
       if(assignedUserID.isNotEmpty){
       success = await UserStorage().assignUserHouse(varsityId: assignedUserID, house: house);
@@ -65,32 +67,25 @@ class _UpdateHouseState extends State<UpdateHouse> {
         Fluttertoast.showToast(
               msg:
                   "Success! New House (Building Name : ${house.buildingName} and House No : ${house.houseNo} with UserID ${house.assignedUserID} added.");
-        Future.delayed(const Duration(seconds: 1), () {
-            Navigator.pop(context);
-          });
-          return;
+        // Future.delayed(const Duration(seconds: 1), () {
+        //     Navigator.pop(context);
+        //   });
+          return true;
       }
       else{
         Fluttertoast.showToast(
               msg:
-                  "Success! New House (Building Name : ${house.buildingName} and House No : ${house.houseNo} without user added.");
-        Fluttertoast.showToast(
-              msg:
                   "UserId ${house.assignedUserID} is not valid!!");
-        Future.delayed(const Duration(seconds: 1), () {
-            Navigator.pop(context);
-          });
+        return false;
       }
       }
         if(assignedUserID.isEmpty){
           Fluttertoast.showToast(
               msg:
                   "Success! New House (Building Name : ${house.buildingName} and House No : ${house.houseNo} without user added.");
-        Future.delayed(const Duration(seconds: 1), () {
-            Navigator.pop(context);
-          });
+         return true;
         }
-      
+      return false;
   }
 
   House? makeAHouse(){
@@ -107,8 +102,7 @@ class _UpdateHouseState extends State<UpdateHouse> {
         return null;
       }
       meterNo = meterNoInputController.text.trim();
-      print(" adding meterNo = $meterNo");
-      House house = House(buildingName: buildingName, houseNo: houseNo, meterNo: meterNo, assignedUserID: assignedUserID);
+      House house = House(buildingName: buildingName, houseNo: houseNo, meterNo: meterNo, assignedUserID: assignedUserID);      
       return house;
   }
 
@@ -170,11 +164,14 @@ class _UpdateHouseState extends State<UpdateHouse> {
                   vertical: size.height * 0.01,
                 ),
                 child: IconButton(
-                      onPressed: (){
+                      onPressed: ()async{
                        // if(buildingNameFormKey.currentState!.validate() & houseNoFormKey.currentState!.validate()){
                        //   addHouse();
                        // }
-                        updateHouse(context);
+                        var success = await updateHouse(context);
+                        if(success){
+                          widget.onOk();
+                        }
                       },
                       icon: const Icon(Icons.check,color: Colors.black,)),
               ),
@@ -275,6 +272,7 @@ class _UpdateHouseState extends State<UpdateHouse> {
                 ),
                 // Assign a user textField
                 SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: Row(
@@ -286,6 +284,7 @@ class _UpdateHouseState extends State<UpdateHouse> {
                       AssignedUserList(
                       onRemove: () async{
                       bool res = await UserStorage().deleteHouseOfUser(varsityId: assignedUserID);
+                      res = await HouseStorage().deleteHouseAssignedUser(house: widget.thisHouse);
                       setState(() {
                           assignedUserID ='';
                           widget.thisHouse.assignedUserID = '';

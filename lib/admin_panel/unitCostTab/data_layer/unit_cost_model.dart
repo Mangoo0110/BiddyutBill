@@ -16,7 +16,7 @@ class UnitCost {
   factory UnitCost.fromJson(Map<String, dynamic> json) =>
       UnitCost(
         startingRange: double.parse(json[startRange]) ,
-        endingRange: double.parse(json[endRange]) ,
+        endingRange: json[endRange]=="INF"?double.infinity :double.parse(json[endRange]) ,
         rate: double.parse(json[rateTk]) ,
       );
 

@@ -15,10 +15,14 @@ Future <List<User>> getAllUsers()async{
 Future<List<User>> getAvailableUsers()async{
   var allUsers = await getAllUsers();
   List<User> availableUsers = [];
-  for(var user in allUsers){
-    if(user.buildingName==""&&user.houseNo == ""){
+  for(int index = 0; index<allUsers.length; index++){
+    var user = allUsers[index];
+    if(user.buildingName == "null")user.buildingName = "";
+    if(user.houseNo =="null")user.houseNo ="";
+    if((user.buildingName==""&&user.houseNo == "")){
       availableUsers.add(user);
     }
+    allUsers[index] = user;
   }
   return availableUsers;
 }
@@ -33,15 +37,45 @@ Future<List<User>> getSearchedUser(String searchText) async{
     return searcheMatchedUsers;
   }
 
-  Future<List<User>> getSearchedUserExceptUser({required  searchText, required String userId}) async{
+  Future<List<User>> getSearchedUserExceptUser({required searchedText,  bool? typeA,  bool? typeB,  bool? typeS,  bool? typeAll, required String userId}) async{
    var allUsers = await getAvailableUsers();
     List<User>searcheMatchedUsers = [];
     for(int index = 0; index<allUsers.length; index++){
-      if(allUsers[index].varsityId.toLowerCase().contains(searchText.toLowerCase())&& allUsers[index].varsityId!=userId){
+      if(allUsers[index].fullName.toLowerCase().contains(searchedText.toLowerCase())&& allUsers[index].varsityId!=userId){
         searcheMatchedUsers.add(allUsers[index]);
       }
     }
-    return searcheMatchedUsers;
+    if(typeA == true){
+      List<User> aTypeUsers = [];
+      for(int index = 0; index<searcheMatchedUsers.length; index++){
+      if(searcheMatchedUsers[index].typeA==typeA){
+        aTypeUsers.add(searcheMatchedUsers[index]);
+      } 
+    }
+    return aTypeUsers;
+     }
+     else if(typeB == true){
+      List<User> bTypeUsers = [];
+      for(int index = 0; index<searcheMatchedUsers.length; index++){
+        if(searcheMatchedUsers[index].typeB==typeB){
+          bTypeUsers.add(searcheMatchedUsers[index]);
+        }
+      }
+      return bTypeUsers;
+     }
+     else if(typeS == true){
+      List<User> sTypeUsers = [];
+      for(int index = 0; index<searcheMatchedUsers.length; index++){
+        if(searcheMatchedUsers[index].typeS==typeS){
+          sTypeUsers.add(searcheMatchedUsers[index]);
+        }
+      }
+      return sTypeUsers;
+     }
+     else{
+      return searcheMatchedUsers;
+     }
+   
   }
 
   String idEmailMeterNo(String a, String b, String c) {

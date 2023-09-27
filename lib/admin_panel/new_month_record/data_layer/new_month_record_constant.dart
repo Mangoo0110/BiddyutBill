@@ -16,7 +16,9 @@ const String secondTotalTk = "second_total_tk";
 const String finalTotalTk = "final_total_tk";
 const String monthAndYear = "month_year";
 
-
+const String aType = "type_a";
+const String bType = "type_b";
+const String sType = "type_s";
 // $monthAndYear = "month_year";
 // $varsityId = "varsity_id";
 // $fullName= "full_name";

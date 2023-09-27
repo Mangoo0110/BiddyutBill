@@ -12,25 +12,50 @@ class HouseStorage{
 
   List<House>housesFromJson(String jsonString){
     final data = json.decode(jsonString);
-    //print(data);
     return List<House>.from(
         data.map((item) =>House.fromJson(item))
     );
   }
 
   Future<List<House>>fetchAllHouses()async{
-      var result = await http.post(
+  try {
+    var result = await http.post(
         Uri.parse(API.fetchAllHouses),
       );
       if(result.statusCode == 200){
-        //print(result.body);
         List<House> list = housesFromJson(result.body);
         return list;
       }
       else {
         return <House>[];
       }
+  } catch (e) {
+    Fluttertoast.showToast(msg: e.toString());
+  }
+      return <House>[];
+}
 
+Future<List<House>>fetchHouse({required House house})async{
+  try {
+    var result = await http.post(
+        Uri.parse(API.fetchHouse),
+        body: {
+          buildingname : house.buildingName,
+          houseno : house.houseNo,
+        }
+      );
+      if(result.statusCode == 200){
+        List<House> list = housesFromJson(result.body);
+        return list;
+      }
+      else {
+        return <House>[];
+      }
+  } catch (e) {
+    Fluttertoast.showToast(msg: e.toString());
+    print(e.toString());
+  }
+      return <House>[];
 }
 
 Future<bool> addOrUpdateHouse(
@@ -40,8 +65,8 @@ Future<bool> addOrUpdateHouse(
 ) async{
   try {
       var user = await UserStorage().fetchOneUser(varsityId: house.assignedUserID);
-      if( (user!=null) && ((user.buildingName == "" && user.houseNo == "" && user.meteNo == "") ||
-      (user.buildingName == house.buildingName && user.houseNo == house.houseNo && user.meteNo == house.meterNo))||house.assignedUserID == ''){
+      if((user == null) || (user.varsityId == house.assignedUserID) || ((user.buildingName == "" && user.houseNo == "" && user.meteNo == "") || (user.buildingName == "null" && user.houseNo == "null" && user.meteNo == "null"))
+      ||house.assignedUserID == ''){
       var res = await http.post(Uri.parse(API.addOrUpdateHouse),
       headers: {"Accept":"application/json"},
        body: {
@@ -50,10 +75,8 @@ Future<bool> addOrUpdateHouse(
         meterno: house.meterNo,
         assignedUserid: house.assignedUserID,
       });
-      print(res.statusCode);
       if (res.statusCode == 200) {
         var data = jsonDecode(res.body);
-        print(data.toString());
         if (data["Success"] == true) {
          return true;
         } else {
@@ -66,12 +89,10 @@ Future<bool> addOrUpdateHouse(
     }
   }
   catch (e) {
-    print(e.toString());
-       Fluttertoast.showToast(
-              msg: e.toString() );
+      //  Fluttertoast.showToast(
+      //         msg: e.toString() );
       return false;
     }
-    print("Could not add House (Building Name : ${house.buildingName} and House No : ${house.houseNo}, meter no : ${house.meterNo}, Assigned user: ${house.assignedUserID}). [Building Name] and [House No] should be unique.");
    
     return false;
   }
@@ -91,12 +112,17 @@ Future<bool> addOrUpdateHouse(
       if(res.statusCode==200){
         var data = jsonDecode(res.body);
         if(data["Success"]==true){
+          if(house.assignedUserID!=''){
           var userDelete = await UserStorage().deleteHouseOfUser(varsityId: house.assignedUserID);
           if(!userDelete){
             var regainHouseUser = addOrUpdateHouse(house: house);
             return false;
           }
           else{
+            return true;
+          }
+          }
+          else {
             return true;
           }
         }
