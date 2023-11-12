@@ -56,11 +56,14 @@ $sqlCreateQuery = "CREATE TABLE IF NOT EXISTS users(
             
             //INSERT INTO `users`(`id`, `name`, `number`, `Assignedhouse`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]')
             
-            $responseOfUpdateQuery = $connectionNow->query($sqlQuery);
+            $responseOfDeleteQuery = $connectionNow->query($sqlQuery);
             
-            if($responseOfUpdateQuery){
+            if($responseOfDeleteQuery){
+                $deleteUserAuthSql = "DELETE FROM user_auth
+                WHERE varsity_id = '$varsityIdData'";
+                $responseOfDeleteUserAuthQuery = $connectionNow->query($deleteUserAuthSql);
                 echo json_encode(array(
-                "Success"=>true));
+                "Success" => true));
             }
             else{
                 echo json_encode(array("Success"=>false,"msg"=>"Cannot DELETE user"));

@@ -7,23 +7,21 @@ $database = "monthly_biddyutbill_tables";
 $connectionNow = new mysqli($serverHost,$user,$password,$database);
 header("Access-Control-Allow-Origin: *");
 
-$buildingName = "building_name";
-$houseNo = "house_no";
 
-$monthYear = $_POST["month_year"];
-$buildingNameData = $_POST[$buildingName];
-$houseNoData = $_POST[$houseNo];
+$varsityId = "varsity_id";
+$monthYearData = $_POST["month_year"];
+$varsityIdData = $_POST[$varsityId];
 
-$sqlFetchQuery = "SELECT * FROM $monthYear WHERE $buildingName = '$buildingNameData' AND $houseNo = '$houseNoData'";
+$sqlFetchQuery = "SELECT * FROM $monthYearData WHERE $varsityId = '$varsityIdData'";
 
 $responseOfFetchQuery = $connectionNow->query($sqlFetchQuery);
-$monthlyRecord;
+$monthlyRecord ;
 if(!$responseOfFetchQuery){
     echo json_encode(
         array(
             "Success"=>false,
             "Data"=>$monthlyRecord,
-            "Error"=>mysqli_error($connectionNow),
+            "Error"=>"This month is not in record",
         )
         );
 }
@@ -33,22 +31,19 @@ else {
             array(
                 "Success"=>false,
                 "Data"=>$monthlyRecord,
-                "Error"=>mysqli_error($connectionNow),
+                "Error"=>"No user record on this month",
             )
             );
     }
-    if($responseOfFetchQuery->num_rows>0){
+    else {
         while($row = $responseOfFetchQuery->fetch_assoc()){
-            $monthlyRecord= $row;
+            $monthlyRecord = $row;
         }
     }
     echo json_encode(
         array(
             "Success"=>true,
-            "Data"=>$monthlyRecord,
+            "Data"=>$monthlyRecord
         )
         );
 }
-
-
-?>

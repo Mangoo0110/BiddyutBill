@@ -11,14 +11,20 @@ $buildingName = "building_name";
 $houseNo = "house_no";
 $meterNo = "meter_no";
 $assignedUserID = "assigned_user_id";
+$typeA = "type_a";
+$typeB = "type_b";
+$typeS = "type_s";
 
 $sqlCreateQuery = "CREATE TABLE IF NOT EXISTS houses(
-$buildingName TEXT,
-$houseNo TEXT,
-$meterNo TEXT,
-$assignedUserID TEXT,
-CONSTRAINT house_unique_key UNIQUE ($buildingName, $houseNo)
-)";
+    $buildingName TEXT NOT NULL,
+    $houseNo TEXT NOT NULL,
+    $meterNo TEXT,
+    $assignedUserID TEXT,
+    $typeA BOOLEAN,
+    $typeB BOOLEAN,
+    $typeS BOOLEAN,
+    CONSTRAINT house_unique_key UNIQUE ($buildingName, $houseNo)
+    )";
 
 $responseOfCreateQuery = $connectionNow->query($sqlCreateQuery);
 if(!$responseOfCreateQuery){

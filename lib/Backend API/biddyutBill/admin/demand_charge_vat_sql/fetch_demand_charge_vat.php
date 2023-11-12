@@ -19,12 +19,11 @@
     if(!$responseOfFetchQuery){
         die('Could not get data: '.mysql_error());
     }
-    if($responseOfFetchQuery->num_rows==1){
+    if($responseOfFetchQuery->num_rows > 0){
         //echo json_encode(array("Success"=>true));
         while($rowFound = $responseOfFetchQuery->fetch_assoc()){
             //printf("\n");
             $demandChargeAndVat[] = $rowFound;
-            break;      
         }
     }
 

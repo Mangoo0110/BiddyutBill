@@ -60,7 +60,7 @@
         $userInfo[] = $varsityIdData;
         echo json_encode(array(
             "Success"=>false,
-            $varsityId
+            "varsity_id"=>$varsityIdData
         ));
     }
     }

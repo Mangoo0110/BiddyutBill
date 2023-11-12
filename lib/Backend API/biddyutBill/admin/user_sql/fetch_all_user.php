@@ -15,6 +15,9 @@
     $meterNo = "meter_no";
     $email = "email";
     $isEmailVerified = "is_email_verified";
+    $typeA = "type_a";
+    $typeB = "type_b";
+    $typeS = "type_s";
 
     $sqlCreateQuery = "CREATE TABLE IF NOT EXISTS users(
         $varsityId TEXT,
@@ -26,6 +29,9 @@
         $meterNo TEXT,
         $email TEXT,
         $isEmailVerified TEXT,
+        $typeA BOOLEAN,
+        $typeB BOOLEAN,
+        $typeS BOOLEAN,
         CONSTRAINT user_unique_key UNIQUE ($varsityId)
         )";
     $responseOfCreateQuery = $connectionNow->query($sqlCreateQuery);
@@ -43,13 +49,14 @@ else{
     if($responseOfFetchQuery->num_rows>0){
         //echo json_encode(array("Success"=>true));
         while($rowFound = $responseOfFetchQuery->fetch_assoc()){
-            //printf("\n");
-            $userRecord[] = $rowFound;      
+            $userRecord[] = $rowFound;
         }
-        
     }
     echo json_encode(
-        $userRecord
-        );
-    }
+        array(
+        "Success"=>true,
+        "Data"=>$userRecord
+        )
+    );
+}
 ?>
