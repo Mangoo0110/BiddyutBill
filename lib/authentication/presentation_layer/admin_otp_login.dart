@@ -1,3 +1,5 @@
+import 'package:e_bill/authentication/data_layer/admin_auth/admin_auth_crud.dart';
+import 'package:e_bill/authentication/data_layer/app_user_auth/app_user_auth_crud.dart';
 import 'package:e_bill/authentication/data_layer/authentication_crud.dart';
 import 'package:flutter/material.dart';
 
@@ -12,19 +14,19 @@ import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart' ;
 
 
-class AdminForgotPassword extends StatefulWidget {
-  const AdminForgotPassword({super.key});
+class AdminOtpLogin extends StatefulWidget {
+  const AdminOtpLogin({super.key});
 
   @override
-  State<AdminForgotPassword> createState() => _AdminForgotPasswordState();
+  State<AdminOtpLogin> createState() => _AdminOtpLoginState();
 }
 
-class _AdminForgotPasswordState extends State<AdminForgotPassword> {
-  bool askForRecoveryCode = false;
-  Key formcodeRecoveryKey = GlobalKey<FormState>();
-  TextEditingController codeRecoveryController = TextEditingController();
-  Key varsityIdKey = GlobalKey<FormState>();
-  TextEditingController varsityIdController = TextEditingController();
+class _AdminOtpLoginState extends State<AdminOtpLogin> {
+  bool askForOTP = false;
+  Key otpFormKey = GlobalKey<FormState>();
+  TextEditingController otpTextEditingController = TextEditingController();
+  Key emailFormKEy = GlobalKey<FormState>();
+  TextEditingController emailTextEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +64,7 @@ class _AdminForgotPasswordState extends State<AdminForgotPassword> {
                     
                       ),
                       //varsity ID textfield
-                      (askForRecoveryCode==false)?
+                      (askForOTP==false)?
                           Column(
                             children: [
                               Padding(
@@ -71,11 +73,11 @@ class _AdminForgotPasswordState extends State<AdminForgotPassword> {
                                 child: SizedBox(
                                   width: 200 + (size.width*0.2),
                                 child: Form(
-                                  key: varsityIdKey,
+                                  key: emailFormKEy,
                                   //input varsity id
                                   child: TextFormField(
                         
-                                    controller: varsityIdController,
+                                    controller: emailTextEditingController,
                                     validator: (val) =>
                                     (val == "")
                                         ? "This Field Can Not Be Empty, Duck!!"
@@ -87,7 +89,7 @@ class _AdminForgotPasswordState extends State<AdminForgotPassword> {
                                         color: Colors.orange,
                         
                                       ),
-                                      hintText: "Type your varsity id...",
+                                      hintText: "Type your admin app email...",
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(20),
                                       ),
@@ -113,39 +115,41 @@ class _AdminForgotPasswordState extends State<AdminForgotPassword> {
                                 ),
                               ),
                               Padding(
-                        padding: EdgeInsets.fromLTRB(0, size.height * .02, size.width * 0, 0.0),
-                        child: SizedBox(
-                          width: 100+ (size.width*0.18),
-                          height: 50,
-                        child: Material(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              onTap: ()async{
-                                var dataModel = await AuthenticationStorage().askApiForRecoveryCode(varsityId: varsityIdController.text);
-                                if(dataModel!=null){
-                                var success = await AuthenticationStorage().sendAdminRecoveryEmail(recoverAdmin: dataModel);
-                                if(success==true){
-                                  Fluttertoast.showToast(msg: "Code sent to your app email address");
-                                  setState(() {
-                                  askForRecoveryCode =true;
-                                });
-                                }
-                                
-                                }
-                              },
-                              child: const Center(child:  Text("Send recovery code to my email",style: TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),)),
-                          ),
-                        ),
-                        ),
-                      ),
-                      
+                                padding: EdgeInsets.fromLTRB(0, size.height * .02, size.width * 0, 0.0),
+                                child: SizedBox(
+                                  width: 100+ (size.width*0.18),
+                                  height: 50,
+                                child: Material(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: InkWell(
+                                      borderRadius: BorderRadius.circular(16),
+                                      onTap: ()async{
+                                          var dataModel = await AdminAuthStorage().sendAdminOTP(email: emailTextEditingController.text);
+                                          if(dataModel==true){
+                                          //var success = await AuthenticationStorage().sendAdminRecoveryEmail(recoverAdmin: dataModel);
+                                            Fluttertoast.showToast(msg: "OTP sent to your app email address");
+                                            setState(() {
+                                            askForOTP =true;
+                                            });
+                                          }
+                                          else{
+                                            Fluttertoast.showToast(msg: "Failed!!");
+                                            setState(() {
+                                            askForOTP =false;
+                                            });
+                                          }
+                                      },
+                                      child: const Center(child:  Text("Send OTP to my email",style: TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),)),
+                                  ),
+                                ),
+                                ),
+                              ),
                             ],
                           )
                           
                       :
-                      //password textfield
+                      // textfield
                           Column(
                             children: [
                               Padding(
@@ -154,11 +158,11 @@ class _AdminForgotPasswordState extends State<AdminForgotPassword> {
                                 child: SizedBox(
                                   width: 200 + (size.width*0.2),
                                 child: Form(
-                                  key: formcodeRecoveryKey,
+                                  key: otpFormKey,
                                   //input varsity id
                                   child: TextFormField(
                         
-                                    controller: codeRecoveryController,
+                                    controller: otpTextEditingController,
                                     validator: (val) =>
                                     (val == "")
                                         ? "This Field Can Not Be Empty, Duck!!"
@@ -172,7 +176,7 @@ class _AdminForgotPasswordState extends State<AdminForgotPassword> {
                                         color: Colors.orange,
                         
                                       ),
-                                      hintText: "Type your temporary login code...",
+                                      hintText: "Type your otp login code...",
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(20),
                                       ),
@@ -198,27 +202,28 @@ class _AdminForgotPasswordState extends State<AdminForgotPassword> {
                                 ),
                               ),
                               Padding(
-                        padding: EdgeInsets.fromLTRB(0, size.height * .02, size.width * 0, 0.0),
-                        child: SizedBox(
-                          width: 100+ (size.width*0.1),
-                          height: 50,
-                        child: Material(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          child: InkWell(
-                              borderRadius: BorderRadius.circular(16),
-                              onTap: ()async{
-                                var success = await AuthenticationStorage().validateRecoveryCode(varsityId: varsityIdController.text, recoveryCode: codeRecoveryController.text);
-                                if(success==true){
-                                  Navigator.of(context).pushNamed(adminDashboardRoute);
-                                }
-                              },
-                              child: const Center(child:  Text("Submit",style: TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),)),
-                          ),
-                        ),
-                        ),
-                      ),
-                      
+                                padding: EdgeInsets.fromLTRB(0, size.height * .02, size.width * 0, 0.0),
+                                child: SizedBox(
+                                  width: 100+ (size.width*0.1),
+                                  height: 50,
+                                child: Material(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: InkWell(
+                                      borderRadius: BorderRadius.circular(16),
+                                      onTap: ()async{
+                                        var success = await AdminAuthStorage().validateAdminOTP(email: emailTextEditingController.text, otp: otpTextEditingController.text);
+                                        if(success==true){
+                                          Future.delayed(const Duration(milliseconds: 1000),(){
+                                            Navigator.of(context).pushNamed(adminDashboardRoute);
+                                          });
+                                        }
+                                      },
+                                      child: const Center(child:  Text("Proceed",style: TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),)),
+                                  ),
+                                ),
+                                ),
+                              ),
                             ],
                           ),
                           
@@ -236,4 +241,5 @@ class _AdminForgotPasswordState extends State<AdminForgotPassword> {
     );
   
   }
+
 }

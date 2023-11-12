@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:e_bill/admin_info/adminModel.dart';
 import 'package:e_bill/admin_panel/admin_dashboard.dart';
-import 'package:e_bill/admin_panel/houseTab/presentation_layer/add_house_view.dart';
+import 'package:e_bill/admin_panel/houseTab/presentation_layer/add_house.dart';
 import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
 import 'package:e_bill/authentication/presentation_layer/logIn.dart';
 import 'package:e_bill/constants/routes.dart';
@@ -50,12 +50,12 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     // TODO: implement initState
-    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
       // getAdmin();
       getUser();
       count++;
-      if(count>6)_timer.cancel();
+      if(count>1)_timer.cancel();
       });
       
     });
@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
         fontFamily: 'Roboto',
         useMaterial3: true,
       ),
-      home: (user==null&&admin==null)?(count<6)?const Center(child: CircularProgressIndicator(),): const LogIn() : (user!=null)? const UserDashboard() : const AdminHome(),
+      home: (user==null&&admin==null)?(count<2)?const Center(child: CircularProgressIndicator(),): const LogIn() : (user!=null)? const UserDashboard() : const AdminHome(),
       routes: {
         adminDashboardRoute: (context) => const AdminHome(),
         //addHouseRoute: (context) => const AddHouse(),

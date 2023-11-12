@@ -2,14 +2,14 @@
 import 'package:e_bill/admin_panel/usersTab/data_layer/user_constants.dart';
 
 class User{
-   String varsityId;
+   String id;
    String fullName;
    String emailAdress;
    String accountNo;
    String occupation;
    String buildingName;
    String houseNo;
-   String meteNo;
+   String meterNo;
    bool isEmailVerified;
    bool typeA;
    bool typeB;
@@ -17,14 +17,14 @@ class User{
 
   User(
       {
-      required this.varsityId,
+      required this.id,
       required this.fullName,
       required this.emailAdress,
       required this.accountNo,
       required this.occupation,
       required this.buildingName,
       required this.houseNo,
-      required this.meteNo,
+      required this.meterNo,
       required this.isEmailVerified,
       required this.typeA,
       required this.typeB,
@@ -33,14 +33,14 @@ class User{
       );
 
   factory User.fromJson(Map<String,dynamic> json) =>User(
-      varsityId: json[varsityid].toString(),
+      id: json[varsityid].toString(),
       fullName: json[name].toString(),
       emailAdress: json[email].toString(),
       accountNo: json[accountno].toString(),
       occupation: json[occupatioN].toString(),
       buildingName: json[buildingname].toString(),
       houseNo: json[houseno].toString(),
-      meteNo:  json[meterno].toString(),
+      meterNo:  json[meterno].toString(),
       isEmailVerified: json[isEmailverified].toString().toLowerCase()=="true"?true:false,
       typeA: json[aType]=="0"?false:true,
       typeB: json[bType]=="0"?false:true ,
@@ -49,14 +49,14 @@ class User{
   
   Map<String,dynamic>toJson(){
     return {
-      varsityid : varsityId,
+      varsityid : id,
       name : fullName,
       email : emailAdress,
       accountno : accountNo,
       occupatioN : occupation,
       buildingname :buildingName,
       houseno : houseNo,
-      meterno : meteNo,
+      meterno : meterNo,
       isEmailverified : isEmailVerified,
       aType :typeA,
       bType :typeB,

@@ -10,7 +10,7 @@ Future<User?>userLogin({
 })async{
   User? userAuth = await AppUserAuthStorage().login(email: email, password: password);
   if(userAuth!=null){
-    User? user = await UserStorage().fetchOneUser(varsityId: userAuth.varsityId);
+    User? user = await UserStorage().fetchOneUser(varsityId: userAuth.id);
     return user;
   }
   return null;

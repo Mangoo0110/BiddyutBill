@@ -26,7 +26,7 @@ class _UpdateUnitCostState extends State<UpdateUnitCost> {
   }
 
   var endingRangeAndRates = new Map();
-  void marge() {
+  void merge() {
     for (int i = 0; i < allUnitCostDataNow.length; i++) {
       endingRangeAndRates[allUnitCostDataNow[i].endingRange.toString()] =
           _textControllers[allUnitCostDataNow[i].endingRange]?.text.trim();
@@ -45,12 +45,10 @@ class _UpdateUnitCostState extends State<UpdateUnitCost> {
       if (res.statusCode == 200) {
         var data = jsonDecode(res.body);
         if (data["Success"] == true) {
-          print("Updated Successfully");
           Fluttertoast.showToast(
               timeInSecForIosWeb: 5, msg: "Updated Successfully");
         } else {
           Fluttertoast.showToast(msg: "Update failed");
-          print("Updated failed");
         }
       }
     } catch (e) {
@@ -151,7 +149,7 @@ class _UpdateUnitCostState extends State<UpdateUnitCost> {
                backgroundColor: Colors.green,
           foregroundColor: const Color.fromARGB(255, 21, 70, 23),
           onPressed: () {
-            marge();
+            merge();
             updateUnitRangeCost();
             Navigator.pop(context);
           },

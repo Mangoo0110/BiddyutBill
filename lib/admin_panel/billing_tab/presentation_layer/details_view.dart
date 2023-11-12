@@ -1,4 +1,4 @@
-import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_model.dart';
+import 'package:e_bill/admin_panel/billing_tab/data_layer/new_month_record_model.dart';
 import 'package:flutter/material.dart';
 
 class RecordDetails extends StatelessWidget {

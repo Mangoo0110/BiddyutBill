@@ -26,31 +26,22 @@ Future<List<User>> getAvailableUsers()async{
   }
   return availableUsers;
 }
-Future<List<User>> getSearchedUser(String searchText) async{
-   var allUsers = await getAvailableUsers();
-    List<User>searcheMatchedUsers = [];
-    for(int index = 0; index<allUsers.length; index++){
-      if(allUsers[index].varsityId.toLowerCase().contains(searchText.toLowerCase())){
-        searcheMatchedUsers.add(allUsers[index]);
-      }
-    }
-    return searcheMatchedUsers;
-  }
 
-  Future<List<User>> getSearchedUserExceptUser({required searchedText,  bool? typeA,  bool? typeB,  bool? typeS,  bool? typeAll, required String userId}) async{
+
+  Future<List<User>> getSearchedUserExceptUser({required searchedText,  bool? typeA,  bool? typeB,  bool? typeS, required String userId}) async{
    var allUsers = await getAvailableUsers();
     List<User>searcheMatchedUsers = [];
-    for(int index = 0; index<allUsers.length; index++){
-      if(allUsers[index].fullName.toLowerCase().contains(searchedText.toLowerCase())&& allUsers[index].varsityId!=userId){
-        searcheMatchedUsers.add(allUsers[index]);
+    for (int index = 0; index<allUsers.length; index++){
+      if (allUsers[index].fullName.toLowerCase().contains(searchedText.toLowerCase()) && allUsers[index].id!=userId){
+          searcheMatchedUsers.add(allUsers[index]);
       }
     }
-    if(typeA == true){
+    if (typeA == true){
       List<User> aTypeUsers = [];
-      for(int index = 0; index<searcheMatchedUsers.length; index++){
-      if(searcheMatchedUsers[index].typeA==typeA){
-        aTypeUsers.add(searcheMatchedUsers[index]);
-      } 
+      for (int index = 0; index<searcheMatchedUsers.length; index++){
+        if (searcheMatchedUsers[index].typeA==typeA){
+            aTypeUsers.add(searcheMatchedUsers[index]);
+        } 
     }
     return aTypeUsers;
      }

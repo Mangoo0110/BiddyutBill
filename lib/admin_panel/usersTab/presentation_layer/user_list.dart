@@ -34,12 +34,6 @@ class _UserListState extends State<UserList> {
 
   final TextEditingController _searchBoxTextEditingController = TextEditingController();
 
-
-  
-
-
-
-
   String idEmailMeterNo(String a, String b, String c) {
     String s = "Id: $a    Email: $b    Account No: $c";
     return s;
@@ -327,7 +321,7 @@ int cnt =1;
                                       ListTile(
                                         title: Text(userData.fullName,style: const TextStyle(color: Colors.grey, fontSize: 28),),
                                         subtitle: Text(
-                                          idEmailMeterNo(userData.varsityId, userData.emailAdress, userData.accountNo),
+                                          idEmailMeterNo(userData.id, userData.emailAdress, userData.accountNo),
                                           style: const TextStyle(color: Colors.white),
                                         ),
                                         onTap: (){
@@ -425,7 +419,7 @@ int cnt =1;
                                                           pageBuilder:
                                                           (BuildContext context, b, e) {
                                                         return ConfirmDialogBox(titleText: "Delete User",
-                                                            bodyText: "Are you sure to delete user [Name :${userData.fullName}, Varsity ID : ${userData.varsityId}]",
+                                                            bodyText: "Are you sure to delete user [Name :${userData.fullName}, Varsity ID : ${userData.id}]",
                                                              onConfirm:()async{
                                                               var res = await UserStorage().deleteUser(user: userData);
                                                            if(res){

@@ -1,5 +1,5 @@
 import 'package:e_bill/admin_panel/houseTab/presentation_layer/all_house_view.dart';
-import 'package:e_bill/admin_panel/new_month_record/presentation_layer/new_month_record_view.dart';
+import 'package:e_bill/admin_panel/billing_tab/presentation_layer/monthly_record_editor.dart';
 import 'package:e_bill/admin_panel/usersTab/presentation_layer/user_list.dart';
 import 'package:e_bill/authentication/presentation_layer/logIn.dart';
 import 'package:e_bill/constants/responsive_constants.dart';

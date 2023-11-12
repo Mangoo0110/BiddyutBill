@@ -43,8 +43,8 @@ class _AddUserState extends State<AddUser> {
       email = removeWhiteSpace(email);
       accountNo = removeWhiteSpace(accountNo);
       occupation = removeWhiteSpace(occupation);
-      var user = User(varsityId: varsityId, fullName: fullName, emailAdress: email, accountNo: accountNo, occupation: occupation, 
-      buildingName: "", houseNo: "", meteNo: "", isEmailVerified: emailVerified,typeA: typeA,typeB: typeB,typeS: typeS);
+      var user = User(id: varsityId, fullName: fullName, emailAdress: email, accountNo: accountNo, occupation: occupation, 
+      buildingName: "", houseNo: "", meterNo: "", isEmailVerified: emailVerified,typeA: typeA,typeB: typeB,typeS: typeS);
       var res = await UserStorage().addOrUpdateUser(user: user);
       if(res==true){
         Fluttertoast.showToast(msg: "Success, New user added");

@@ -23,3 +23,13 @@ double responsiveNormalButtonFontSize({ required BoxConstraints boxConstraints})
   }
 }
 
+double respTextSize({ required Size size}){
+  if(size.width<500)return 11;
+  if(size.width<100){
+    return 13;
+  }
+  else {
+  return 17;
+  }
+}
+

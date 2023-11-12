@@ -9,29 +9,28 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class UserStorage {
- Future< List<User>> usersFromJson(String jsonString) async{
+ Future<List<User>> usersFromJson(String jsonString) async{
     final data = jsonDecode(jsonString);
     return List<User>.from((data.map((item) {
       final user = User.fromJson(item);
-      final b = addOrUpdateUser(user: user);
+      //final b = addOrUpdateUser(user: user);
       return user;
     })));
   }
 
   Future<List<User>> fetchAllUsers() async {
     try {
-      var result = await http.post(
-      Uri.parse(API.fetchAllUsers),
-    );
-    //print(result.body);
-    if (result.statusCode == 200) {
-      
-      List<User> list = await usersFromJson(result.body);
-      return list;
-    } else {
-      return <User>[];
+      var result = await http.post(Uri.parse(API.fetchAllUsers),);
+      //print(result.body);
+      if (result.statusCode == 200) {
+        final data = jsonDecode(result.body);
+        if(data["Success"]==true){
+        List<User> list = await usersFromJson(jsonEncode(data["Data"]));
+        return list;
+        }
+      }
     }
-    } catch (e) {
+    catch (e) {
       print(e.toString());
     }
     return <User>[];
@@ -67,7 +66,7 @@ class UserStorage {
     return null;
   }
 
-  Future<bool> assignUserHouse(
+  Future<bool> assignUserAHouse(
     {
       required String varsityId,
       required House house,
@@ -77,20 +76,20 @@ class UserStorage {
     if(user!=null){
       user.buildingName = house.buildingName;
       user.houseNo = house.houseNo;
-      user.meteNo = house.meterNo;
+      user.meterNo = house.meterNo;
       return await addOrUpdateUser(user: user);
     }
     return false;
   }
 
   Future<bool> deleteHouseOfUser({
-    required String varsityId
+    required String id
     })async {
-    var user = await fetchOneUser(varsityId: varsityId);
+    var user = await fetchOneUser(varsityId: id);
     if(user!=null){
       user.buildingName = "";
       user.houseNo = "";
-      user.meteNo = "";
+      user.meterNo = "";
       return await addOrUpdateUser(user: user);
     }
     return false;
@@ -105,15 +104,15 @@ class UserStorage {
       var res = await http.post(Uri.parse(API.addOrUpdateUser), headers: {
         "Accept": "application/json"
       }, body: {
-        varsityid : user.varsityId,
+        varsityid : user.id,
          name : user.fullName,
          occupatioN : user.occupation,
          accountno : user.accountNo,
          email : user.emailAdress,
-         isEmailverified : user.isEmailVerified==true?"true":"false",
+         isEmailverified : user.isEmailVerified.toString(),
          buildingname : user.buildingName,
          houseno : user.houseNo,
-         meterno : user.meteNo,
+         meterno : user.meterNo,
          aType : user.typeA.toString(),
          bType : user.typeB.toString(),
          sType : user.typeS.toString(),
@@ -143,13 +142,13 @@ class UserStorage {
         "Accept": "application/json"
       },
       body: {
-        varsityid : user.varsityId
+        varsityid : user.id
       });
       if(res.statusCode ==200){
         var data = jsonDecode(res.body);
         if(data["Success"]){
           if(user.buildingName.isEmpty && user.houseNo.isEmpty)return true;
-          House house = House(buildingName: user.buildingName, houseNo: user.houseNo, meterNo: user.meteNo, assignedUserID: user.varsityId);
+          House house = House(buildingName: user.buildingName, houseNo: user.houseNo, meterNo: user.meterNo, assignedUserID: user.id, typeA: true, typeB: false, typeS: false);
           var deleteHouseUser = await HouseStorage().deleteHouseAssignedUser(house: house);
           if(!deleteHouseUser){
             var restoreUser = addOrUpdateUser(user: user);

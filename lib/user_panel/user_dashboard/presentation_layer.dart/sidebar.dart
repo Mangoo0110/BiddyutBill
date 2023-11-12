@@ -40,68 +40,71 @@ class UserSideBar extends StatelessWidget {
                                         children: [
                                           Align(
                                             alignment: Alignment.topLeft,
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(6),
-                                                    border: Border.all(color: Colors.black,width: 3),
-                                                    color: AppColors.primaryBg
-                                                  ),
-                                                  child: const Icon(Icons.person, size: 100,)
-                                                  ),
-                                                  (user!.isEmailVerified==true)?
-                                                  Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.green.shade200,
-                                                        borderRadius: BorderRadius.circular(5),
-                                                      ),
-                                                      child: const Padding(
-                                                        padding:  EdgeInsets.all(6.0),
-                                                        child: Row(
-                                                          children: [
-                                                            Icon(Icons.verified),
-                                                            Text("Verified"),
-                                                          ],
-                                                        ),
-                                                      )
+                                            child: SingleChildScrollView(
+                                              scrollDirection: Axis.horizontal,
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(6),
+                                                      border: Border.all(color: Colors.black,width: 3),
+                                                      color: AppColors.primaryBg
                                                     ),
-                                                  )
-                                                  :
-                                                  Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Row(
-                                                      children: [
-                                                        Container(
-                                                          decoration: BoxDecoration(
-                                                            color: Colors.red.shade200,
-                                                            borderRadius: BorderRadius.circular(5),
+                                                    child: const Icon(Icons.person, size: 100,)
+                                                    ),
+                                                    (user!.isEmailVerified==true)?
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.green.shade200,
+                                                          borderRadius: BorderRadius.circular(5),
+                                                        ),
+                                                        child: const Padding(
+                                                          padding:  EdgeInsets.all(6.0),
+                                                          child: Row(
+                                                            children: [
+                                                              Icon(Icons.verified),
+                                                              Text("Verified"),
+                                                            ],
                                                           ),
-                                                          child: const Padding(
-                                                            padding:  EdgeInsets.all(6.0),
-                                                            child: Row(
-                                                              children: [
-                                                                Icon(Icons.error),
-                                                                Text("Not Verified"),
-                                                              ],
-                                                            ),
-                                                          )
-                                                        ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            
-                                                          },
-                                                          child: const Text("Verify yourself",style: TextStyle(fontStyle: FontStyle.italic,textBaseline: TextBaseline.alphabetic),),
                                                         )
-                                                      ],
-                                                    ),
-                                                  )
-                                                
-                                              ],
+                                                      ),
+                                                    )
+                                                    :
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Row(
+                                                        children: [
+                                                          Container(
+                                                            decoration: BoxDecoration(
+                                                              color: Colors.red.shade200,
+                                                              borderRadius: BorderRadius.circular(5),
+                                                            ),
+                                                            child: const Padding(
+                                                              padding:  EdgeInsets.all(6.0),
+                                                              child: Row(
+                                                                children: [
+                                                                  Icon(Icons.error),
+                                                                  Text("Not Verified"),
+                                                                ],
+                                                              ),
+                                                            )
+                                                          ),
+                                                          InkWell(
+                                                            onTap: () {
+                                                              
+                                                            },
+                                                            child: const Text("Verify yourself",style: TextStyle(fontStyle: FontStyle.italic,textBaseline: TextBaseline.alphabetic),),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    )
+                                                  
+                                                ],
+                                              ),
                                             )),
-                                              customTableRow(label1: "Id", label2: user!.varsityId),
+                                              customTableRow(label1: "Id", label2: user!.id),
                                               customTableRow(label1: "Name", label2: user!.fullName),
                                               customTableRow(label1: "Occupation", label2: user!.occupation),
                                               customTableRow(label1: "Email", label2: user!.emailAdress),

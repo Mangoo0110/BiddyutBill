@@ -5,8 +5,8 @@ import 'dart:convert';
 import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:e_bill/authentication/domain_layer/admin_login_call.dart';
 import 'package:e_bill/authentication/domain_layer/user_login_call.dart';
-import 'package:e_bill/authentication/presentation_layer/admin_forgot_password.dart';
-import 'package:e_bill/authentication/presentation_layer/verify_user_email_address.dart';
+import 'package:e_bill/authentication/presentation_layer/admin_otp_login.dart';
+import 'package:e_bill/authentication/presentation_layer/user_otp_login.dart';
 import 'package:e_bill/constants/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -322,9 +322,14 @@ class LogInState extends State<LogIn> {
                           splashColor: Colors.white,
                           //highlightColor: Colors.grey,
                           onTap: (){
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const AdminForgotPassword()));
+                            if(adminbtn){
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const AdminOtpLogin()));
+                            }
+                            if(userbtn){
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> UserOtpLogin()));
+                            }
                           },
-                          child: const Text("Forgot password? Login with one time temporary code",style: TextStyle(color: Colors.grey,fontWeight: FontWeight.bold,fontStyle: FontStyle.italic,fontSize: 20,),),
+                          child: const Text("Login with one time one-time-code",style: TextStyle(color: Colors.grey,fontWeight: FontWeight.bold,fontStyle: FontStyle.italic,fontSize: 20,),),
                         ),
                       )
                     

@@ -100,4 +100,72 @@ Future<User?>login({
     }
   return null;
   }
+
+  Future<bool>sendUserOTP({required String email })async{
+    try{
+       var res = await http.post(
+          Uri.parse(API.sendUserOTP),
+          headers: {"Accept":"application/json"},
+          body: {
+            "email": email,
+          }
+      );
+      print("asking.. ${res.statusCode}");
+      //var resBody = res.body;
+      //print(resBody);
+      if(res.statusCode == 200){
+        var resBody= jsonDecode(res.body);
+        print(resBody);
+        if(resBody["Success"]==true){
+          final datax = resBody["Message"];          
+          print(datax);
+          return true;
+        }
+        else{
+          Fluttertoast.showToast(msg: resBody["Message"]);
+          return false;
+        }
+      }
+    }
+    catch(e){
+      print(e);
+      Fluttertoast.showToast(msg: "$e");
+    }
+    return false;
+  }
+
+  Future<bool>validateUserOTP({required String email, required String otp})async{
+    try{
+      print(otp);
+       var res = await http.post(
+          Uri.parse(API.verifyUserOTP),
+          headers: {"Accept":"application/json"},
+          body: {
+            "email": email,
+            "otp": otp,
+          }
+      );
+      print("validating.. ${res.statusCode}");
+      print(res.body);
+      if(res.statusCode == 200){
+        var resBody= jsonDecode(res.body);
+        if(resBody["Success"]==true){
+          final data = resBody["Message"];
+          print("validation data $data");
+          return true;
+        }
+        else{
+          Fluttertoast.showToast(msg: resBody["Message"]);
+          return false;
+        }
+      }
+    }
+    catch(e){
+      print(e);
+      Fluttertoast.showToast(msg: "$e");
+      return false;
+    }
+    return false;
+  }
+
 }

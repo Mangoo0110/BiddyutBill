@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_model.dart';
+import 'package:e_bill/admin_panel/billing_tab/data_layer/new_month_record_model.dart';
 import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
 import 'package:e_bill/admin_panel/usersTab/data_layer/user_cruds.dart';
 import 'package:e_bill/api_connection/api_connection.dart';
@@ -21,7 +21,7 @@ Future<bool> monthly_bill_email({ required MonthlyRecord record, required String
   var finalTotalTk = record.finaltotalTk;
   var houseAddress = "${record.buildingName},${record.houseNo}";
 
-   var userDetails = await UserStorage().fetchOneUser(varsityId: record.varsityid);
+   var userDetails = await UserStorage().fetchOneUser(varsityId: record.assignedUserID);
    
    if(userDetails!=null&&userDetails.isEmailVerified=="true"){
 

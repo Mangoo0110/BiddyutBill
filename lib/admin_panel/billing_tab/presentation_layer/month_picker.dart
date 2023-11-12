@@ -1,5 +1,5 @@
-import 'package:e_bill/admin_panel/new_month_record/domain_layer/riverpod_monthly_record_helper.dart';
-import 'package:e_bill/admin_panel/new_month_record/presentation_layer/new_month_record_view.dart';
+import 'package:e_bill/admin_panel/billing_tab/domain_layer/riverpod_monthly_record_helper.dart';
+import 'package:e_bill/admin_panel/billing_tab/presentation_layer/monthly_record_editor.dart';
 import 'package:e_bill/constants/responsive_constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

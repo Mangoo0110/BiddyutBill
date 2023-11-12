@@ -29,7 +29,6 @@ class _UserDashboardState extends State<UserDashboard> {
     _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       setState(() {
       getUser();
-      count++;
       if(count>6||user!=null)_timer.cancel();
       });
       
@@ -44,7 +43,7 @@ class _UserDashboardState extends State<UserDashboard> {
   }
   @override
   Widget build(BuildContext context) {
-    
+    count++;
     if(user==null){
       if(count>5){
           _timer.cancel();
@@ -61,7 +60,7 @@ class _UserDashboardState extends State<UserDashboard> {
           child: UserDashboardMainContent(user: user),
         ),
         Expanded(
-          flex: 5,
+          flex: 7,
           child: UserSideBar(user: user),
         ),
       ]),

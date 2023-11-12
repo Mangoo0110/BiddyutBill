@@ -65,7 +65,7 @@ Future<bool> addOrUpdateHouse(
 ) async{
   try {
       var user = await UserStorage().fetchOneUser(varsityId: house.assignedUserID);
-      if((user == null) || (user.varsityId == house.assignedUserID) || ((user.buildingName == "" && user.houseNo == "" && user.meteNo == "") || (user.buildingName == "null" && user.houseNo == "null" && user.meteNo == "null"))
+      if((user == null) || (user.id == house.assignedUserID) || ((user.buildingName == "" && user.houseNo == "" && user.meterNo == "") || (user.buildingName == "null" && user.houseNo == "null" && user.meterNo == "null"))
       ||house.assignedUserID == ''){
       var res = await http.post(Uri.parse(API.addOrUpdateHouse),
       headers: {"Accept":"application/json"},
@@ -74,9 +74,13 @@ Future<bool> addOrUpdateHouse(
         houseno: house.houseNo,
         meterno: house.meterNo,
         assignedUserid: house.assignedUserID,
+        aType : house.typeA.toString(),
+        bType : house.typeB.toString(),
+        sType : house.typeS.toString()
       });
       if (res.statusCode == 200) {
         var data = jsonDecode(res.body);
+        print(data);
         if (data["Success"] == true) {
          return true;
         } else {
@@ -89,8 +93,8 @@ Future<bool> addOrUpdateHouse(
     }
   }
   catch (e) {
-      //  Fluttertoast.showToast(
-      //         msg: e.toString() );
+       Fluttertoast.showToast(
+              msg: e.toString() );
       return false;
     }
    
@@ -113,7 +117,7 @@ Future<bool> addOrUpdateHouse(
         var data = jsonDecode(res.body);
         if(data["Success"]==true){
           if(house.assignedUserID!=''){
-          var userDelete = await UserStorage().deleteHouseOfUser(varsityId: house.assignedUserID);
+          var userDelete = await UserStorage().deleteHouseOfUser(id: house.assignedUserID);
           if(!userDelete){
             var regainHouseUser = addOrUpdateHouse(house: house);
             return false;
@@ -154,14 +158,4 @@ Future<bool> addOrUpdateHouse(
     }
     return false;
   }
-  // Future<bool>houseAlreadyExist({
-  //   required String buildingName,
-  //   required String houseNo
-  // }) async{
-  //   try {
-      
-  //   } catch (e) {
-      
-  //   }
-  // }
 }

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:e_bill/admin_panel/houseTab/domain_layer/house_details_text.dart';
-import 'package:e_bill/admin_panel/houseTab/presentation_layer/add_house_view.dart';
+import 'package:e_bill/admin_panel/houseTab/presentation_layer/add_house.dart';
 import 'package:e_bill/admin_panel/houseTab/presentation_layer/update_house.dart';
 import 'package:e_bill/admin_panel/houseTab/data_layer/house_model.dart';
 import 'package:e_bill/admin_panel/houseTab/data_layer/house_cruds.dart';

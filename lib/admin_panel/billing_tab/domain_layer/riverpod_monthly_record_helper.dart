@@ -1,6 +1,11 @@
-import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_constant.dart';
-import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_crud.dart';
-import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_model.dart';
+import 'dart:js_interop';
+
+import 'package:e_bill/admin_panel/billing_tab/data_layer/new_month_record_constant.dart';
+import 'package:e_bill/admin_panel/billing_tab/data_layer/new_month_record_crud.dart';
+import 'package:e_bill/admin_panel/billing_tab/data_layer/new_month_record_model.dart';
+import 'package:e_bill/admin_panel/billing_tab/domain_layer/generate_record_key.dart';
+import 'package:e_bill/admin_panel/houseTab/data_layer/house_cruds.dart';
+import 'package:e_bill/admin_panel/houseTab/data_layer/house_model.dart';
 import 'package:e_bill/admin_panel/unitCostTab/data_layer/crud_demand_charge_vat_percentage.dart';
 import 'package:e_bill/admin_panel/unitCostTab/data_layer/demand_charge_vat_percentage.dart';
 import 'package:e_bill/admin_panel/unitCostTab/data_layer/unit_cost_crud.dart';
@@ -68,41 +73,66 @@ final monthlyRecordProvider = FutureProvider<List<MonthlyRecord>>((ref) async{
     var demandChargeAndVatPercentage = await DemandChargeVatPercentageStorage().fetchDemandChargeVatPercentageStorage();
     List<MonthlyRecord> allRecordOfThisMonth=[];
     List<User> allUsers = [];
-    List<User> filteredUser = [];
-    List<MonthlyRecord> presentRecord=[];
-    List<MonthlyRecord> previousRecord=[];
+    List<House> allHouses = [];
+    List<House> filteredHouses = [];
+    MonthlyRecord? presentRecord;
+    MonthlyRecord? previousRecord;
     allUsers = await UserStorage().fetchAllUsers();
-    
-    for(int index = 0; index<allUsers.length; index++){
-      var user = allUsers[index];
-      if (user.meteNo.toString() != "" && user.meteNo.toString().toLowerCase() != "null") {
-          filteredUser.add(user);       
+    allHouses = await HouseStorage().fetchAllHouses();
+    for(int index = 0; index<allHouses.length; index++){
+      var house = allHouses[index];
+      if (house.meterNo.toString() != "" && house.meterNo.toString().toLowerCase() != "null") {
+          filteredHouses.add(house);       
       }
     }
-    for(int index=0; index<filteredUser.length;index++){
-      var user = filteredUser[index];
-      presentRecord = await MonthRecordStorage().fetchRecord(monthYear: presentMonthAndYear, varsityid: user.varsityId);
-      if(presentRecord.isEmpty)
-      {
-       var dvx = demandChargeAndVatPercentage[0];
-       MonthlyRecord filledRecord = MonthlyRecord(
-      varsityid: user.varsityId, fullName: user.fullName, occupation: user.occupation,buildingName: user.buildingName,
-      houseNo: user.houseNo, meterNo: user.meteNo,accountNo: user.accountNo, presentmeteRreading: 0, previousmeterReading: 0,
-      usedunit: 0, unitcostTk: 0, demandchargeTk: dvx.demandChargeTk, firsttotalTk: 0,
-      vatTk: dvx.vatPercentageTk, secondtotalTk: 0, finaltotalTk: 0,typeA: user.typeA, typeB: user.typeB, typeS: user.typeS);
-       presentRecord.add(filledRecord);
+    for(int index=0; index<filteredHouses.length;index++){
+      var house = filteredHouses[index];
+      User? user;
+      String userName ="";
+      String userId = "";
+      String userOccupation = "";
+      String userAccountNo = "";
+      bool typeA = true;
+      bool typeS = false;
+      bool typeB = false;
+      if(house.assignedUserID!=""){
+        user = await UserStorage().fetchOneUser(varsityId: house.assignedUserID);
+        if(user!=null){
+          userId = user.id;
+          userName = user.fullName;
+          userOccupation = user.occupation;
+          userAccountNo = user.accountNo;
+          typeA = user.typeA;
+          typeB = user.typeB;
+          typeS = user.typeS;
+        }
       }
-      
-        if(presentRecord[0].previousmeterReading==0){
-          previousRecord = await MonthRecordStorage().fetchRecord(monthYear: previousMonthAndYear, varsityid: user.varsityId);
-          if(previousRecord.isNotEmpty){
-          presentRecord[0].previousmeterReading = previousRecord[0].presentmeteRreading;
+      presentRecord = await MonthlyRecordStorage().fetchARecordForHouse(monthYear: presentMonthAndYear, house: house);
+      if(presentRecord.isNull){
+        var dvx = demandChargeAndVatPercentage[0];
+        for(int it = 0; it < demandChargeAndVatPercentage.length; it++){
+          if(typeA == demandChargeAndVatPercentage[it].typeA && typeB == demandChargeAndVatPercentage[it].typeB && typeS == demandChargeAndVatPercentage[it].typeS){
+            dvx = demandChargeAndVatPercentage[it];
           }
         }
-      allRecordOfThisMonth.add(presentRecord[0]);
-      if(readyToPush[presentRecord[0].varsityid]==null)readyToPush[presentRecord[0].varsityid] = false;
-      
-      
+        MonthlyRecord filledRecord = MonthlyRecord(
+                                      assignedUserID: userId, fullName: userName, occupation: userOccupation,buildingName: house.buildingName,
+                                      houseNo: house.houseNo, meterNo: house.meterNo,accountNo: userAccountNo, presentmeteRreading: 0, previousmeterReading: 0,
+                                      usedunit: 0, unitcostTk: 0, demandchargeTk: dvx.demandChargeTk, firsttotalTk: 0,
+                                      vatTk: dvx.vatPercentageTk, secondtotalTk: 0, finaltotalTk: 0,typeA: typeA, typeB: typeB, typeS: typeS);
+                                      
+        presentRecord = filledRecord;
+      }
+      if(presentRecord!=null){
+        if (presentRecord.previousmeterReading==0){
+          previousRecord = await MonthlyRecordStorage().fetchARecordForHouse(monthYear: previousMonthAndYear, house: house);
+          if (previousRecord!=null){
+          presentRecord.previousmeterReading = previousRecord.presentmeteRreading;
+          }
+        }
+        allRecordOfThisMonth.add(presentRecord);
+        if (readyToPush[presentRecord.assignedUserID]==null) readyToPush[generateRecordKey(presentRecord)] = false;
+      }
     }
     ref.read(recordsToBePushProvider.notifier).update((state) => allRecordOfThisMonth);
     ref.read(readyToPushProvider.notifier).update((state) => readyToPush);
@@ -146,36 +176,16 @@ final searchedMonthlyRecordsProvider = FutureProvider<List<MonthlyRecord>>((ref)
     return searchedRecords;
 });
 
-//   final pushallRecordsProvider = FutureProvider((ref) async{
-//     print("pushing");
-//   List<MonthlyRecord>failedToSend = [];
-//   List<MonthlyRecord>records = ref.read(recordsToBePushProvider);
-//   final readyToPush = ref.read(readyToPushProvider);
-//   String monthAndYear = ref.read(selectedPresentMonthAndYear);
-//   for(int index =0;index<records.length; index++){
-//     print(readyToPush[records[index].varsityid]);
-//   if(readyToPush[records[index].varsityid]==true){
-//     readyToPush[records[index].varsityid] = false;
-//    var success =  await MonthRecordStorage().pushMonthlyRecord(monthYear: monthAndYear, record: records[index]);
-//   if(!success){
-//     failedToSend.add(records[index]);
-//       }
-//     }
-//   }
-//   var date = ref.read(selectedPresentMonthAndYear);
-//   ref.read(selectedPresentMonthAndYear.notifier).update((state) => ref.read(selectedPreviousMonthAndYear));
-//   ref.read(selectedPresentMonthAndYear.notifier).update((state) => date);
-//   ref.watch(failedToPush.notifier).update((state) => failedToSend);
-// });
+
 
 final storedRecordsOfMonthProvider = FutureProvider((ref) async{
  if(ref.watch(newRecordPush)==true){
-  var records =  await MonthRecordStorage().fetchAllRecord(monthYear: ref.watch(selectedPresentMonthAndYear));
+  var records =  await MonthlyRecordStorage().fetchAllRecord(monthYear: ref.watch(selectedPresentMonthAndYear));
   ref.read(newRecordPush.notifier).update((state) => false);
   return records;
  }
  else{
-  var records =  await MonthRecordStorage().fetchAllRecord(monthYear: ref.watch(selectedPresentMonthAndYear));
+  var records =  await MonthlyRecordStorage().fetchAllRecord(monthYear: ref.watch(selectedPresentMonthAndYear));
   ref.read(newRecordPush.notifier).update((state) => false);
   return records;
  }

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 
-import '../../unitCostTab/data_layer/unit_cost_crud.dart';
 import '../../unitCostTab/data_layer/unit_cost_model.dart';
 import 'mobile_pdf_save.dart' if (dart.library.html) 'web_pdf_save.dart';
 import '../data_layer/new_month_record_model.dart';
@@ -15,7 +14,7 @@ class CreatePdf {
   
 
   String getTitle(List<UnitCost> allUnitCostData) {
-    String ans = "Residential Rate (Per Unit): Tk ";
+    String titleText = "Residential Rate (Per Unit): Tk ";
     // if (allUnitCostData.isEmpty) {
     //   allUnitCostData.add(UnitCost(startingRange: 0, endingRange: 50, rate: 4.35));
     //   allUnitCostData.add(UnitCost(startingRange: 0, endingRange: 75, rate: 4.85));
@@ -28,13 +27,13 @@ class CreatePdf {
 
     for (int i = 0; i < allUnitCostData.length; i++) {
       if(i <allUnitCostData.length-1) {
-        ans ="$ans${allUnitCostData[i].rate}(${allUnitCostData[i].startingRange}-${allUnitCostData[i].endingRange}), ";
+        titleText ="$titleText${allUnitCostData[i].rate}(${allUnitCostData[i].startingRange}-${allUnitCostData[i].endingRange}), ";
       }
       else { 
-        ans ="$ans${allUnitCostData[i].rate}(${allUnitCostData[i].startingRange}-Infinity)";
+        titleText ="$titleText${allUnitCostData[i].rate}(${allUnitCostData[i].startingRange}-Infinity)";
       }
     }
-    return ans;
+    return titleText;
   }
 
   Future<void> generate(
@@ -58,11 +57,11 @@ class CreatePdf {
           SizedBox(height: 40),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text('Bill Maker/Assistant Engineer(Electricity)',
-                style: TextStyle(fontSize: 11)),
+                style: const TextStyle(fontSize: 11)),
             Text('Executive Engineer(Electricity)',
-                style: TextStyle(fontSize: 11)),
+                style: const TextStyle(fontSize: 11)),
             Text('Executive Engineer(Electricity)',
-                style: TextStyle(fontSize: 11)),
+                style: const TextStyle(fontSize: 11)),
           ]),
           SizedBox(height: 5),
           Row(mainAxisAlignment: MainAxisAlignment.end, children: [

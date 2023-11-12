@@ -1,12 +1,12 @@
-import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_constant.dart';
+import 'package:e_bill/admin_panel/billing_tab/data_layer/new_month_record_constant.dart';
 
 class MonthlyRecord{
-final String varsityid ;
+final String assignedUserID;
 final String fullName;
 final String occupation;
+final String accountNo;
 final String buildingName;
 final String houseNo;
-final String accountNo ;
 final String meterNo ;
  double presentmeteRreading;
  double previousmeterReading;
@@ -21,18 +21,18 @@ final double vatTk;
  bool typeB;
  bool typeS;
 
-  MonthlyRecord({required this.varsityid, required this.fullName, required this.occupation, required this.buildingName,required this.houseNo,required this.accountNo, required this.meterNo,required this.presentmeteRreading,
+  MonthlyRecord({required this.assignedUserID, required this.fullName, required this.occupation, required this.accountNo, required this.buildingName,required this.houseNo, required this.meterNo,required this.presentmeteRreading,
   required this.previousmeterReading,required this.usedunit, required this.unitcostTk,required this.demandchargeTk, 
   required this.firsttotalTk,required this.vatTk,required this.secondtotalTk,required this.finaltotalTk, required this.typeA, required this.typeB, required this.typeS});
 
   factory MonthlyRecord.fromJson(Map<String,dynamic>json){
     return MonthlyRecord(
-      varsityid: json[varsityId],
+      assignedUserID: json[varsityId],
       fullName: json[name],
       occupation: json[occupatioN],
+      accountNo: json[accountno],
       buildingName: json[buildingname],
       houseNo: json[houseno],
-      accountNo: json[accountno],
       meterNo: json[meterno],
       presentmeteRreading: double.parse(json[presentMeterReading]) ,
       previousmeterReading: double.parse(json[previousMeterReading]),

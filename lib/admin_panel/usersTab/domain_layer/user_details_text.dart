@@ -10,6 +10,6 @@ List<String>userDetailsText({
   detailText.add("Account No : ${user.accountNo}");
   detailText.add("Buildin Name : ${user.buildingName}");
   detailText.add("House No : ${user.houseNo}");
-  detailText.add("Meter No : ${user.meteNo}");
+  detailText.add("Meter No : ${user.meterNo}");
   return detailText;
 }

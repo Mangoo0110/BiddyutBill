@@ -2,9 +2,9 @@ import 'package:e_bill/admin_panel/unitCostTab/data_layer/unit_cost_and_other_co
 import 'package:flutter/material.dart';
 
 class UnitCost {
-  final double startingRange;
-  final double endingRange;
-  final double rate;
+   double startingRange;
+   double endingRange;
+   double rate;
 
   UnitCost({
     

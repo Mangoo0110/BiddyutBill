@@ -50,8 +50,8 @@ class _UpdateUserState extends State<UpdateUser> {
       email = removeWhiteSpace(email);
       accountNo = removeWhiteSpace(accountNo);
       occupation = removeWhiteSpace(occupation);
-      var user = User(varsityId: widget.userInfo.varsityId, fullName: fullName, emailAdress: email, accountNo: accountNo, occupation: occupation, 
-      buildingName: "", houseNo: "", meteNo: "", isEmailVerified: emailVerified,typeA: typeA,typeB: typeB,typeS: typeS);
+      var user = User(id: widget.userInfo.id, fullName: fullName, emailAdress: email, accountNo: accountNo, occupation: occupation, 
+      buildingName: "", houseNo: "", meterNo: "", isEmailVerified: emailVerified,typeA: typeA,typeB: typeB,typeS: typeS);
       var res = await UserStorage().addOrUpdateUser(user: user);
       if(res==true){
         Fluttertoast.showToast(msg: "Success. user Uppaded.");
@@ -72,7 +72,7 @@ class _UpdateUserState extends State<UpdateUser> {
   }
 
   getDetails(){
-    varsityIdInputController.text = widget.userInfo.varsityId;
+    varsityIdInputController.text = widget.userInfo.id;
     fullNameInputController.text = widget.userInfo.fullName;
     emailInputController.text = widget.userInfo.emailAdress;
     accountNoInputController.text = widget.userInfo.accountNo;
@@ -84,7 +84,7 @@ class _UpdateUserState extends State<UpdateUser> {
     // TODO: implement initState
     emailVerified = widget.userInfo.isEmailVerified=="true"?true:false;
     emailNotVerified = widget.userInfo.isEmailVerified!="true"?true:false;
-    varsityId = widget.userInfo.varsityId;
+    varsityId = widget.userInfo.id;
     fullName = widget.userInfo.fullName;
     occupation = widget.userInfo.occupation;
     accountNo = widget.userInfo.accountNo;

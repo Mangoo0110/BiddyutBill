@@ -1,12 +1,14 @@
 import 'dart:convert';
-import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_constant.dart';
-import 'package:e_bill/admin_panel/new_month_record/data_layer/new_month_record_model.dart';
+import 'package:e_bill/admin_panel/billing_tab/data_layer/new_month_record_constant.dart';
+import 'package:e_bill/admin_panel/billing_tab/data_layer/new_month_record_model.dart';
+import 'package:e_bill/admin_panel/houseTab/data_layer/house_model.dart';
+import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
 import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
-class MonthRecordStorage{
+class MonthlyRecordStorage{
 
-  Future<bool>pushMonthlyRecord(
+Future<bool>pushMonthlyRecord(
     {
       required String monthYear,
       required MonthlyRecord record,
@@ -14,19 +16,16 @@ class MonthRecordStorage{
   ) async{
     bool pushed =false;
     try {
-      print("pushing  + ${record.fullName.toString()} ${record.typeA} ${record.typeB} ${record.typeS}");
+      print("pushing ${record.buildingName.toString()} ${record.houseNo.toString()} ${record.typeA} ${record.typeB} ${record.typeS}");
         final res = await http.post(
         Uri.parse(API.newMonthRecord),
         headers: {"Accept":"application/json"},
         body: {
           monthAndYear : monthYear.toString(),
-          varsityId : record.varsityid.toString(),
-          name : record.fullName.toString(),
-          occupatioN : record.occupation.toString(),
+          varsityId : record.assignedUserID,
           buildingname : record.buildingName.toString(),
           houseno : record.houseNo.toString(),
           meterno: record.meterNo,
-          accountno : record.accountNo.toString(),
           presentMeterReading : record.presentmeteRreading.toString(),
           previousMeterReading : record.previousmeterReading.toString(),
           usedUnit : record.usedunit.toString(),
@@ -63,30 +62,59 @@ class MonthRecordStorage{
       return pushed;
     }
   }
-Future <List<MonthlyRecord>> fetchRecord(
+
+Future <MonthlyRecord?> fetchARecordForHouse(
   {
     required String monthYear,
-    required String varsityid,
+    required House house,
   }
 ) async{
   try {
     final res = await http.post(
       Uri.parse(API.fetchMonthRecord),
       body: {
-        monthAndYear: monthYear,
-        varsityId : varsityid,
+        monthAndYear : monthYear,
+        buildingname : house.buildingName,
+        houseno : house.houseNo
       }
     );
-    if(res.statusCode == 200){      
-      return monthlyRecordConvert(res.body);
-    }
-    else {
-    return <MonthlyRecord>[];
+    if(res.statusCode == 200){
+      var data = jsonDecode(res.body);
+      if(data["Success"]==true){
+        return MonthlyRecord.fromJson(data["Data"]);
+      }  
     }
   } catch (e) {
     print(e.toString());
-    return <MonthlyRecord>[];
   }
+  return null;
+}
+
+Future <MonthlyRecord?> fetchARecordForUser(
+  {
+    required String monthYear,
+    required User user,
+  }
+) async{
+  try {
+    final res = await http.post(
+      Uri.parse(API.fetcUserMonthlyRecord),
+      body: {
+        monthAndYear : monthYear,
+        varsityId: user.id,
+      }
+    );
+    if(res.statusCode == 200){
+      var data = jsonDecode(res.body);
+      //print(res.body);
+      if(data["Success"]==true){
+        return MonthlyRecord.fromJson(data["Data"]);
+      }  
+    }
+  } catch (e) {
+    print(e.toString());
+  }
+  return null;
 }
 
 Future <List<MonthlyRecord>> fetchAllRecord(
@@ -102,7 +130,7 @@ Future <List<MonthlyRecord>> fetchAllRecord(
       }
     );
     if(res.statusCode == 200){      
-      return monthlyRecordConvert(res.body);
+      return monthlyRecordListConvert(res.body);
     }
     else {
     return <MonthlyRecord>[];
@@ -113,8 +141,7 @@ Future <List<MonthlyRecord>> fetchAllRecord(
   }
 }
 
-
-  List<MonthlyRecord> monthlyRecordConvert(String jsonString) { 
+List<MonthlyRecord> monthlyRecordListConvert(String jsonString) {
     final data = jsonDecode(jsonString) ;
     return List<MonthlyRecord>.from(
         (data.map((item) => MonthlyRecord.fromJson(item))));

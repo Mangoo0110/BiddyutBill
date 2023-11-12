@@ -18,7 +18,7 @@ class DemandChargeVatPercentageStorage {
     );
     if (result.statusCode == 200) {
       //print(result.body);
-      List<DemandChargeVatPercentage> list =demandChargeVatPercentage(result.body);
+      List<DemandChargeVatPercentage> list = demandChargeVatPercentage(result.body);
       return list;
     } else {
       return <DemandChargeVatPercentage>[];

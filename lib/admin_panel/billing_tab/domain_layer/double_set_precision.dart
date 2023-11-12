@@ -1,6 +1,5 @@
 double doubleSetPrecision({ required double num, required int setPrecision}){
   String numText = num.toString();
-  print("$num .. $numText");
   String goodText = "";
   int cnt = 0;
   
@@ -12,6 +11,5 @@ double doubleSetPrecision({ required double num, required int setPrecision}){
     }
     
   }
-  print("$numText $goodText");
   return double.parse(goodText);
 }

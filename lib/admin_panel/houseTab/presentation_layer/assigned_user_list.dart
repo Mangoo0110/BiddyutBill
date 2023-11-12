@@ -110,7 +110,7 @@ class _AssignedUserListState extends State<AssignedUserList> {
                                 Container(alignment: Alignment.topLeft,child: Text("Name : ${users[index].fullName}",style: const TextStyle(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),)),
                                 Container(alignment: Alignment.topLeft,child: Text("Occupation : ${users[index].occupation}",style: const TextStyle(color: Colors.black),)),
                                 Container(alignment: Alignment.topLeft,child: Text("Account No : ${users[index].accountNo}",style: const TextStyle(color: Colors.black),)),
-                                Container(alignment: Alignment.topLeft,child: Text("Varsity Id : ${users[index].varsityId}",style: const TextStyle(color: Colors.black),)),
+                                Container(alignment: Alignment.topLeft,child: Text("Varsity Id : ${users[index].id}",style: const TextStyle(color: Colors.black),)),
                                           
                               ],
                             ),

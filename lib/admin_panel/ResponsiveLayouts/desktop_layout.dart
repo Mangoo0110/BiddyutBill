@@ -1,10 +1,14 @@
+import 'dart:async';
+
+import 'package:e_bill/admin_info/adminModel.dart';
 import 'package:e_bill/admin_panel/houseTab/presentation_layer/all_house_view.dart';
-import 'package:e_bill/admin_panel/new_month_record/presentation_layer/new_month_record_view.dart';
+import 'package:e_bill/admin_panel/billing_tab/presentation_layer/monthly_record_editor.dart';
 import 'package:e_bill/admin_panel/unitCostTab/presentation_layer/unit_range_cost.dart';
 import 'package:e_bill/admin_panel/usersTab/presentation_layer/user_list.dart';
 import 'package:e_bill/authentication/presentation_layer/logIn.dart';
 import 'package:e_bill/constants/responsive_constants.dart';
 import 'package:e_bill/constants/routes.dart';
+import 'package:e_bill/shared_pref/data_layer/shared_pref_appuser_setting.dart';
 import 'package:flutter/material.dart';
 
 class DesktopLayout extends StatefulWidget {
@@ -17,12 +21,17 @@ class DesktopLayout extends StatefulWidget {
 class _DesktopLayoutState extends State<DesktopLayout> {
 
   final PageController _pageController = PageController();
-
+  Admin? adminInfo;
   int _index = 0;
-
+  late Timer _timer;
   @override
   void initState() {
     // TODO: implement initState
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) { 
+      Future.delayed(const Duration(seconds: 1),() async{
+      adminInfo = await AppPersistantStorage().getCurrentAppUserAdmin();
+    });
+    });
     
     super.initState();
   }
@@ -35,6 +44,15 @@ class _DesktopLayoutState extends State<DesktopLayout> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     String adminName = "bot";
+    if(adminInfo == null){
+      //return const Center(child: CircularProgressIndicator());
+    }
+    else{
+      if(_timer.isActive){
+        _timer.cancel();
+      }
+      adminName = adminInfo!.fullName;
+    }
     return Scaffold(
       body: Row(
         children: [
@@ -47,44 +65,10 @@ class _DesktopLayoutState extends State<DesktopLayout> {
                 children: [
                   Column(
                     children: [
-                       DrawerHeader(child: Column(
+                        DrawerHeader(child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("Good day, Admin"),
-                            // Padding(
-                            // padding: const EdgeInsets.all(4.0),
-                            // child: InkWell(
-                            //   onTap: () {
-                            //     Navigator.of(context).push(PageRouteBuilder(
-                            //           opaque: false,
-                            //           transitionDuration: const Duration(milliseconds: 500),
-                            //           reverseTransitionDuration: const Duration(milliseconds: 500),
-                            //           pageBuilder: (BuildContext context, b, e) {
-                            //             return  NewMonthRecord();
-                            //           }));
-                            //   },
-                            //   child: Container(
-                            //     decoration: BoxDecoration(
-                            //       borderRadius: BorderRadius.circular(6),
-                            //       color: Colors.orange.shade200,
-                            //       border: Border.all(width: 2,color: Colors.white)
-                            //     ),
-                            //     // width: size.width * 0.2,
-                            //     // height: size.height * 0.08,
-                            //     child: Padding(
-                            //       padding: const EdgeInsets.all(8.0),
-                            //       child: Row(
-                            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            //         children: [
-                            //           Image.asset("images/thunder.png",color: Colors.orange,height: 30, width: 30,),
-                            //           Text("B I L L I N G  P A N E L",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),)
-                            //         ],
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
-                            //             ),
-              
+                            Text("Good day, $adminName"),
                           ],
                         )),
                       ListTile(
@@ -146,7 +130,7 @@ class _DesktopLayoutState extends State<DesktopLayout> {
                         padding: const EdgeInsets.all(4.0),
                         child: ListTile(
                           onTap: () {
-                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const LogIn()), (route) => false);
+                            Navigator.popAndPushNamed(context, loginRoute);
                           },
                           title: Container(
                             decoration: BoxDecoration(
