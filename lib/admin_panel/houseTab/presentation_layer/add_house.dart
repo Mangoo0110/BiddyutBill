@@ -50,6 +50,7 @@ class _AddHouseState extends State<AddHouse> {
       var success = await HouseStorage().addOrUpdateHouse(house: house);
       if(!success){
         Fluttertoast.showToast(
+              timeInSecForIosWeb: 5,
               msg:
                   "Could not add House (Building Name : ${house.buildingName} and House No : ${house.houseNo}). [Building Name] and [House No] should be unique.");
       return;
@@ -58,26 +59,26 @@ class _AddHouseState extends State<AddHouse> {
       success = await UserStorage().assignUserAHouse(varsityId: assignedUserID, house: house);
       if(success){
         Fluttertoast.showToast(
-              msg:
-                  "Success! New House (Building Name : ${house.buildingName} and House No : ${house.houseNo}) with User ${assignedUser!.fullName} added.");
+              timeInSecForIosWeb: 5,
+              msg:"Success! New House (Building Name : ${house.buildingName} and House No : ${house.houseNo}) with User ${assignedUser!.fullName} added.");
           widget.onOk();
           return;
       }
       else{
         Fluttertoast.showToast(
-              msg:
-                  "Success! New House (Building Name : ${house.buildingName} and House No : ${house.houseNo}) without user added.");
+              msg:"Success! New House (Building Name : ${house.buildingName} and House No : ${house.houseNo}) without user added.",
+              timeInSecForIosWeb: 5);
         Fluttertoast.showToast(
             textColor: Colors.orange,
-              msg:
-                  "UserId ${house.assignedUserID} is not valid!!");
+            msg:"UserId ${house.assignedUserID} is not valid!!",
+            timeInSecForIosWeb: 5);
          widget.onOk();
       }
       }
         if(assignedUserID.isEmpty){
           Fluttertoast.showToast(
-              msg:
-                  "Success! New House (Building Name : ${house.buildingName} and House No : ${house.houseNo}) without user added.");
+              msg:"Success! New House (Building Name : ${house.buildingName} and House No : ${house.houseNo}) without user added.",
+              timeInSecForIosWeb: 5);
          widget.onOk();
         }
       
@@ -93,7 +94,7 @@ class _AddHouseState extends State<AddHouse> {
       }
       houseNo = houseNoInputController.text.trim();
       if(houseNo ==''){
-        Fluttertoast.showToast(msg: "HouseNo can not be empty!!");
+        Fluttertoast.showToast(msg: "HouseNo can not be empty!!", timeInSecForIosWeb: 5);
         return null;
       }
       meterNo = meterNoInputController.text.trim();
@@ -102,7 +103,8 @@ class _AddHouseState extends State<AddHouse> {
       if(check.isNotEmpty){
         Fluttertoast.showToast(
               msg:
-                  "This house already exists. [Building Name] and [House No] should be unique.");
+                  "This house already exists. [Building Name] and [House No] should be unique.",
+              timeInSecForIosWeb: 5);
       return null;
       }
       return house;

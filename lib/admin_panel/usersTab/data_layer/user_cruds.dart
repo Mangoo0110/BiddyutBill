@@ -21,7 +21,6 @@ class UserStorage {
   Future<List<User>> fetchAllUsers() async {
     try {
       var result = await http.post(Uri.parse(API.fetchAllUsers),);
-      //print(result.body);
       if (result.statusCode == 200) {
         final data = jsonDecode(result.body);
         if(data["Success"]==true){
@@ -31,7 +30,6 @@ class UserStorage {
       }
     }
     catch (e) {
-      print(e.toString());
     }
     return <User>[];
   }
@@ -40,7 +38,6 @@ class UserStorage {
     final datax = jsonDecode(jsonString);
     if(datax["Success"]==false) return null;
     final data = datax["Data"];
-    //print(data);
     var res =
         User.fromJson(data);
     return res;
@@ -118,16 +115,13 @@ class UserStorage {
          sType : user.typeS.toString(),
       });
       
-      print(res.body);
       var data = jsonDecode(res.body);
        //Fluttertoast.showToast(msg:data.toString());
       if (res.statusCode == 200) {
         
-       // print(data.toString());
        return data["Success"];
       }
     } catch (e) {
-      print(e.toString());
        Fluttertoast.showToast(msg: e.toString());
     }
    

@@ -31,7 +31,7 @@ Future<bool> monthly_bill_email({ required MonthlyRecord record, required String
   var userId = "bPhZhhuhyVlvOAFBy";
   var accessToken = "imABnvJAMBGAdhlVDcy-z";
 
-   print("occupation is $occupation");
+   //print("occupation is $occupation");
   Future.delayed(const Duration(seconds: 3),() async{
     var res = await http.post(
     Uri.parse(API.onlineEmailjsApi),
@@ -59,8 +59,8 @@ Future<bool> monthly_bill_email({ required MonthlyRecord record, required String
       }
     })
   );
-  print("email sent to $name at $userEmail");
-  print(res.body);
+  //print("email sent to $name at $userEmail");
+  //print(res.body);
   }); 
   return true;
    }

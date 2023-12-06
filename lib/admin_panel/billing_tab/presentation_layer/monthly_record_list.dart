@@ -177,7 +177,8 @@ class _MonthlyRecordListViewState extends ConsumerState<MonthlyRecordListView> {
                                                                             thisMonthRecords[index].previousmeterReading.toString();
                                                                             updateToBePushRecords();
                                                                       });
-                                                                    } else {
+                                                                    }
+                                                                    else {
                                                                       if (_previousMeterReadControllers[index].text =='') {
                                                                         setState(() {
                                                                           _previousMeterReadControllers[index].text = '0';
@@ -186,11 +187,7 @@ class _MonthlyRecordListViewState extends ConsumerState<MonthlyRecordListView> {
                                                                         });
                                                                       }
                                                           
-                                                                      if ( isValidDoubleText(
-                                                                          text:
-                                                                              _previousMeterReadControllers[
-                                                                                      index]
-                                                                                  .text)) {
+                                                                      if (isValidDoubleText( text: _previousMeterReadControllers[index].text)) {
                                                                         if (!value.endsWith(".")) {
                                                                           setState(() {
                                                                             thisMonthRecords[index]
@@ -202,7 +199,8 @@ class _MonthlyRecordListViewState extends ConsumerState<MonthlyRecordListView> {
                                                                                         updateToBePushRecords();
                                                                           });
                                                                         }
-                                                                      } else {
+                                                                      } 
+                                                                      else {
                                                                         setState(() {
                                                                           _previousMeterReadControllers[index].text =
                                                                               thisMonthRecords[index].previousmeterReading.toString();
@@ -363,7 +361,6 @@ class _MonthlyRecordListViewState extends ConsumerState<MonthlyRecordListView> {
                                                             builder:(context, ref, child) {
                                                               var k = ref.watch(readyToPushProvider);
                                                               var state = k[generateRecordKey(record)];
-                                                              print("${record.fullName} $state");
                                                               return Center(
                                                               child: Checkbox(
                                                                 value: state,

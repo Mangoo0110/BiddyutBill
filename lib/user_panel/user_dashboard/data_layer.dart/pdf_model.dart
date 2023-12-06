@@ -13,8 +13,8 @@ class UserPdfBillReciept {
   static String titleText = "";
   List<UnitCost> unitCostData;
   MonthlyRecord record;
-  String presentMonth;
-  UserPdfBillReciept({required this.unitCostData, required this.record, required this.presentMonth});
+  String presentMonthYear;
+  UserPdfBillReciept({required this.unitCostData, required this.record, required this.presentMonthYear});
   String getTitle(List<UnitCost> allUnitCostData) {
     String titleText = "Residential Rate (Per Unit): Tk ";
     // if (allUnitCostData.isEmpty) {
@@ -101,25 +101,15 @@ class UserPdfBillReciept {
     ));
 
     List<int> bytes = await document.save();
-    downloadPdf(bytes, "${formatMonthYear(presentMonth)}.pdf");
+    downloadPdf(bytes, "${formatMonthYear(presentMonthYear)}.pdf");
   }
 
   static String formatMonthYear(String monthYear) {
-    for (int i = 0; i < monthYear.length; i++) {
-      if (i == 0) {
-        monthYear = monthYear[i].toUpperCase() + monthYear.substring(1);
-      }
-      if (monthYear[i] == '_') {
-        monthYear =
-            "${monthYear.substring(0, i)}/${monthYear.substring(i + 1)}";
-      }
-    }
-
     return monthYear;
   }
 
   Widget buildTitle() {
-    var monthAndYearText = formatMonthYear(presentMonth);
+    var monthAndYearText = formatMonthYear(presentMonthYear);
     return Column(children: [
       Center(
           child: Container(
@@ -183,7 +173,7 @@ class UserPdfBillReciept {
       children: [
         Align(
           alignment: Alignment.topLeft,
-          child: Text("User Details :",style: TextStyle(color:PdfColors.black, fontWeight: FontWeight.bold, fontSize: 16)),
+          child: Text("User Details",style: TextStyle(color:PdfColors.black, fontWeight: FontWeight.bold, fontSize: 16)),
         ),
         Divider(
           thickness: 2,

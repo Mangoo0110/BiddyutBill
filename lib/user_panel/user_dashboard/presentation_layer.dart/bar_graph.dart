@@ -11,52 +11,68 @@ class BarGraph extends StatelessWidget {
   Widget build(BuildContext context) {
     YearlyData yearlyDataModel = this.yearlyDataModel;
     final yearlyUsedUnitData = yearlyDataModel.yearlyUsedUnitData();
-    return BarChart(
-      BarChartData(
-        maxY: yearlyDataModel.maxYearlyUsedUnit(),
-        minY: 0,
-        barTouchData: BarTouchData(
-          enabled: true,
-          touchTooltipData: BarTouchTooltipData(
-            tooltipBgColor: Colors.grey.shade300
-          )
+    return Column(
+      children: [
+        const Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 5),
+            child: Text("Month VS Total tk", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+          ),
         ),
-        gridData: const FlGridData(show: false),
-        borderData: FlBorderData(show: false),
-        titlesData: FlTitlesData(
-          rightTitles: const AxisTitles( sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles( sideTitles: SideTitles(showTitles: false)),
-          bottomTitles: AxisTitles( sideTitles: 
-            SideTitles(
-              showTitles: true,
-              getTitlesWidget: getBottomTitles,
-              reservedSize: 42
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: BarChart(
+              BarChartData(
+                maxY: yearlyDataModel.maxYearlyUsedUnit(),
+                minY: 0,
+                barTouchData: BarTouchData(
+                  enabled: true,
+                  touchTooltipData: BarTouchTooltipData(
+                    tooltipBgColor: Colors.grey.shade300
+                  )
+                ),
+                gridData: const FlGridData(show: false),
+                borderData: FlBorderData(show: false),
+                titlesData: FlTitlesData(
+                  rightTitles: const AxisTitles( sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles( sideTitles: SideTitles(showTitles: false)),
+                  bottomTitles: AxisTitles( sideTitles: 
+                    SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: getBottomTitles,
+                      reservedSize: 42
+                      )
+                    ),
+                ),
+                
+                //groupsSpace: 4,
+                barGroups: yearlyUsedUnitData.
+                    map((individualBarData) => 
+                      BarChartGroupData(
+                        barsSpace: 50,
+                        x: integerValueOfMonth(individualBarData.month),
+                        barRods: [
+                          BarChartRodData(
+                            fromY: 0,
+                            toY: individualBarData.value,
+                            width: 30,
+                            color: Colors.grey.shade700,
+                            borderRadius: BorderRadius.circular(3),
+                            backDrawRodData: BackgroundBarChartRodData(
+                              show: true,
+                              color: Colors.grey.shade300,
+                              toY: yearlyDataModel.maxYearlyUsedUnit()
+                            )
+                          )
+                        ]
+                      )).toList(),
               )
             ),
+          ),
         ),
-        
-        //groupsSpace: 4,
-        barGroups: yearlyUsedUnitData.
-            map((individualBarData) => 
-              BarChartGroupData(
-                barsSpace: 50,
-                x: integerValueOfMonth(individualBarData.month),
-                barRods: [
-                  BarChartRodData(
-                    fromY: 0,
-                    toY: individualBarData.value,
-                    width: 30,
-                    color: Colors.grey.shade700,
-                    borderRadius: BorderRadius.circular(3),
-                    backDrawRodData: BackgroundBarChartRodData(
-                      show: true,
-                      color: Colors.grey.shade300,
-                      toY: yearlyDataModel.maxYearlyUsedUnit()
-                    )
-                  )
-                ]
-              )).toList(),
-      )
+      ],
     );
   }
   int integerValueOfMonth(String month){

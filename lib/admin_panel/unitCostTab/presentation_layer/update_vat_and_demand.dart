@@ -1,70 +1,41 @@
 // ignore_for_file: no_logic_in_create_state
 import 'dart:convert';
+import 'package:e_bill/admin_panel/unitCostTab/data_layer/crud_demand_charge_vat_percentage.dart';
+import 'package:e_bill/admin_panel/unitCostTab/data_layer/unit_cost_and_other_constant.dart';
+import 'package:e_bill/common_logic/check_valid_double.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:e_bill/api_connection/api_connection.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:e_bill/admin_panel/unitCostTab/data_layer/demand_charge_vat_percentage.dart';
-
 class UpdateVatAndDemand extends StatefulWidget {
-  const UpdateVatAndDemand({super.key, required this.vatAndDemandData});
-  final List<DemandChargeVatPercentage> vatAndDemandData;
+  DemandChargeVatPercentage vatAndDemandData;
+  UpdateVatAndDemand({super.key, required this.vatAndDemandData});
+  
   @override
-  State<UpdateVatAndDemand> createState() =>
-      _UpdateVatAndDemandState(vatAndDemandData: vatAndDemandData);
+  State<UpdateVatAndDemand> createState() => _UpdateVatAndDemandState();
 }
 
 class _UpdateVatAndDemandState extends State<UpdateVatAndDemand> {
-  late List<DemandChargeVatPercentage> vatAndDemandData;
-  _UpdateVatAndDemandState({required this.vatAndDemandData});
-
   TextEditingController vatTextEditingController = TextEditingController();
 
   TextEditingController demandChargeTextEditingController =
       TextEditingController();
 
-  List<String> updatedVatAndDemandData = [];
-  updateVatAndDemand() async {
-    try {
-      var res = await http.post(Uri.parse(API.updateDemandChargeVatPercentage),
-          headers: {"Accept": "application/json"},
-          body: jsonEncode(updatedVatAndDemandData));
-      print(res.statusCode);
-      if (res.statusCode == 200) {
-        var data = jsonDecode(res.body);
-        if (data["Success"] == true) {
-          print("Updated Successfully");
-          Fluttertoast.showToast(
-              timeInSecForIosWeb: 5, msg: "Updated Successfully");
-        } else {
-          Fluttertoast.showToast(msg: "Update failed");
-          print("Updated failed");
-        }
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  void prevDataPushController() {
-    vatTextEditingController.text =
-        vatAndDemandData[0].vatPercentageTk.toString();
-    demandChargeTextEditingController.text =
-        vatAndDemandData[0].demandChargeTk.toString();
-  }
-
-  void updateData() {
-    updatedVatAndDemandData.add(vatTextEditingController.text);
-    updatedVatAndDemandData.add(demandChargeTextEditingController.text);
+  @override
+  void initState() {
+    // TODO: implement initState
+    vatTextEditingController.text = widget.vatAndDemandData.vatPercentageTk.toString();
+    demandChargeTextEditingController.text = widget.vatAndDemandData.demandChargeTk.toString();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    prevDataPushController();
     return AlertDialog(
         contentPadding: EdgeInsets.zero,
         backgroundColor: const Color.fromARGB(255, 222, 250, 223),
-        content: Container(
+        content: SizedBox(
             width: (MediaQuery.of(context).size.width * 0.25) + 300,
             child: SingleChildScrollView(
                 child: Column(
@@ -115,6 +86,36 @@ class _UpdateVatAndDemandState extends State<UpdateVatAndDemand> {
                                     ),
                                     cursorColor: Colors.white,
                                     style: const TextStyle(color: Colors.white),
+                                    onChanged: (value) {
+                                      if (value.length > 10) {
+                                        setState(() {
+                                          vatTextEditingController.text =
+                                              widget.vatAndDemandData.vatPercentageTk.toString();
+                                        });
+                                      }
+                                      else {
+                                        if (vatTextEditingController.text =='') {
+                                          setState(() {
+                                            vatTextEditingController.text = '0';
+                                            widget.vatAndDemandData.vatPercentageTk = 0;
+                                          });
+                                        }
+                                        if (isValidDoubleText( text: vatTextEditingController.text)) {
+                                          if (!value.endsWith(".")) {
+                                            setState(() {
+                                              widget.vatAndDemandData.vatPercentageTk =
+                                                  double.parse(vatTextEditingController.text);
+                                            });
+                                          }
+                                        } 
+                                        else {
+                                          setState(() {
+                                            vatTextEditingController.text =
+                                                widget.vatAndDemandData.vatPercentageTk.toString();
+                                          });
+                                        }
+                                      }
+                                    },
                                   ),
                                 ),
                               ),
@@ -154,6 +155,37 @@ class _UpdateVatAndDemandState extends State<UpdateVatAndDemand> {
                                     ),
                                     cursorColor: Colors.white,
                                     style: const TextStyle(color: Colors.white),
+                                    onChanged: (value) {
+                                      if (value.length > 10) {
+                                        setState(() {
+                                          demandChargeTextEditingController.text =
+                                              widget.vatAndDemandData.demandChargeTk.toString();
+                                        });
+                                      }
+                                      else {
+                                        if (demandChargeTextEditingController.text =='') {
+                                          setState(() {
+                                            demandChargeTextEditingController.text = '0';
+                                            widget.vatAndDemandData.demandChargeTk = 0;
+                                          });
+                                        }
+                            
+                                        if (isValidDoubleText( text: demandChargeTextEditingController.text)) {
+                                          if (!value.endsWith(".")) {
+                                            setState(() {
+                                              widget.vatAndDemandData.demandChargeTk =
+                                                  double.parse(demandChargeTextEditingController.text);
+                                            });
+                                          }
+                                        } 
+                                        else {
+                                          setState(() {
+                                            demandChargeTextEditingController.text =
+                                                widget.vatAndDemandData.demandChargeTk.toString();
+                                          });
+                                        }
+                                      }
+                                    },
                                   ),
                                 ),
                               ),
@@ -165,16 +197,19 @@ class _UpdateVatAndDemandState extends State<UpdateVatAndDemand> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 FloatingActionButton.extended(
                   backgroundColor: Colors.green.shade200,
                   foregroundColor: const Color.fromARGB(255, 21, 70, 23),
-                  onPressed: () {
-                    updateData();
-                    updateVatAndDemand();
-                    Navigator.pop(context);
+                  onPressed: () async{
+                    var res = await DemandChargeVatPercentageStorage().updateVatAndDemand(updatedVatAndDemandData: widget.vatAndDemandData);
+                    if(res == true){
+                      Future.delayed(const Duration(seconds: 1),(){
+                        Navigator.pop(context);
+                      });
+                    }
                   },
                   label: const Text(
                     'Confirm',
@@ -182,6 +217,9 @@ class _UpdateVatAndDemandState extends State<UpdateVatAndDemand> {
                   ),
                 ),
               ],
-            ))));
+            )
+          )
+        )
+      );
   }
 }

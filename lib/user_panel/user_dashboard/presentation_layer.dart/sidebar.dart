@@ -1,5 +1,6 @@
 import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
 import 'package:e_bill/authentication/presentation_layer/logIn.dart';
+import 'package:e_bill/constants/routes.dart';
 import 'package:e_bill/user_panel/constants/ui_colors.dart';
 import 'package:e_bill/user_panel/constants/ui_style.dart';
 import 'package:flutter/material.dart';
@@ -119,11 +120,11 @@ class UserSideBar extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
+                    child: ListTile(
                     onTap: (){
-                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const LogIn()), (route) => false);
+                            Navigator.pushReplacementNamed(context, loginRoute);
                           },
-                      child: Container(
+                      title: Container(
                          decoration: BoxDecoration(
                             color: Colors.black,
                             borderRadius: BorderRadius.circular(6),

@@ -1,8 +1,8 @@
 import 'package:e_bill/admin_panel/unitCostTab/data_layer/unit_cost_and_other_constant.dart';
 
 class DemandChargeVatPercentage{
-  late final double demandChargeTk;
-  late final double vatPercentageTk;
+  double demandChargeTk;
+  double vatPercentageTk;
   bool typeA;
   bool typeB;
   bool typeS;

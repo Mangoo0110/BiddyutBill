@@ -8,11 +8,14 @@ import 'package:e_bill/admin_panel/unitCostTab/data_layer/demand_charge_vat_perc
 import 'package:e_bill/admin_panel/unitCostTab/data_layer/unit_cost_crud.dart';
 import 'package:e_bill/admin_panel/unitCostTab/data_layer/unit_cost_and_other_constant.dart';
 import 'package:e_bill/admin_panel/unitCostTab/presentation_layer/check_if_all_good_for_new_range.dart';
+import 'package:e_bill/admin_panel/unitCostTab/presentation_layer/demand_vat_view.dart';
 import 'package:e_bill/admin_panel/unitCostTab/presentation_layer/update_unit_range_cost.dart';
 import 'package:e_bill/admin_panel/unitCostTab/presentation_layer/update_vat_and_demand.dart';
 import 'package:e_bill/common_logic/check_valid_double.dart';
+import 'package:e_bill/common_ui/confirm_dialog_box.dart';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class UnitRangeCost extends StatefulWidget {
   const UnitRangeCost({super.key});
@@ -48,16 +51,7 @@ class _UnitRangeCostState extends State<UnitRangeCost> {
   }
   void startFetching() async{
     _timer = Timer.periodic(const Duration(seconds: 2), (timer) async{
-      // print("hi$cnt");
-      // cnt++;
       await getUnitCostRecord();
-      await getVatAndDemandCharge();
-    //   if(allUnitCostData.isNotEmpty && vatAndDemandData.isNotEmpty){
-    //   if(_timer.isActive){
-    //     _timer.cancel();
-    //   }
-    // }
-      //currentAdmin = getCurrentAdmin();
     });
   }
   late Timer _timer ;
@@ -84,7 +78,7 @@ class _UnitRangeCostState extends State<UnitRangeCost> {
     Size size = MediaQuery.of(context).size;
     startFetching();
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Color.fromARGB(255, 239, 255, 239),
       ),
       child: SingleChildScrollView(
@@ -94,7 +88,6 @@ class _UnitRangeCostState extends State<UnitRangeCost> {
               height: size.height * 0.5,
               width: size.width,
               decoration: BoxDecoration(
-                  //borderRadius: BorderRadius.circular(10),
                   color: const Color.fromARGB(255, 214, 245, 214),
                   border: Border.all(color: Colors.green)),
               child: Scaffold(
@@ -178,7 +171,6 @@ class _UnitRangeCostState extends State<UnitRangeCost> {
                                         color: Colors.grey),
                                   ));
                                 }
-                                
                                 return GridView.builder(
                                   gridDelegate:
                                       SliverGridDelegateWithFixedCrossAxisCount(
@@ -340,14 +332,34 @@ class _UnitRangeCostState extends State<UnitRangeCost> {
                                                       ),
                                                       InkWell(
                                                         onTap: (){
-                                                          var res = Future.delayed(const Duration(seconds: 1), () async{
-                                                            return await UnitCostStorage().deleteUnitRangeCost(unitRangeCost: allUnitCostData[index]);
-                                                          });
-                                                          if(res == true){
-                                                            setState(() {
-                                                              //startFetching();
+                                                          Navigator.of(context).push(PageRouteBuilder(
+                                                            opaque: false,
+                                                            transitionDuration:
+                                                            const Duration(milliseconds: 500),
+                                                            reverseTransitionDuration:
+                                                            const Duration(milliseconds: 200),
+                                                            pageBuilder:
+                                                            (BuildContext context, b, e) {
+                                                            return ConfirmDialogBox(titleText: "Delete Unit Range", bodyText: "Are you sure to delete unit range [${allUnitCostData[index].startingRange},${allUnitCostData[index].endingRange}]",
+                                                            onConfirm: ()async{
+                                                              var res = await UnitCostStorage().deleteUnitRangeCost(unitRangeCost: allUnitCostData[index]);
+                                                                if(res){
+                                                                  Fluttertoast.showToast(msg: "Success! Unit range(1) deleted.", timeInSecForIosWeb: 5);
+                                                                  setState(() {
+                                                                    //startFetching();
+                                                                  });
+                                                                }
+                                                                else{
+                                                                  Fluttertoast.showToast(msg: "Failed! Could not delete the unit range [${allUnitCostData[index].startingRange},${allUnitCostData[index].endingRange}].", timeInSecForIosWeb: 5);
+                                                                }
+                                                                Future.delayed(const Duration(milliseconds: 500),(){
+                                                                  Navigator.of(context).pop();
+                                                                });
+                                                            },
+                                                            onCancel: (){
+                                                              Navigator.of(context).pop();
                                                             });
-                                                          }
+                                                            }));
                                                         },
                                                         child: Container(
                                                           decoration: BoxDecoration(
@@ -430,183 +442,17 @@ class _UnitRangeCostState extends State<UnitRangeCost> {
                 height: size.height * 0.4,
                 width: size.width,
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 214, 245, 214),
+                  color: const Color.fromARGB(255, 214, 245, 214),
                   //borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: Colors.green,
                   ),
                 ),
-                child: vatAndDemandChargeView(size))
+                child: const DemandAndVatView(),
+            )
           ],
         ),
       ),
     );
-  }
-   vatAndDemandChargeView(Size size) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 214, 245, 214),
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40),
-        child: AppBar(
-          title: const Center(
-              child: Text(
-                "Vat And Demand Charge",
-                style: TextStyle(color: Colors.white),
-              )
-          ),
-          backgroundColor: Colors.green,
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: SizedBox(
-          height: size.height * 0.4,
-          width: size.width,
-          child: StreamBuilder(
-              stream: _vatAndDemandStreamController.stream,
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  case ConnectionState.active:
-                    if (snapshot.hasData) {
-                      vatAndDemandData =
-                          snapshot.data as List<DemandChargeVatPercentage>;
-                      if (vatAndDemandData.isEmpty) {
-                        return const Center(
-                                child: Text(
-                                  "No Vat and Demand Charge addded",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 30,
-                                      color: Colors.grey),
-                                ));
-                      }
-                      //if(_timer.isActive)_timer.cancel();
-                      return GridView.builder(
-                        gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: size.width.toInt() ~/ 400,
-                                        childAspectRatio: 1.5, // Aspect ratio makes the cards square
-                                      ),
-                        itemCount: vatAndDemandData.length,
-                        itemBuilder:(context,index)=> 
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              color: Colors.white,
-                              child: Column(
-                                children: [
-                                  typeInfo(vatAndDemandData[index]),
-                                  Expanded(
-                                    child: Card(
-                                      color: const Color.fromARGB(255, 195, 243, 205),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                const Text(
-                                                  "Vat : ",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 23,
-                                                    color: Colors.black,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                                Text(
-                                                  "${vatAndDemandData[index].vatPercentageTk.toString()}%",
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Row(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: [
-                                                    const Text(
-                                                      "Demand Charge : ",
-                                                      style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 23,
-                                                        color: Colors.black,
-                                                      ),
-                                                      textAlign: TextAlign.center,
-                                                    ),
-                                                    Text(
-                                                      "${vatAndDemandData[index].demandChargeTk.toString()} tk",
-                                                      style: const TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 20,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        
-                      );
-                    }
-                    else {
-                      return const Center(
-                          child: Text(
-                        "No Vat and demand Charge added",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30,
-                            color: Colors.grey),
-                      ));
-                    }
-                  default:
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                }
-              }),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.green.shade200,
-        foregroundColor: const Color.fromARGB(255, 21, 70, 23),
-        onPressed: () {
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              opaque: false,
-              pageBuilder: (BuildContext context, _, __) {
-                return UpdateVatAndDemand(vatAndDemandData: vatAndDemandData);
-              },
-            ),
-          );
-        },
-        label: const Text(
-          'Update Vat and Demand Charge',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-        ),
-      ),
-    );
-  }
-  Widget typeInfo(DemandChargeVatPercentage demandVat){
-    String type = "a";
-    if(demandVat.typeB == true) type = "b";
-    if(demandVat.typeS == true) type = "s";
-    return Text("Type $type", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),);
   }
 }

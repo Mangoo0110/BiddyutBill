@@ -30,35 +30,9 @@ class MyApp extends StatefulWidget {
 
 final currentAdminProvider = StateProvider<String?>((ref) => null);
 class _MyAppState extends State<MyApp> {
-  User? user;
-  Admin? admin;
-  late Timer _timer;
-  int count = 0;
-  Future <void>getUser()async{
-    user = await publicUserFromPersistantStorage();
-    if(user!=null) _timer.cancel();
-    print("user = $user");
-   // print(user);
-  }
-  Future <void>getAdmin()async{
-    AppPersistantStorage storage = AppPersistantStorage();
-    storage.init();
-    admin = await storage.getCurrentAppUserAdmin();
-    if(admin!=null)_timer.cancel();
-   // print(user);
-  }
   @override
   void initState() {
     // TODO: implement initState
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-      // getAdmin();
-      getUser();
-      count++;
-      if(count>1)_timer.cancel();
-      });
-      
-    });
     super.initState();
   }
   // This widget is the root of your application.
@@ -72,11 +46,12 @@ class _MyAppState extends State<MyApp> {
         fontFamily: 'Roboto',
         useMaterial3: true,
       ),
-      home: (user==null&&admin==null)?(count<2)?const Center(child: CircularProgressIndicator(),): const LogIn() : (user!=null)? const UserDashboard() : const AdminHome(),
+      home: const LogIn(),
       routes: {
         adminDashboardRoute: (context) => const AdminHome(),
-        //addHouseRoute: (context) => const AddHouse(),
+        loginRoute: (context) => const LogIn(),
         userDashboardRoute : (context) => const UserDashboard(),
+        
       },
     );
   }

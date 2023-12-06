@@ -16,13 +16,15 @@ Future<bool>pushMonthlyRecord(
   ) async{
     bool pushed =false;
     try {
-      print("pushing ${record.buildingName.toString()} ${record.houseNo.toString()} ${record.typeA} ${record.typeB} ${record.typeS}");
         final res = await http.post(
         Uri.parse(API.newMonthRecord),
         headers: {"Accept":"application/json"},
         body: {
           monthAndYear : monthYear.toString(),
           varsityId : record.assignedUserID,
+          name : record.fullName,
+          occupatioN : record.occupation,
+          accountno : record.accountNo,
           buildingname : record.buildingName.toString(),
           houseno : record.houseNo.toString(),
           meterno: record.meterNo,
@@ -41,7 +43,6 @@ Future<bool>pushMonthlyRecord(
         }
       );
        //final  resBodyData = jsonDecode(res.body);
-       print(res.body);
       if(res.statusCode == 500){
         return false;
       }
@@ -51,14 +52,14 @@ Future<bool>pushMonthlyRecord(
       else{
         final  resBodyData = jsonDecode(res.body);
         if(resBodyData["Success"]==true)pushed = true;
-        print(resBodyData);
+        // print(resBodyData);
         Fluttertoast.showToast(msg: resBodyData);
         return pushed;
       }
     } catch (e) {
       
       //Fluttertoast.showToast(msg: e.toString());
-      print(e.toString());
+      //print(e.toString());
       return pushed;
     }
   }
@@ -85,7 +86,6 @@ Future <MonthlyRecord?> fetchARecordForHouse(
       }  
     }
   } catch (e) {
-    print(e.toString());
   }
   return null;
 }
@@ -112,7 +112,7 @@ Future <MonthlyRecord?> fetchARecordForUser(
       }  
     }
   } catch (e) {
-    print(e.toString());
+    //print(e.toString());
   }
   return null;
 }
@@ -136,7 +136,7 @@ Future <List<MonthlyRecord>> fetchAllRecord(
     return <MonthlyRecord>[];
     }
   } catch (e) {
-    print(e.toString());
+    //print(e.toString());
     return <MonthlyRecord>[];
   }
 }

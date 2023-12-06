@@ -280,14 +280,19 @@ class _UpdateUserState extends State<UpdateUser> {
                         ),
                         Checkbox(
                           value: typeA,
-                           onChanged: (val){
-                            setState(() {
-                              typeA = true;
-                              typeS = false;
-                              typeB = false;
-                            });
-                           }
-                         ),
+                          onChanged: (val){
+                            if(widget.userInfo.meterNo == ""){
+                              setState(() {
+                                typeA = true;
+                                typeS = false;
+                                typeB = false;
+                              });
+                            }
+                            else{
+                              Fluttertoast.showToast(msg: "User is type can't be modified, when the user is already assigned to a house", timeInSecForIosWeb: 5);
+                            }
+                          }
+                        ),
                       ],
                     ),
                     Padding(
@@ -300,15 +305,19 @@ class _UpdateUserState extends State<UpdateUser> {
                            ),
                           Checkbox(
                             value: typeB,
-                           onChanged: (val){
-                            
-                            setState(() {
-                              typeB = true;
-                              typeA = false;
-                              typeS = false;
-                            });
-                           }
-                           ),
+                            onChanged: (val){
+                              if(widget.userInfo.meterNo == ""){
+                                setState(() {
+                                  typeB = true;
+                                  typeA = false;
+                                  typeS = false;
+                                });
+                              }
+                              else{
+                                Fluttertoast.showToast(msg: "User is type can't be modified, if the user is already assigned to a house", timeInSecForIosWeb: 5);
+                              }
+                            }
+                          ),
                         ],
                       ),
                     ),
@@ -322,15 +331,19 @@ class _UpdateUserState extends State<UpdateUser> {
                            ),
                           Checkbox(
                             value: typeS,
-                           onChanged: (val){
-                            
-                            setState(() {
-                              typeS = true;
-                              typeA = false;
-                              typeB = false;
-                            });
-                           }
-                           ),
+                            onChanged: (val){
+                              if(widget.userInfo.meterNo == ""){
+                                setState(() {
+                                  typeS = true;
+                                  typeA = false;
+                                  typeB = false;
+                                });
+                              }
+                              else{
+                                Fluttertoast.showToast(msg: "User type can't be modified, if the user is already assigned to a house", timeInSecForIosWeb: 5);
+                              }
+                            }
+                          ),
                         ],
                       ),
                     ),

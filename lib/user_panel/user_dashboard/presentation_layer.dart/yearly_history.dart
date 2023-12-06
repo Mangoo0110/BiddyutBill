@@ -10,7 +10,8 @@ import 'package:flutter/material.dart';
 class YearlyRecordHistory extends StatefulWidget {
   Map<String,MonthlyRecord?> records;
   List<UnitCost>unitCostData;
-  YearlyRecordHistory({super.key, required this.records, required this.unitCostData});
+  String year;
+  YearlyRecordHistory({super.key, required this.records, required this.unitCostData, required this.year});
 
   @override
   State<YearlyRecordHistory> createState() => _YearlyRecordHistoryState();
@@ -118,7 +119,7 @@ class _YearlyRecordHistoryState extends State<YearlyRecordHistory> {
                           padding:const EdgeInsets.symmetric(horizontal: 16,vertical: 4),
                           child: InkWell(
                             onTap: () async{
-                              UserPdfBillReciept billReciept = UserPdfBillReciept(unitCostData: widget.unitCostData, record: record, presentMonth: month);
+                              UserPdfBillReciept billReciept = UserPdfBillReciept(unitCostData: widget.unitCostData, record: record, presentMonthYear: "$month, ${widget.year}");
                               await billReciept.generate();
                             },
                             child: Container(

@@ -142,9 +142,7 @@ class CreatePdf {
       'Final Total',
     ];
     //int val =0;
-    print("len.... ${allRecordOfThisMonth.length}");
     final data = allRecordOfThisMonth.map((item) { 
-      print("${item.fullName}... typeA ${item.typeA} typeB ${item.typeB} typeS ${item.typeS}");
       if((type == 1 && item.typeA==true) || (type == 2 && item.typeB==true) || (type==3 && item.typeS  == true)){
       return [
         item.fullName,

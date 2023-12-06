@@ -4,10 +4,9 @@ import 'package:e_bill/admin_panel/usersTab/data_layer/user_model.dart';
 
 Future<Map<String,MonthlyRecord?>> fetchYearlyRecordsForUser(List<String>allMonths, List<String>monthYear,User user) async{
   Map<String,MonthlyRecord?>records={};
-  for (int index=0; index<12;index++){
+  for (int index=0; index<12; index++) {
       final record = await MonthlyRecordStorage().fetchARecordForUser(monthYear: monthYear[index], user: user);
       records[allMonths[index]] = record;
-      print("${allMonths[index]} : ${record}");
   }
   return records;
 }

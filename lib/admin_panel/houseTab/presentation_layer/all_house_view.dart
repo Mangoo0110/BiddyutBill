@@ -84,10 +84,6 @@ class _AllHouseViewState extends State<AllHouseView> {
     _allHouseStreamController.sink.add(selectedBuildnigHouses);
     }
     
-    //print(" map len = ${buildingNames.length}");
-    for(var item in buildingNames.entries){
-      print(item.key);
-    }
   }
 
   @override
@@ -190,9 +186,9 @@ class _AllHouseViewState extends State<AllHouseView> {
                                   color: Colors.grey),
                             ));
                           }
-                          if(_timer.isActive){
-                            _timer.cancel();
-                          }
+                          // if(_timer.isActive){
+                          //   _timer.cancel();
+                          // }
                           return Column(
                             children: [
                                 Padding(
@@ -278,31 +274,34 @@ class _AllHouseViewState extends State<AllHouseView> {
                                             child: Column(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Align(
-                                                  alignment: Alignment.center,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.symmetric(
-                                                        vertical: 20),
-                                                    child: SingleChildScrollView(
-                                                      child: Column(
-                                                        children: [
-                                                          Text(
-                                                            "Building : $building",
-                                                            style: const TextStyle(
-                                                                color: Colors.white,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 12),
-                                                          ),
-                                                          Text(
-                                                            "House No : $houseNo",
-                                                            style: const TextStyle(
-                                                                color: Colors.white,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 12),
-                                                          ),
-                                                        ],
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(
+                                                      vertical: 20),
+                                                  child: Column(
+                                                    children: [
+                                                      Align(
+                                                        alignment: Alignment.center,
+                                                        child: Text(
+                                                          "Building : $building",
+                                                          style: const TextStyle(
+                                                              color: Colors.white,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 12),
+                                                          maxLines: 1,
+                                                        ),
                                                       ),
-                                                    ),
+                                                      Align(
+                                                        alignment: Alignment.center,
+                                                        child: Text(
+                                                          "House No : $houseNo",
+                                                          style: const TextStyle(
+                                                              color: Colors.white,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 12),
+                                                          maxLines: 1,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                                 Row(
@@ -349,34 +348,33 @@ class _AllHouseViewState extends State<AllHouseView> {
                                                       child: InkWell(
                                                         onTap: (){
                                                            Navigator.of(context).push(PageRouteBuilder(
-                                                        opaque: false,
-                                                        transitionDuration:
-                                                        const Duration(milliseconds: 500),
-                                                         reverseTransitionDuration:
-                                                        const Duration(milliseconds: 200),
-                                                        pageBuilder:
-                                                        (BuildContext context, b, e) {
-                                                      return ConfirmDialogBox(titleText: "Delete House", bodyText: "Are you sure to delete House ${thisHouse.buildingName},${thisHouse.houseNo}",
-                                                       onConfirm: ()async{
-                                                        var res = await HouseStorage().deleteHouse(house: thisHouse);
-                                                          if(res){
-                                                            Fluttertoast.showToast(msg: "Success! House deleted.");
-                                                            await getAllHouses();
-                                                          }
-                                                          else{
-                                                            Fluttertoast.showToast(msg: "Failed! Could not delete the house.");
-                                                          }
-                                                          if(res){
-                                                          Future.delayed(const Duration(milliseconds: 500),(){
-                                                            Navigator.of(context).pop();
-                                                          });
-                                                         }
-                                                       },
-                                                        onCancel: (){
-                                                          Navigator.of(context).pop();
-                                                        });
-                                                        }));
-                                                          
+                                                            opaque: false,
+                                                            transitionDuration:
+                                                            const Duration(milliseconds: 500),
+                                                            reverseTransitionDuration:
+                                                            const Duration(milliseconds: 200),
+                                                            pageBuilder:
+                                                            (BuildContext context, b, e) {
+                                                            return ConfirmDialogBox(titleText: "Delete House", bodyText: "Are you sure to delete House ${thisHouse.buildingName},${thisHouse.houseNo}",
+                                                            onConfirm: ()async{
+                                                              var res = await HouseStorage().deleteHouse(house: thisHouse);
+                                                                if(res){
+                                                                  Fluttertoast.showToast(msg: "Success! House deleted.");
+                                                                  await getAllHouses();
+                                                                }
+                                                                else{
+                                                                  Fluttertoast.showToast(msg: "Failed! Could not delete the house.");
+                                                                }
+                                                                if(res){
+                                                                Future.delayed(const Duration(milliseconds: 500),(){
+                                                                  Navigator.of(context).pop();
+                                                                });
+                                                            }
+                                                          },
+                                                            onCancel: (){
+                                                              Navigator.of(context).pop();
+                                                            });
+                                                            }));
                                                         },
                                                         child: Container(
                                                           decoration: BoxDecoration(

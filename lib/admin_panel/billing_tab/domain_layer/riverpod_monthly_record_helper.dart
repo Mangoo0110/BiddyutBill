@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:js_interop';
 
 import 'package:e_bill/admin_panel/billing_tab/data_layer/new_month_record_constant.dart';
@@ -70,13 +71,19 @@ final monthlyRecordProvider = FutureProvider<List<MonthlyRecord>>((ref) async{
     var presentMonthAndYear = ref.watch(selectedPresentMonthAndYear);
     var previousMonthAndYear = ref.watch(selectedPreviousMonthAndYear);
     Map<String,bool>readyToPush = ref.watch(readyToPushProvider);
-    var demandChargeAndVatPercentage = await DemandChargeVatPercentageStorage().fetchDemandChargeVatPercentageStorage();
+    List<DemandChargeVatPercentage> demandChargeAndVatPercentage = await DemandChargeVatPercentageStorage().fetchDemandChargeVatPercentageStorage();
     List<MonthlyRecord> allRecordOfThisMonth=[];
     List<User> allUsers = [];
     List<House> allHouses = [];
     List<House> filteredHouses = [];
     MonthlyRecord? presentRecord;
     MonthlyRecord? previousRecord;
+    // Timer _timer;
+    // _timer = Timer.periodic(const Duration(seconds: 5), (timer) async{ 
+    //   demandChargeAndVatPercentage = await DemandChargeVatPercentageStorage().fetchDemandChargeVatPercentageStorage();
+    //   allUsers = await UserStorage().fetchAllUsers();
+    //   allHouses = await HouseStorage().fetchAllHouses();
+    // });
     allUsers = await UserStorage().fetchAllUsers();
     allHouses = await HouseStorage().fetchAllHouses();
     for(int index = 0; index<allHouses.length; index++){
@@ -105,6 +112,7 @@ final monthlyRecordProvider = FutureProvider<List<MonthlyRecord>>((ref) async{
           typeA = user.typeA;
           typeB = user.typeB;
           typeS = user.typeS;
+          //print("${user.fullName} typeA - $typeA, typeB - $typeB, typeS - $typeS,");
         }
       }
       presentRecord = await MonthlyRecordStorage().fetchARecordForHouse(monthYear: presentMonthAndYear, house: house);
@@ -113,7 +121,13 @@ final monthlyRecordProvider = FutureProvider<List<MonthlyRecord>>((ref) async{
         for(int it = 0; it < demandChargeAndVatPercentage.length; it++){
           if(typeA == demandChargeAndVatPercentage[it].typeA && typeB == demandChargeAndVatPercentage[it].typeB && typeS == demandChargeAndVatPercentage[it].typeS){
             dvx = demandChargeAndVatPercentage[it];
+            if(user!=null){
+              //print("${user.fullName} demand charge ${dvx.demandChargeTk}");
+            }
           }
+          if(user!=null){
+              //print("${user.fullName} demand charge ${dvx.demandChargeTk}");
+            }
         }
         MonthlyRecord filledRecord = MonthlyRecord(
                                       assignedUserID: userId, fullName: userName, occupation: userOccupation,buildingName: house.buildingName,

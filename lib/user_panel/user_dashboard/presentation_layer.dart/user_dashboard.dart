@@ -47,14 +47,15 @@ class _UserDashboardState extends State<UserDashboard> {
     if(user==null){
       if(count>5){
           _timer.cancel();
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LogIn()), (route) => false);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> const LogIn()), (route) => false);
       }
     }
     count =0;
     _timer.cancel;
     return Scaffold(
       backgroundColor: AppColors.primaryBg,
-      body: Row(children: [
+      body:
+       Row(children: [
         Expanded(
           flex: 20,
           child: UserDashboardMainContent(user: user),

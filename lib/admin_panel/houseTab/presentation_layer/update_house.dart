@@ -64,6 +64,7 @@ class _UpdateHouseState extends State<UpdateHouse> {
       var success = await HouseStorage().addOrUpdateHouse(house: house);
       if(!success){
         Fluttertoast.showToast(
+              timeInSecForIosWeb: 5,
               msg:
                   "Could not update House (Building Name : ${house.buildingName} and House No : ${house.houseNo}). [Building Name] and [House No] should be unique.");
       return false;
@@ -73,12 +74,14 @@ class _UpdateHouseState extends State<UpdateHouse> {
       success = await UserStorage().assignUserAHouse(varsityId: assignedUserID, house: house);
       if(success){
         Fluttertoast.showToast(
+              timeInSecForIosWeb: 5,
               msg:
                   "Success! House (Building Name : ${house.buildingName} and House No : ${house.houseNo}, User: ${assignedUser!.fullName}.");
           return true;
       }
       else{
         Fluttertoast.showToast(
+              timeInSecForIosWeb: 5,
               msg:
                   "UserId ${house.assignedUserID} is not valid!!");
         return false;
@@ -86,6 +89,7 @@ class _UpdateHouseState extends State<UpdateHouse> {
       }
         if(assignedUserID.isEmpty){
           Fluttertoast.showToast(
+              timeInSecForIosWeb: 5,
               msg:
                   "Success! House (Building Name : ${house.buildingName} and House No : ${house.houseNo} is updated without user.");
          return true;
@@ -97,13 +101,14 @@ class _UpdateHouseState extends State<UpdateHouse> {
       buildingName = buildingNameInputController.text.trim();
       if(buildingName==''){
         Fluttertoast.showToast(msg: "BuildingName can not be empty!!",
+          timeInSecForIosWeb: 5,
           toastLength: Toast.LENGTH_LONG,
           );
         return null;
       }
       houseNo = houseNoInputController.text.trim();
       if(houseNo ==''){
-        Fluttertoast.showToast(msg: "HouseNo can not be empty!!");
+        Fluttertoast.showToast(msg: "HouseNo can not be empty!!", timeInSecForIosWeb: 5);
         return null;
       }
       meterNo = meterNoInputController.text.trim();
@@ -216,11 +221,13 @@ class _UpdateHouseState extends State<UpdateHouse> {
                                   Checkbox(
                                     value: typeA,
                                      onChanged: (val){
-                                      setState(() {
-                                        typeA = true;
-                                        typeS = false;
-                                        typeB = false;
-                                      });
+                                      if(widget.thisHouse.assignedUserID == ""){
+                                        setState(() {
+                                          typeA = true;
+                                          typeS = false;
+                                          typeB = false;
+                                        });
+                                      }
                                      }
                                    ),
                                    Text("A",style: TextStyle(color: (typeA==true)?Colors.black: Colors.black54,fontSize: responsiveNormalButtonFontSize(boxConstraints: constraints)),),
@@ -245,12 +252,13 @@ class _UpdateHouseState extends State<UpdateHouse> {
                                   Checkbox(
                                     value: typeB,
                                    onChanged: (val){
-                                    
-                                    setState(() {
-                                      typeB = true;
-                                      typeA = false;
-                                      typeS = false;
-                                    });
+                                    if(widget.thisHouse.assignedUserID == ""){
+                                      setState(() {
+                                        typeB = true;
+                                        typeA = false;
+                                        typeS = false;
+                                      });
+                                    }
                                    }
                                    ),
                                     Text("B",style: TextStyle(color: (typeB==true)?Colors.black: Colors.black54,fontSize: responsiveNormalButtonFontSize(boxConstraints: constraints)),),
@@ -275,11 +283,13 @@ class _UpdateHouseState extends State<UpdateHouse> {
                                    Checkbox(
                                     value: typeS,
                                    onChanged: (val){
-                                    setState(() {
-                                      typeS = true;
-                                      typeA = false;
-                                      typeB = false;
-                                    });
+                                    if(widget.thisHouse.assignedUserID == ""){
+                                      setState(() {
+                                        typeS = true;
+                                        typeA = false;
+                                        typeB = false;
+                                      });
+                                    }
                                    }
                                    ),
                                     Text("S",style: TextStyle(color: (typeS==true)?Colors.black: Colors.black54,fontSize: responsiveNormalButtonFontSize(boxConstraints: constraints)),),
@@ -363,13 +373,23 @@ class _UpdateHouseState extends State<UpdateHouse> {
                         AssignedUserList(
                         onRemove: () async{
                         bool res = await UserStorage().deleteHouseOfUser(id: assignedUserID);
-                        res = await HouseStorage().deleteHouseAssignedUser(house: widget.thisHouse);
-                        setState(() {
+                        if(res){
+                          res = await HouseStorage().deleteHouseAssignedUser(house: widget.thisHouse);
+                          if(res){
+                            setState(() {
                             assignedUserID ='';
                             widget.thisHouse.assignedUserID = '';
                             userAssigned =false;
-                            print("house updated");
+                            // print("house updated");
                           });
+                          }
+                        }
+                        // setState(() {
+                        //     assignedUserID ='';
+                        //     widget.thisHouse.assignedUserID = '';
+                        //     userAssigned =false;
+                        //     print("house updated");
+                        //   });
                         },
                         assignedUserID: assignedUserID, ),
                       ],
@@ -394,7 +414,6 @@ class _UpdateHouseState extends State<UpdateHouse> {
           ),),
       ),
     );
-       
-       }
-   
+  }
+  
 }

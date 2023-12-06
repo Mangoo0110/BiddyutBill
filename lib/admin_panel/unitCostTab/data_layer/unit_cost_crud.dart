@@ -9,7 +9,6 @@ import 'package:http/http.dart' as http;
 class UnitCostStorage {
   List<UnitCost> unitCostFromJson(String jsonString) {
     final data = jsonDecode(jsonString);
-    //print(data);
     return List<UnitCost>.from(
         (data.map((item) => UnitCost.fromJson(item))));
   }
@@ -18,7 +17,6 @@ class UnitCostStorage {
     var result = await http.post(
       Uri.parse(API.fetchAllUnitCost),
     );
-    //print(result.body);
     if (result.statusCode == 200) {
       List<UnitCost> list = unitCostFromJson(result.body);
       return list;

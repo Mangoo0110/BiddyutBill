@@ -18,8 +18,6 @@ Future<Admin?>adminLogin({
     required String password,
   })async{
   try {
-
-      print("$email , $password");
       var res = await http.post(
           Uri.parse(API.adminLogIn),
           headers: {"Accept":"application/json"},
@@ -28,17 +26,17 @@ Future<Admin?>adminLogin({
             "pwd": password,
           }
       );
-      print(res.statusCode);
+      //print(res.statusCode);
       if (res.statusCode == 200){
-        print("success");
+        //print("success");
         var resBodyOfLogin = jsonDecode(res.body);
 
         if (resBodyOfLogin["Success"]==true){
-          print(resBodyOfLogin["Success"]);
+          //print(resBodyOfLogin["Success"]);
           Fluttertoast.showToast(msg: "Congrats, You are Logged In successfully");
           final adminData = jsonEncode(resBodyOfLogin["Admin"]);
           final admin = adminFromJson(adminData);
-          print(adminData);
+          //print(adminData);
           AppPersistantStorage storage = AppPersistantStorage();
           await storage.init();
           storage.setCurrentAppUserAdmin(adminInfo: admin);
@@ -50,7 +48,7 @@ Future<Admin?>adminLogin({
       }
     }
     catch(e){
-      print(e);
+      //print(e);
       Fluttertoast.showToast(msg: "$e");
     }
   return null;
@@ -65,15 +63,15 @@ Future<Admin?>adminLogin({
             "email": email,
           }
       );
-      print("asking.. ${res.statusCode}");
+      //print("asking.. ${res.statusCode}");
       //var resBody = res.body;
       //print(resBody);
       if(res.statusCode == 200){
         var resBody= jsonDecode(res.body);
-        print(resBody);
+        //print(resBody);
         if(resBody["Success"]==true){
           final datax = resBody["Message"];          
-          print(datax);
+          //print(datax);
           return true;
         }
         else{
@@ -83,7 +81,7 @@ Future<Admin?>adminLogin({
       }
     }
     catch(e){
-      print(e);
+      //print(e);
       Fluttertoast.showToast(msg: "$e");
     }
     return false;
@@ -91,7 +89,7 @@ Future<Admin?>adminLogin({
 
   Future<bool>validateAdminOTP({required String email, required String otp})async{
     try{
-      print(otp);
+      //print(otp);
        var res = await http.post(
           Uri.parse(API.verifyAdminOTP),
           headers: {"Accept":"application/json"},
@@ -100,13 +98,13 @@ Future<Admin?>adminLogin({
             "otp": otp,
           }
       );
-      print("validating.. ${res.statusCode}");
-      print(res.body);
+      //print("validating.. ${res.statusCode}");
+      //print(res.body);
       if(res.statusCode == 200){
         var resBody= jsonDecode(res.body);
         if(resBody["Success"]==true){
           final data = resBody["Message"];
-          print("validation data $data");
+          //print("validation data $data");
           return true;
         }
         else{
@@ -116,7 +114,7 @@ Future<Admin?>adminLogin({
       }
     }
     catch(e){
-      print(e);
+      //print(e);
       Fluttertoast.showToast(msg: "$e");
       return false;
     }

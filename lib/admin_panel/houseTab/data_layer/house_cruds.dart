@@ -53,7 +53,6 @@ Future<List<House>>fetchHouse({required House house})async{
       }
   } catch (e) {
     Fluttertoast.showToast(msg: e.toString());
-    print(e.toString());
   }
       return <House>[];
 }
@@ -80,7 +79,6 @@ Future<bool> addOrUpdateHouse(
       });
       if (res.statusCode == 200) {
         var data = jsonDecode(res.body);
-        print(data);
         if (data["Success"] == true) {
          return true;
         } else {
@@ -89,7 +87,7 @@ Future<bool> addOrUpdateHouse(
       }
     }
     else{
-      Fluttertoast.showToast(msg: "Not a valid user!!");
+      Fluttertoast.showToast(msg: "Not a valid user!!", timeInSecForIosWeb: 5);
     }
   }
   catch (e) {

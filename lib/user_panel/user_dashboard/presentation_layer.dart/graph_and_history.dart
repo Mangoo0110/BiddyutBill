@@ -48,7 +48,6 @@ class _GraphAndHistoryState extends State<GraphAndHistory> {
   }
 
   void fillMonthYears(){
-    print("fillmonths ${widget.year}");
     int year = widget.year;
     monthYear = [];
     for(int index = 0; index<12; index++){
@@ -77,50 +76,40 @@ class _GraphAndHistoryState extends State<GraphAndHistory> {
           );
         }
         else if(snapshot.hasData){
-          if(snapshot.hasData){
-            final records = snapshot.data as Map<String,MonthlyRecord?>;
-            final yearlyData = YearlyData(records: records);
-            return Expanded(
-                    child: SingleChildScrollView(
-                      child:  Column(
-                        children: [
-                          Align(alignment: Alignment.topLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.all(14.0),
-                            child: Text("Monthly Graph",style: AppStyle().headerOne,),
-                          )),
-                          SizedBox(
-                            height: size.height * .35,
-                            child: BarGraph(yearlyDataModel: yearlyData)),
-                          Padding(
-                            padding: const EdgeInsets.all(14.0),
-                            child: 
-                            Column(
-                              children: [
-                                Align(alignment: Alignment.topLeft,child: Text("History",style: AppStyle().headerOne,)),
-                                Container(
-                                  height: size.height * .4,
-                                  child: YearlyRecordHistory(records: records, unitCostData: unitCostData),
-                                )
-                              ],
-                            ),
-                          ),
-                        
-                        ],
-                      ),
+          final records = snapshot.data as Map<String,MonthlyRecord?>;
+          final yearlyData = YearlyData(records: records);
+          return
+            Expanded(
+              child: DefaultTabController(
+              length: 2,
+                child: Scaffold(
+                    appBar: 
+                    TabBar(
+                      indicatorColor: Colors.green.shade300,
+                      tabs: [
+                        Tab(child: Text("Monthly Graph",style: AppStyle().headerOne,),),
+                        Tab(child: Text("History",style: AppStyle().headerOne,)),
+                      ],
                     ),
-                  );
-                            
-          }
-          else{
-            return const Center(
-            child: Text("No Data")
-          );
-          }
+                    body: TabBarView(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: BarGraph(yearlyDataModel: yearlyData),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: YearlyRecordHistory(records: records, unitCostData: unitCostData, year: widget.year.toString(),),
+                        ),
+                      ],
+                      ),
+                  ),
+              ),
+            );
         }
         else{
           return const Center(
-            child: CircularProgressIndicator(),
+            child: Text("No data!!!")
           );
         }
       },

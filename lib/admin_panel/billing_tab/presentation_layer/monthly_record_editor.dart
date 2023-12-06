@@ -46,7 +46,7 @@ class _NewMonthRecordState extends ConsumerState<NewMonthRecord> {
   ];
   List<DemandChargeVatPercentage>demandVatList = [];
   recordSearching(){
-    print(" printing ${ref.watch(selectedUserType)}");
+    //print(" printing ${ref.watch(selectedUserType)}");
     ref.read(searchedRecordText.notifier).update((state) => searchText);
     var cc = ref.watch(monthlyRecordProvider);
     var dd = ref.watch(searchedMonthlyRecordsProvider);

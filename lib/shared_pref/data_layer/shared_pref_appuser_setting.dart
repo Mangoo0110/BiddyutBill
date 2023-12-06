@@ -30,14 +30,10 @@ class AppPersistantStorage{
   Future<bool> setCurrentAppUserPublic({
     required User publicInfo
   })async{
-    print("x");
     persistentStorage.setString(currentAppUser, publicKey);
-    print("xx");
     String publicJsonData = jsonEncode(publicInfo.toJson());
     persistentStorage.setString(publicKey, publicJsonData);
-    print("xxx");
     final data = getCurrentAppUserPublic();
-    print("data>>$data");
     if(data!=null)return true;
     return false;
   }

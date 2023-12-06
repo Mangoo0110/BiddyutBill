@@ -37,8 +37,7 @@ class _AddUserState extends State<AddUser> {
 
   addUser() async {
     
-      print("pressed\n");
-       if(await formValidation()){
+    if(await formValidation()){
       fullName = removeWhiteSpace(fullName);
       email = removeWhiteSpace(email);
       accountNo = removeWhiteSpace(accountNo);
@@ -52,7 +51,7 @@ class _AddUserState extends State<AddUser> {
           Navigator.of(context).pop();
         }); 
       }
-       }
+    }
   }
    Future<bool> formValidation()async{
       
@@ -80,7 +79,6 @@ class _AddUserState extends State<AddUser> {
 
   @override
   Widget build(BuildContext context) {
-    print("started");
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 0, 7, 3),
       appBar: AppBar(
